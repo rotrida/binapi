@@ -14,11 +14,13 @@
 
 #include <cstdint>
 
+using namespace std;
+
 namespace binapi {
 
 /*************************************************************************************************/
 
-enum class e_side: std::size_t {
+enum class e_side: size_t {
     buy
    ,sell
 };
@@ -28,7 +30,7 @@ const char* e_side_to_string(e_side side);
 
 /*************************************************************************************************/
 
-enum class e_type: std::size_t {
+enum class e_type: size_t {
      limit
     ,market
     ,stop_loss
@@ -43,7 +45,7 @@ const char* e_type_to_string(e_type type);
 
 /*************************************************************************************************/
 
-enum class e_time: std::size_t {
+enum class e_time: size_t {
      GTC
     ,IOC
     ,FOK
@@ -54,7 +56,7 @@ const char* e_time_to_string(e_time time);
 
 /*************************************************************************************************/
 
-enum class e_freq: std::size_t {
+enum class e_freq: size_t {
      _100ms  = 100
     ,_1000ms = 1000
 };
@@ -64,7 +66,7 @@ const char* e_freq_to_string(e_freq freq);
 
 /*************************************************************************************************/
 
-enum class e_levels: std::size_t {
+enum class e_levels: size_t {
      _5 = 5
     ,_10 = 10
     ,_20 = 20
@@ -75,7 +77,7 @@ const char* e_levels_to_string(e_levels level);
 
 /*************************************************************************************************/
 
-enum class e_trade_resp_type: std::size_t {
+enum class e_trade_resp_type: size_t {
      ACK
     ,RESULT
     ,FULL

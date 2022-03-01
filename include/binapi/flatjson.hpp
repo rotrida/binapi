@@ -347,7 +347,7 @@ static typename std::enable_if<
 conv_to(const char *ptr, std::size_t len) {
     if ( *ptr == '-' ) {
         ++ptr;
-        return -conv_to<typename std::make_unsigned<To>::type>(ptr, len - 1);
+        return conv_to<typename std::make_unsigned<To>::type>(ptr, len - 1) * -1;
     }
 
     return conv_to<typename std::make_unsigned<To>::type>(ptr, len);
