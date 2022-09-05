@@ -17,6 +17,8 @@
 #include <binapi/errors.hpp>
 
 #include <boost/asio/io_context.hpp>
+#include <boost/asio/io_context_strand.hpp>
+#include <boost/asio/dispatch.hpp>
 #include <boost/asio/connect.hpp>
 #include <boost/asio/ip/tcp.hpp>
 #include <boost/asio/ssl/stream.hpp>
@@ -28,10 +30,8 @@
 #include <boost/callable_traits.hpp>
 #include <boost/algorithm/string/case_conv.hpp>
 
-#include <boost/intrusive/set.hpp>
-
 #include <map>
-#include <set>
+#include <unordered_map>
 #include <cstring>
 
 //#include <iostream> // TODO: comment out
@@ -242,11 +242,12 @@ struct websocket_id_getter {
 struct websockets::impl {
     impl(boost::asio::io_context &ioctx, std::string host, std::string port, on_message_received_cb cb)
         :m_ioctx{ioctx}
+        ,m_strand{ioctx}
         ,m_host{std::move(host)}
         ,m_port{std::move(port)}
         ,m_on_message{std::move(cb)}
-        ,m_set{}
     {}
+    
     ~impl() {
         unsubscribe_all();
     }
@@ -272,15 +273,7 @@ struct websockets::impl {
         using args_tuple = typename boost::callable_traits::args<F>::type;
         using message_type = typename std::tuple_element<3, args_tuple>::type;
 
-        static const auto deleter = [this](websocket *ws) {
-            auto it = m_set.find(ws);
-            if ( it != m_set.end() ) {
-                m_set.erase(it);
-            }
-
-            delete ws;
-        };
-        std::shared_ptr<websocket> ws{new websocket(m_ioctx), deleter};
+        std::shared_ptr<websocket> ws = std::make_shared<websocket>(m_ioctx);
         std::string schannel = make_channel_name(pair, channel);
 
         auto wscb = [this, schannel, cb=std::move(cb)]
@@ -330,29 +323,33 @@ struct websockets::impl {
             return false;
         };
 
-        auto *ptr = ws.get();
-        ptr->start(
+        ws->start(
              m_host
             ,m_port
             ,schannel
             ,std::move(wscb)
-            ,std::move(ws)
+            ,ws
         );
 
-        m_set.insert(*ptr);
-
-        return ptr;
+        boost::asio::dispatch(m_strand, [this, ws]()
+        {
+            m_websockets.insert(std::make_pair(ws.get(), ws));
+        });
+        
+        return ws.get();
     }
 
     template<typename F>
     void stop_channel_impl(handle h, F f) {
-        auto it = m_set.find(h);
-        if ( it == m_set.end() ) { return; }
+        boost::asio::dispatch(m_strand, [this, h, f]() 
+        {
+            auto it = m_websockets.find(h);
+            if (it == m_websockets.end()) { return; }
 
-        auto *ws = static_cast<websocket *>(&(*it));
-        f(ws);
+            f(it->second);
 
-        m_set.erase(it);
+            m_websockets.erase(it);
+        });
     }
 
     void stop_channel(handle h) {
@@ -364,12 +361,15 @@ struct websockets::impl {
 
     template<typename F>
     void unsubscribe_all_impl(F f) {
-        for ( auto it = m_set.begin(); it != m_set.end(); ) {
-            auto *ws = static_cast<websocket *>(&(*it));
-            f(ws);
+        boost::asio::dispatch(m_strand, [this, f]()
+        {
+            for (auto & it : m_websockets) 
+            {
+                f(it.second);
+            }
 
-            it = m_set.erase(it);
-        }
+            m_websockets.clear();
+        });
     }
     void unsubscribe_all() {
         return unsubscribe_all_impl([](auto sp){ sp->stop(); });
@@ -379,18 +379,11 @@ struct websockets::impl {
     }
 
     boost::asio::io_context &m_ioctx;
+    boost::asio::io_context::strand m_strand;
     std::string m_host;
     std::string m_port;
     on_message_received_cb m_on_message;
-    boost::intrusive::set<
-         websocket
-        ,boost::intrusive::key_of_value<websocket_id_getter>
-        ,boost::intrusive::member_hook<
-             websocket
-            ,boost::intrusive::set_member_hook<>
-            ,&websocket::m_intrusive_set_hook
-        >
-    > m_set;
+    std::unordered_map<handle, std::shared_ptr<websocket>> m_websockets;
 };
 
 /*************************************************************************************************/
