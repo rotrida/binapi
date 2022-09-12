@@ -47,6 +47,16 @@ set(BINAPI_SOURCES
     src/websocket.cpp
 )
 
+ADD_LIBRARY( binapi.a STATIC
+             src/api.cpp
+             src/enums.cpp
+             src/errors.cpp
+             src/pairslist.cpp
+             src/reports.cpp
+             src/tools.cpp
+             src/types.cpp
+             src/websocket.cpp )
+
 add_executable(
     ${PROJECT_NAME}
     #
