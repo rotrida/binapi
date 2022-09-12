@@ -117,19 +117,6 @@ depend:
 .PHONY : depend
 
 #=============================================================================
-# Target rules for targets named binapi.a
-
-# Build rule for target.
-binapi.a: cmake_check_build_system
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 binapi.a
-.PHONY : binapi.a
-
-# fast build rule for target.
-binapi.a/fast:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/binapi.a.dir/build.make CMakeFiles/binapi.a.dir/build
-.PHONY : binapi.a/fast
-
-#=============================================================================
 # Target rules for targets named binapi
 
 # Build rule for target.
@@ -142,12 +129,25 @@ binapi/fast:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/binapi.dir/build.make CMakeFiles/binapi.dir/build
 .PHONY : binapi/fast
 
+#=============================================================================
+# Target rules for targets named binapi_proj
+
+# Build rule for target.
+binapi_proj: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 binapi_proj
+.PHONY : binapi_proj
+
+# fast build rule for target.
+binapi_proj/fast:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/binapi_proj.dir/build.make CMakeFiles/binapi_proj.dir/build
+.PHONY : binapi_proj/fast
+
 main.o: main.cpp.o
 .PHONY : main.o
 
 # target to build an object file
 main.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/binapi.dir/build.make CMakeFiles/binapi.dir/main.cpp.o
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/binapi_proj.dir/build.make CMakeFiles/binapi_proj.dir/main.cpp.o
 .PHONY : main.cpp.o
 
 main.i: main.cpp.i
@@ -155,7 +155,7 @@ main.i: main.cpp.i
 
 # target to preprocess a source file
 main.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/binapi.dir/build.make CMakeFiles/binapi.dir/main.cpp.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/binapi_proj.dir/build.make CMakeFiles/binapi_proj.dir/main.cpp.i
 .PHONY : main.cpp.i
 
 main.s: main.cpp.s
@@ -163,7 +163,7 @@ main.s: main.cpp.s
 
 # target to generate assembly for a file
 main.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/binapi.dir/build.make CMakeFiles/binapi.dir/main.cpp.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/binapi_proj.dir/build.make CMakeFiles/binapi_proj.dir/main.cpp.s
 .PHONY : main.cpp.s
 
 src/api.o: src/api.cpp.o
@@ -171,8 +171,8 @@ src/api.o: src/api.cpp.o
 
 # target to build an object file
 src/api.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/binapi.a.dir/build.make CMakeFiles/binapi.a.dir/src/api.cpp.o
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/binapi.dir/build.make CMakeFiles/binapi.dir/src/api.cpp.o
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/binapi_proj.dir/build.make CMakeFiles/binapi_proj.dir/src/api.cpp.o
 .PHONY : src/api.cpp.o
 
 src/api.i: src/api.cpp.i
@@ -180,8 +180,8 @@ src/api.i: src/api.cpp.i
 
 # target to preprocess a source file
 src/api.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/binapi.a.dir/build.make CMakeFiles/binapi.a.dir/src/api.cpp.i
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/binapi.dir/build.make CMakeFiles/binapi.dir/src/api.cpp.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/binapi_proj.dir/build.make CMakeFiles/binapi_proj.dir/src/api.cpp.i
 .PHONY : src/api.cpp.i
 
 src/api.s: src/api.cpp.s
@@ -189,8 +189,8 @@ src/api.s: src/api.cpp.s
 
 # target to generate assembly for a file
 src/api.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/binapi.a.dir/build.make CMakeFiles/binapi.a.dir/src/api.cpp.s
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/binapi.dir/build.make CMakeFiles/binapi.dir/src/api.cpp.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/binapi_proj.dir/build.make CMakeFiles/binapi_proj.dir/src/api.cpp.s
 .PHONY : src/api.cpp.s
 
 src/enums.o: src/enums.cpp.o
@@ -198,8 +198,8 @@ src/enums.o: src/enums.cpp.o
 
 # target to build an object file
 src/enums.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/binapi.a.dir/build.make CMakeFiles/binapi.a.dir/src/enums.cpp.o
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/binapi.dir/build.make CMakeFiles/binapi.dir/src/enums.cpp.o
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/binapi_proj.dir/build.make CMakeFiles/binapi_proj.dir/src/enums.cpp.o
 .PHONY : src/enums.cpp.o
 
 src/enums.i: src/enums.cpp.i
@@ -207,8 +207,8 @@ src/enums.i: src/enums.cpp.i
 
 # target to preprocess a source file
 src/enums.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/binapi.a.dir/build.make CMakeFiles/binapi.a.dir/src/enums.cpp.i
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/binapi.dir/build.make CMakeFiles/binapi.dir/src/enums.cpp.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/binapi_proj.dir/build.make CMakeFiles/binapi_proj.dir/src/enums.cpp.i
 .PHONY : src/enums.cpp.i
 
 src/enums.s: src/enums.cpp.s
@@ -216,8 +216,8 @@ src/enums.s: src/enums.cpp.s
 
 # target to generate assembly for a file
 src/enums.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/binapi.a.dir/build.make CMakeFiles/binapi.a.dir/src/enums.cpp.s
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/binapi.dir/build.make CMakeFiles/binapi.dir/src/enums.cpp.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/binapi_proj.dir/build.make CMakeFiles/binapi_proj.dir/src/enums.cpp.s
 .PHONY : src/enums.cpp.s
 
 src/errors.o: src/errors.cpp.o
@@ -225,8 +225,8 @@ src/errors.o: src/errors.cpp.o
 
 # target to build an object file
 src/errors.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/binapi.a.dir/build.make CMakeFiles/binapi.a.dir/src/errors.cpp.o
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/binapi.dir/build.make CMakeFiles/binapi.dir/src/errors.cpp.o
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/binapi_proj.dir/build.make CMakeFiles/binapi_proj.dir/src/errors.cpp.o
 .PHONY : src/errors.cpp.o
 
 src/errors.i: src/errors.cpp.i
@@ -234,8 +234,8 @@ src/errors.i: src/errors.cpp.i
 
 # target to preprocess a source file
 src/errors.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/binapi.a.dir/build.make CMakeFiles/binapi.a.dir/src/errors.cpp.i
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/binapi.dir/build.make CMakeFiles/binapi.dir/src/errors.cpp.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/binapi_proj.dir/build.make CMakeFiles/binapi_proj.dir/src/errors.cpp.i
 .PHONY : src/errors.cpp.i
 
 src/errors.s: src/errors.cpp.s
@@ -243,8 +243,8 @@ src/errors.s: src/errors.cpp.s
 
 # target to generate assembly for a file
 src/errors.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/binapi.a.dir/build.make CMakeFiles/binapi.a.dir/src/errors.cpp.s
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/binapi.dir/build.make CMakeFiles/binapi.dir/src/errors.cpp.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/binapi_proj.dir/build.make CMakeFiles/binapi_proj.dir/src/errors.cpp.s
 .PHONY : src/errors.cpp.s
 
 src/pairslist.o: src/pairslist.cpp.o
@@ -252,8 +252,8 @@ src/pairslist.o: src/pairslist.cpp.o
 
 # target to build an object file
 src/pairslist.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/binapi.a.dir/build.make CMakeFiles/binapi.a.dir/src/pairslist.cpp.o
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/binapi.dir/build.make CMakeFiles/binapi.dir/src/pairslist.cpp.o
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/binapi_proj.dir/build.make CMakeFiles/binapi_proj.dir/src/pairslist.cpp.o
 .PHONY : src/pairslist.cpp.o
 
 src/pairslist.i: src/pairslist.cpp.i
@@ -261,8 +261,8 @@ src/pairslist.i: src/pairslist.cpp.i
 
 # target to preprocess a source file
 src/pairslist.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/binapi.a.dir/build.make CMakeFiles/binapi.a.dir/src/pairslist.cpp.i
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/binapi.dir/build.make CMakeFiles/binapi.dir/src/pairslist.cpp.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/binapi_proj.dir/build.make CMakeFiles/binapi_proj.dir/src/pairslist.cpp.i
 .PHONY : src/pairslist.cpp.i
 
 src/pairslist.s: src/pairslist.cpp.s
@@ -270,8 +270,8 @@ src/pairslist.s: src/pairslist.cpp.s
 
 # target to generate assembly for a file
 src/pairslist.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/binapi.a.dir/build.make CMakeFiles/binapi.a.dir/src/pairslist.cpp.s
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/binapi.dir/build.make CMakeFiles/binapi.dir/src/pairslist.cpp.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/binapi_proj.dir/build.make CMakeFiles/binapi_proj.dir/src/pairslist.cpp.s
 .PHONY : src/pairslist.cpp.s
 
 src/reports.o: src/reports.cpp.o
@@ -279,8 +279,8 @@ src/reports.o: src/reports.cpp.o
 
 # target to build an object file
 src/reports.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/binapi.a.dir/build.make CMakeFiles/binapi.a.dir/src/reports.cpp.o
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/binapi.dir/build.make CMakeFiles/binapi.dir/src/reports.cpp.o
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/binapi_proj.dir/build.make CMakeFiles/binapi_proj.dir/src/reports.cpp.o
 .PHONY : src/reports.cpp.o
 
 src/reports.i: src/reports.cpp.i
@@ -288,8 +288,8 @@ src/reports.i: src/reports.cpp.i
 
 # target to preprocess a source file
 src/reports.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/binapi.a.dir/build.make CMakeFiles/binapi.a.dir/src/reports.cpp.i
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/binapi.dir/build.make CMakeFiles/binapi.dir/src/reports.cpp.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/binapi_proj.dir/build.make CMakeFiles/binapi_proj.dir/src/reports.cpp.i
 .PHONY : src/reports.cpp.i
 
 src/reports.s: src/reports.cpp.s
@@ -297,8 +297,8 @@ src/reports.s: src/reports.cpp.s
 
 # target to generate assembly for a file
 src/reports.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/binapi.a.dir/build.make CMakeFiles/binapi.a.dir/src/reports.cpp.s
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/binapi.dir/build.make CMakeFiles/binapi.dir/src/reports.cpp.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/binapi_proj.dir/build.make CMakeFiles/binapi_proj.dir/src/reports.cpp.s
 .PHONY : src/reports.cpp.s
 
 src/tools.o: src/tools.cpp.o
@@ -306,8 +306,8 @@ src/tools.o: src/tools.cpp.o
 
 # target to build an object file
 src/tools.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/binapi.a.dir/build.make CMakeFiles/binapi.a.dir/src/tools.cpp.o
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/binapi.dir/build.make CMakeFiles/binapi.dir/src/tools.cpp.o
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/binapi_proj.dir/build.make CMakeFiles/binapi_proj.dir/src/tools.cpp.o
 .PHONY : src/tools.cpp.o
 
 src/tools.i: src/tools.cpp.i
@@ -315,8 +315,8 @@ src/tools.i: src/tools.cpp.i
 
 # target to preprocess a source file
 src/tools.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/binapi.a.dir/build.make CMakeFiles/binapi.a.dir/src/tools.cpp.i
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/binapi.dir/build.make CMakeFiles/binapi.dir/src/tools.cpp.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/binapi_proj.dir/build.make CMakeFiles/binapi_proj.dir/src/tools.cpp.i
 .PHONY : src/tools.cpp.i
 
 src/tools.s: src/tools.cpp.s
@@ -324,8 +324,8 @@ src/tools.s: src/tools.cpp.s
 
 # target to generate assembly for a file
 src/tools.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/binapi.a.dir/build.make CMakeFiles/binapi.a.dir/src/tools.cpp.s
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/binapi.dir/build.make CMakeFiles/binapi.dir/src/tools.cpp.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/binapi_proj.dir/build.make CMakeFiles/binapi_proj.dir/src/tools.cpp.s
 .PHONY : src/tools.cpp.s
 
 src/types.o: src/types.cpp.o
@@ -333,8 +333,8 @@ src/types.o: src/types.cpp.o
 
 # target to build an object file
 src/types.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/binapi.a.dir/build.make CMakeFiles/binapi.a.dir/src/types.cpp.o
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/binapi.dir/build.make CMakeFiles/binapi.dir/src/types.cpp.o
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/binapi_proj.dir/build.make CMakeFiles/binapi_proj.dir/src/types.cpp.o
 .PHONY : src/types.cpp.o
 
 src/types.i: src/types.cpp.i
@@ -342,8 +342,8 @@ src/types.i: src/types.cpp.i
 
 # target to preprocess a source file
 src/types.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/binapi.a.dir/build.make CMakeFiles/binapi.a.dir/src/types.cpp.i
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/binapi.dir/build.make CMakeFiles/binapi.dir/src/types.cpp.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/binapi_proj.dir/build.make CMakeFiles/binapi_proj.dir/src/types.cpp.i
 .PHONY : src/types.cpp.i
 
 src/types.s: src/types.cpp.s
@@ -351,8 +351,8 @@ src/types.s: src/types.cpp.s
 
 # target to generate assembly for a file
 src/types.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/binapi.a.dir/build.make CMakeFiles/binapi.a.dir/src/types.cpp.s
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/binapi.dir/build.make CMakeFiles/binapi.dir/src/types.cpp.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/binapi_proj.dir/build.make CMakeFiles/binapi_proj.dir/src/types.cpp.s
 .PHONY : src/types.cpp.s
 
 src/websocket.o: src/websocket.cpp.o
@@ -360,8 +360,8 @@ src/websocket.o: src/websocket.cpp.o
 
 # target to build an object file
 src/websocket.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/binapi.a.dir/build.make CMakeFiles/binapi.a.dir/src/websocket.cpp.o
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/binapi.dir/build.make CMakeFiles/binapi.dir/src/websocket.cpp.o
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/binapi_proj.dir/build.make CMakeFiles/binapi_proj.dir/src/websocket.cpp.o
 .PHONY : src/websocket.cpp.o
 
 src/websocket.i: src/websocket.cpp.i
@@ -369,8 +369,8 @@ src/websocket.i: src/websocket.cpp.i
 
 # target to preprocess a source file
 src/websocket.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/binapi.a.dir/build.make CMakeFiles/binapi.a.dir/src/websocket.cpp.i
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/binapi.dir/build.make CMakeFiles/binapi.dir/src/websocket.cpp.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/binapi_proj.dir/build.make CMakeFiles/binapi_proj.dir/src/websocket.cpp.i
 .PHONY : src/websocket.cpp.i
 
 src/websocket.s: src/websocket.cpp.s
@@ -378,8 +378,8 @@ src/websocket.s: src/websocket.cpp.s
 
 # target to generate assembly for a file
 src/websocket.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/binapi.a.dir/build.make CMakeFiles/binapi.a.dir/src/websocket.cpp.s
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/binapi.dir/build.make CMakeFiles/binapi.dir/src/websocket.cpp.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/binapi_proj.dir/build.make CMakeFiles/binapi_proj.dir/src/websocket.cpp.s
 .PHONY : src/websocket.cpp.s
 
 # Help Target
@@ -391,7 +391,7 @@ help:
 	@echo "... edit_cache"
 	@echo "... rebuild_cache"
 	@echo "... binapi"
-	@echo "... binapi.a"
+	@echo "... binapi_proj"
 	@echo "... main.o"
 	@echo "... main.i"
 	@echo "... main.s"
