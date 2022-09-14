@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.2)
-project(binapi)
+project(binapi_proj)
 
 set(CMAKE_CXX_STANDARD 14)
 
@@ -46,6 +46,16 @@ set(BINAPI_SOURCES
     src/types.cpp
     src/websocket.cpp
 )
+
+ADD_LIBRARY( binapi STATIC
+             src/api.cpp
+             src/enums.cpp
+             src/errors.cpp
+             src/pairslist.cpp
+             src/reports.cpp
+             src/tools.cpp
+             src/types.cpp
+             src/websocket.cpp )
 
 add_executable(
     ${PROJECT_NAME}
