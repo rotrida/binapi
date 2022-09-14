@@ -732,6 +732,19 @@ api::result<trades_t> api::trades(const char *symbol, std::size_t limit, trades_
 
 /*************************************************************************************************/
 
+api::result<trades_t> api::historical_trades(const char* symbol, std::size_t limit, uint64_t from_id, trades_cb cb)
+{
+    const impl::init_list_type map = {
+         {"symbol", symbol}
+        ,{"limit", limit}
+        ,{"fromId", from_id}
+    };
+
+    return pimpl->post(false, "/api/v3/historicalTrades", boost::beast::http::verb::get, map, std::move(cb));
+}
+
+/*************************************************************************************************/
+
 api::result<agg_trades_t::agg_trade_t> api::agg_trade(const char *symbol, agg_trade_cb cb) {
     const impl::init_list_type map = {
          {"symbol", symbol}

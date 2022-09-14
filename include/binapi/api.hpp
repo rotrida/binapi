@@ -102,6 +102,13 @@ struct api {
     result<trades_t>
     trades(const char *symbol, std::size_t limit, trades_cb cb = {});
 
+    // https://github.com/binance/binance-spot-api-docs/blob/master/rest-api.md#old-trade-lookup-market_data
+    using historical_trades_cb = std::function<bool(const char* fl, int ec, std::string errmsg, trades_t res)>;
+    result<trades_t>
+        historical_trades(const std::string& symbol, std::size_t limit, uint64_t from_id, trades_cb cb = {}) { return historical_trades(symbol.c_str(), limit, from_id, std::move(cb)); }
+    result<trades_t>
+        historical_trades(const char* symbol, std::size_t limit, uint64_t from_id, trades_cb cb = {});
+
     // https://github.com/binance/binance-spot-api-docs/blob/master/rest-api.md#symbol-price-ticker
     using price_cb = std::function<bool(const char *fl, int ec, std::string errmsg, prices_t::price_t res)>;
     result<prices_t::price_t>
