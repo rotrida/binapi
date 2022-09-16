@@ -16,16 +16,20 @@
 #include <binapi/flatjson.hpp>
 #include <binapi/errors.hpp>
 
+#include <boost/beast/core.hpp>
+#include <boost/beast/ssl.hpp>
+#include <boost/beast/websocket.hpp>
+#include <boost/beast/websocket/ssl.hpp>
+#include <boost/asio/strand.hpp>
+
+/*
 #include <boost/asio/io_context.hpp>
 #include <boost/asio/io_context_strand.hpp>
 #include <boost/asio/dispatch.hpp>
 #include <boost/asio/connect.hpp>
 #include <boost/asio/ip/tcp.hpp>
 #include <boost/asio/ssl/stream.hpp>
-
-#include <boost/beast/core.hpp>
-#include <boost/beast/websocket.hpp>
-#include <boost/beast/websocket/ssl.hpp>
+*/
 
 #include <boost/callable_traits.hpp>
 #include <boost/algorithm/string/case_conv.hpp>
@@ -53,7 +57,7 @@ struct websocket: std::enable_shared_from_this<websocket> {
         :m_ioctx{ioctx}
         ,m_ssl{boost::asio::ssl::context::sslv23_client}
         ,m_resolver{m_ioctx}
-        ,m_ws{m_ioctx, m_ssl}
+        ,m_ws{boost::asio::make_strand(ioctx), m_ssl}
         ,m_buf{}
         ,m_host{}
         ,m_target{}
@@ -73,7 +77,7 @@ struct websocket: std::enable_shared_from_this<websocket> {
     void stop() {
         m_stop_requested = true;
 
-        if ( m_ws.next_layer().next_layer().is_open() ) {
+        if (m_ws.is_open() ) {
             boost::system::error_code ec;
             m_ws.close(boost::beast::websocket::close_code::normal, ec);
         }
@@ -83,7 +87,7 @@ struct websocket: std::enable_shared_from_this<websocket> {
         m_stop_requested = true;
         holder_type holder = shared_from_this();
 
-        if ( m_ws.next_layer().next_layer().is_open() ) {
+        if ( m_ws.is_open() ) {
             m_ws.async_close(
                  boost::beast::websocket::close_code::normal
                 ,[holder=std::move(holder)](const boost::system::error_code &){}
@@ -121,9 +125,8 @@ private:
             return;
         }
 
-        boost::asio::async_connect(
-             m_ws.next_layer().next_layer()
-            ,res.begin()
+        boost::beast::get_lowest_layer(m_ws).async_connect(
+            res.begin()
             ,res.end()
             ,[this, cb=std::move(cb), holder=std::move(holder)]
              (boost::system::error_code ec, boost::asio::ip::tcp::resolver::iterator) mutable {
@@ -136,18 +139,24 @@ private:
         );
     }
     void on_connected(on_message_received_cb cb, holder_type holder) {
-        m_ws.control_callback(
-            [this]
-            (boost::beast::websocket::frame_type kind, boost::beast::string_view payload) mutable {
-                (void)kind; (void) payload;
-                //std::cout << "control_callback(" << this << "): kind=" << static_cast<int>(kind) << ", payload=" << payload.data() << std::endl;
-                m_ws.async_pong(
-                     boost::beast::websocket::ping_data{}
-                    ,[](boost::beast::error_code ec)
-                     { (void)ec; /*std::cout << "control_callback_cb(" << this << "): ec=" << ec << std::endl;*/ }
-                );
-            }
-        );
+        
+        // Turn off the timeout on the tcp_stream, because
+        // the websocket stream has its own timeout system.
+        boost::beast::get_lowest_layer(m_ws).expires_never();
+
+        // Set suggested timeout settings for the websocket
+        m_ws.set_option(
+            boost::beast::websocket::stream_base::timeout::suggested(
+                boost::beast::role_type::client));
+
+        // Set a decorator to change the User-Agent of the handshake
+        m_ws.set_option(boost::beast::websocket::stream_base::decorator(
+            [](boost::beast::websocket::request_type& req)
+            {
+                req.set(boost::beast::http::field::user_agent,
+                    std::string(BOOST_BEAST_VERSION_STRING) +
+                    " websocket-client-async-ssl");
+            }));
 
         m_ws.next_layer().async_handshake(
              boost::asio::ssl::stream_base::client
@@ -222,7 +231,7 @@ private:
     boost::asio::io_context &m_ioctx;
     boost::asio::ssl::context m_ssl;
     boost::asio::ip::tcp::resolver m_resolver;
-    boost::beast::websocket::stream<boost::asio::ssl::stream<boost::asio::ip::tcp::socket>> m_ws;
+    boost::beast::websocket::stream<boost::beast::ssl_stream<boost::beast::tcp_stream>> m_ws;
     boost::beast::multi_buffer m_buf;
     std::string m_host;
     std::string m_target;
