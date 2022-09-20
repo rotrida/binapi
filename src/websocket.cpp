@@ -81,6 +81,8 @@ struct websocket: std::enable_shared_from_this<websocket> {
             boost::system::error_code ec;
             m_ws.close(boost::beast::websocket::close_code::normal, ec);
         }
+
+        m_timeout_timer.cancel();
     }
 
     void async_stop() {
@@ -140,24 +142,12 @@ private:
     }
     void on_connected(holder_type holder) {
         
-        m_ws.control_callback(
-            [this]
-            (boost::beast::websocket::frame_type kind, boost::beast::string_view payload) mutable 
+        m_ws.control_callback(boost::asio::bind_executor(m_strand,
+            [this] (boost::beast::websocket::frame_type kind, boost::beast::string_view payload) mutable 
             {
-                time_t now;
-                time(&now);
-
-                //(void)kind; (void)payload;
-                std::cout << "control_callback(" << this << "): time: " << now << " kind = " << static_cast<int>(kind) << ", payload = " << payload.data() << std::endl;
-                /*
-                m_ws.async_pong(
-                    boost::beast::websocket::ping_data{}
-                    , [](boost::beast::error_code ec)
-                    { (void)ec; /*std::cout << "control_callback_cb(" << this << "): ec=" << ec << std::endl; }
-                );
-                */
+                m_last_message_received = boost::posix_time::second_clock::universal_time();
             }
-        );
+        ));
 
         // Turn off the timeout on the tcp_stream, because
         // the websocket stream has its own timeout system.
@@ -192,28 +182,52 @@ private:
 
     void on_timeout_timer_control(boost::system::error_code ec)
     {
-        if (m_last_message_received + m_timeout < boost::posix_time::second_clock::universal_time())
-        {
+        const auto now = boost::posix_time::second_clock::universal_time();
 
+        if (m_last_message_received + m_timeout < now)
+        {
+            m_cb(__FILE__, -1, "Websocket timeout", nullptr, 0);
+            stop();
+
+            return;
         }
+        else if (m_last_message_received + m_timeout_verification < now)
+        {
+            m_ws.async_ping(
+                boost::beast::websocket::ping_data{}
+                , [this](boost::beast::error_code ec)
+                { 
+                    if (!ec)
+                        return;
+
+                    __BINAPI_CB_ON_ERROR(m_cb, ec);
+                }
+            );
+        }
+
+        m_timeout_timer.expires_from_now(m_timeout_verification);
+        m_timeout_timer.async_wait(boost::asio::bind_executor(m_strand, std::bind(&websocket::on_timeout_timer_control, this, std::placeholders::_1)));
     }
 
     void on_async_ssl_handshake(holder_type holder) {
         m_ws.async_handshake(
             m_host
             ,m_target
-            ,[this, holder=std::move(holder)]
-            (boost::system::error_code ec) mutable
-            { 
-                start_read(ec, std::move(holder)); 
-            }
+            ,boost::asio::bind_executor(m_strand, [this, holder = std::move(holder)]
+                (boost::system::error_code ec) mutable
+                { 
+                    start_read(ec, std::move(holder)); 
+                }
+            )
         );
 
         if (m_timeout != boost::posix_time::time_duration())
         {
+            m_timeout_verification = m_timeout / 2;
+
             m_last_message_received = boost::posix_time::second_clock::universal_time();
 
-            m_timeout_timer.expires_from_now(m_timeout / 2);
+            m_timeout_timer.expires_from_now(m_timeout_verification);
             m_timeout_timer.async_wait(boost::asio::bind_executor(m_strand, std::bind(&websocket::on_timeout_timer_control, this, std::placeholders::_1)));
         }
     }
@@ -230,10 +244,12 @@ private:
         }
 
         m_ws.async_read(
-             m_buf
-            ,[this, holder=std::move(holder)]
-             (boost::system::error_code ec, std::size_t rd) mutable
-             { on_read(ec, rd, std::move(holder)); }
+             m_buf,
+            boost::asio::bind_executor(m_strand, 
+                [this, holder = std::move(holder)]
+                (boost::system::error_code ec, std::size_t rd) mutable
+                { on_read(ec, rd, std::move(holder)); }
+            )
         );
     }
     void on_read(boost::system::error_code ec, std::size_t rd, holder_type holder) {
@@ -246,6 +262,8 @@ private:
 
             return;
         }
+
+        m_last_message_received = boost::posix_time::second_clock::universal_time();
 
         auto size = m_buf.size();
         assert(size == rd);
@@ -269,6 +287,7 @@ private:
     boost::asio::io_context &m_ioctx;
     boost::asio::io_context::strand m_strand;
     boost::posix_time::time_duration m_timeout;
+    boost::posix_time::time_duration m_timeout_verification;
     boost::asio::deadline_timer m_timeout_timer;
     on_message_received_cb m_cb;
     boost::posix_time::ptime m_last_message_received;
