@@ -24,10 +24,12 @@
 
 #include <boost/callable_traits.hpp>
 #include <boost/algorithm/string/case_conv.hpp>
+#include <boost/date_time.hpp>
 
 #include <map>
 #include <unordered_map>
 #include <cstring>
+#include <iostream>
 
 //#include <iostream> // TODO: comment out
 
@@ -44,8 +46,16 @@ struct websockets;
 struct websocket: std::enable_shared_from_this<websocket> {
     friend struct websockets;
 
-    explicit websocket(boost::asio::io_context &ioctx)
+    using on_message_received_cb = std::function<
+        bool(const char* fl, int ec, std::string errmsg, const char* ptr, std::size_t size)
+    >; // when 'false' returned the stop will called
+
+    explicit websocket(boost::asio::io_context& ioctx, on_message_received_cb cb, boost::posix_time::time_duration timeout)
         :m_ioctx{ioctx}
+        ,m_strand{ioctx}
+        ,m_timeout_timer{ioctx}
+        ,m_timeout{timeout}
+        ,m_cb(cb)
         ,m_ssl{boost::asio::ssl::context::sslv23_client}
         ,m_resolver{m_ioctx}
         ,m_ws{boost::asio::make_strand(ioctx), m_ssl}
@@ -54,16 +64,15 @@ struct websocket: std::enable_shared_from_this<websocket> {
         ,m_target{}
         ,m_stop_requested{}
     {}
+    
     virtual ~websocket()
-    {}
-
-    using on_message_received_cb = std::function<
-        bool(const char *fl, int ec, std::string errmsg, const char *ptr, std::size_t size)
-    >; // when 'false' returned the stop will called
+    {
+        m_timeout_timer.cancel();
+    }
 
     using holder_type = std::shared_ptr<websocket>;
-    void start(const std::string &host, const std::string &port, const std::string &target, on_message_received_cb cb, holder_type holder)
-    { return async_start(host, port, target, std::move(cb), std::move(holder)); }
+    void start(const std::string &host, const std::string &port, const std::string &target, holder_type holder)
+    { return async_start(host, port, target, std::move(holder)); }
 
     void stop() {
         m_stop_requested = true;
@@ -87,31 +96,31 @@ struct websocket: std::enable_shared_from_this<websocket> {
     }
 
 private:
-    void async_start(const std::string &host, const std::string &port, const std::string &target, on_message_received_cb cb, holder_type holder) {
+    void async_start(const std::string &host, const std::string &port, const std::string &target, holder_type holder) {
         m_host = host;
         m_target = target;
 
         m_resolver.async_resolve(
              m_host
             ,port
-            ,[this, cb=std::move(cb), holder=std::move(holder)]
+            ,[this, holder=std::move(holder)]
              (boost::system::error_code ec, boost::asio::ip::tcp::resolver::results_type res) mutable {
                 if ( ec ) {
-                    if ( !m_stop_requested ) { __BINAPI_CB_ON_ERROR(cb, ec); }
+                    if ( !m_stop_requested ) { __BINAPI_CB_ON_ERROR(m_cb, ec); }
                 } else {
-                    async_connect(std::move(res), std::move(cb), std::move(holder));
+                    async_connect(std::move(res), std::move(holder));
                 }
             }
         );
     }
-    void async_connect(boost::asio::ip::tcp::resolver::results_type res, on_message_received_cb cb, holder_type holder) {
+    void async_connect(boost::asio::ip::tcp::resolver::results_type res, holder_type holder) {
         if( !SSL_set_tlsext_host_name(m_ws.next_layer().native_handle() ,m_host.c_str())) {
             auto error_code = boost::beast::error_code(
                  static_cast<int>(::ERR_get_error())
                 ,boost::asio::error::get_ssl_category()
             );
 
-            __BINAPI_CB_ON_ERROR(cb, error_code);
+            __BINAPI_CB_ON_ERROR(m_cb, error_code);
 
             return;
         }
@@ -119,18 +128,37 @@ private:
         boost::beast::get_lowest_layer(m_ws).async_connect(
             res.begin()
             ,res.end()
-            ,[this, cb=std::move(cb), holder=std::move(holder)]
+            ,[this, holder=std::move(holder)]
              (boost::system::error_code ec, boost::asio::ip::tcp::resolver::iterator) mutable {
                 if ( ec ) {
-                    if ( !m_stop_requested ) { __BINAPI_CB_ON_ERROR(cb, ec); }
+                    if ( !m_stop_requested ) { __BINAPI_CB_ON_ERROR(m_cb, ec); }
                 } else {
-                    on_connected(std::move(cb), std::move(holder));
+                    on_connected(std::move(holder));
                 }
             }
         );
     }
-    void on_connected(on_message_received_cb cb, holder_type holder) {
+    void on_connected(holder_type holder) {
         
+        m_ws.control_callback(
+            [this]
+            (boost::beast::websocket::frame_type kind, boost::beast::string_view payload) mutable 
+            {
+                time_t now;
+                time(&now);
+
+                //(void)kind; (void)payload;
+                std::cout << "control_callback(" << this << "): time: " << now << " kind = " << static_cast<int>(kind) << ", payload = " << payload.data() << std::endl;
+                /*
+                m_ws.async_pong(
+                    boost::beast::websocket::ping_data{}
+                    , [](boost::beast::error_code ec)
+                    { (void)ec; /*std::cout << "control_callback_cb(" << this << "): ec=" << ec << std::endl; }
+                );
+                */
+            }
+        );
+
         // Turn off the timeout on the tcp_stream, because
         // the websocket stream has its own timeout system.
         boost::beast::get_lowest_layer(m_ws).expires_never();
@@ -151,30 +179,49 @@ private:
 
         m_ws.next_layer().async_handshake(
              boost::asio::ssl::stream_base::client
-            ,[this, cb=std::move(cb), holder=std::move(holder)]
+            ,[this, holder=std::move(holder)]
              (boost::system::error_code ec) mutable {
                 if ( ec ) {
-                    if ( !m_stop_requested ) { __BINAPI_CB_ON_ERROR(cb, ec); }
+                    if ( !m_stop_requested ) { __BINAPI_CB_ON_ERROR(m_cb, ec); }
                 } else {
-                    on_async_ssl_handshake(std::move(cb), std::move(holder));
+                    on_async_ssl_handshake(std::move(holder));
                 }
             }
         );
     }
-    void on_async_ssl_handshake(on_message_received_cb cb, holder_type holder) {
-        m_ws.async_handshake(
-             m_host
-            ,m_target
-            ,[this, cb=std::move(cb), holder=std::move(holder)]
-             (boost::system::error_code ec) mutable
-             { start_read(ec, std::move(cb), std::move(holder)); }
-        );
+
+    void on_timeout_timer_control(boost::system::error_code ec)
+    {
+        if (m_last_message_received + m_timeout < boost::posix_time::second_clock::universal_time())
+        {
+
+        }
     }
 
-    void start_read(boost::system::error_code ec, on_message_received_cb cb, holder_type holder) {
+    void on_async_ssl_handshake(holder_type holder) {
+        m_ws.async_handshake(
+            m_host
+            ,m_target
+            ,[this, holder=std::move(holder)]
+            (boost::system::error_code ec) mutable
+            { 
+                start_read(ec, std::move(holder)); 
+            }
+        );
+
+        if (m_timeout != boost::posix_time::time_duration())
+        {
+            m_last_message_received = boost::posix_time::second_clock::universal_time();
+
+            m_timeout_timer.expires_from_now(m_timeout / 2);
+            m_timeout_timer.async_wait(boost::asio::bind_executor(m_strand, std::bind(&websocket::on_timeout_timer_control, this, std::placeholders::_1)));
+        }
+    }
+
+    void start_read(boost::system::error_code ec, holder_type holder) {
         if ( ec ) {
             if ( !m_stop_requested ) {
-                __BINAPI_CB_ON_ERROR(cb, ec);
+                __BINAPI_CB_ON_ERROR(m_cb, ec);
             }
 
             stop();
@@ -184,15 +231,15 @@ private:
 
         m_ws.async_read(
              m_buf
-            ,[this, cb=std::move(cb), holder=std::move(holder)]
+            ,[this, holder=std::move(holder)]
              (boost::system::error_code ec, std::size_t rd) mutable
-             { on_read(ec, rd, std::move(cb), std::move(holder)); }
+             { on_read(ec, rd, std::move(holder)); }
         );
     }
-    void on_read(boost::system::error_code ec, std::size_t rd, on_message_received_cb cb, holder_type holder) {
+    void on_read(boost::system::error_code ec, std::size_t rd, holder_type holder) {
         if ( ec ) {
             if ( !m_stop_requested ) {
-                __BINAPI_CB_ON_ERROR(cb, ec);
+                __BINAPI_CB_ON_ERROR(m_cb, ec);
             }
 
             stop();
@@ -211,15 +258,20 @@ private:
         }
         m_buf.consume(m_buf.size());
 
-        bool ok = cb(nullptr, 0, std::string{}, strbuf.data(), strbuf.size());
+        bool ok = m_cb(nullptr, 0, std::string{}, strbuf.data(), strbuf.size());
         if ( !ok ) {
             stop();
         } else {
-            start_read(boost::system::error_code{}, std::move(cb), std::move(holder));
+            start_read(boost::system::error_code{}, std::move(holder));
         }
     }
 
     boost::asio::io_context &m_ioctx;
+    boost::asio::io_context::strand m_strand;
+    boost::posix_time::time_duration m_timeout;
+    boost::asio::deadline_timer m_timeout_timer;
+    on_message_received_cb m_cb;
+    boost::posix_time::ptime m_last_message_received;
     boost::asio::ssl::context m_ssl;
     boost::asio::ip::tcp::resolver m_resolver;
     boost::beast::websocket::stream<boost::beast::ssl_stream<boost::beast::tcp_stream>> m_ws;
@@ -269,14 +321,13 @@ struct websockets::impl {
     }
 
     template<typename F>
-    websockets::handle start_channel(const char *pair, const char *channel, F cb) {
+    websockets::handle start_channel(const char *pair, const char *channel, F cb, boost::posix_time::time_duration timeout) {
         using args_tuple = typename boost::callable_traits::args<F>::type;
         using message_type = typename std::tuple_element<3, args_tuple>::type;
 
-        std::shared_ptr<websocket> ws = std::make_shared<websocket>(m_ioctx);
         std::string schannel = make_channel_name(pair, channel);
 
-        auto wscb = [this, schannel, cb=std::move(cb)]
+        auto wscb = [this, schannel, cb = std::move(cb)]
             (const char *fl, int ec, std::string errmsg, const char *ptr, std::size_t size) -> bool
         {
             if ( ec ) {
@@ -323,11 +374,12 @@ struct websockets::impl {
             return false;
         };
 
+        std::shared_ptr<websocket> ws = std::make_shared<websocket>(m_ioctx, wscb, timeout);
+
         ws->start(
              m_host
             ,m_port
             ,schannel
-            ,std::move(wscb)
             ,ws
         );
 
@@ -394,7 +446,7 @@ websockets::websockets(
     ,std::string port
     ,on_message_received_cb cb
 )
-    :pimpl{std::make_unique<impl>(ioctx, std::move(host), std::move(port), std::move(cb))}
+    :pimpl{std::make_unique<impl>(ioctx, std::move(host), std::move(port),cb)}
 {}
 
 websockets::~websockets()
@@ -402,24 +454,24 @@ websockets::~websockets()
 
 /*************************************************************************************************/
 
-websockets::handle websockets::part_depth(const char *pair, e_levels level, e_freq freq, on_part_depths_received_cb cb) {
+websockets::handle websockets::part_depth(const char *pair, e_levels level, e_freq freq, on_part_depths_received_cb cb, boost::posix_time::time_duration timeout) {
     std::string ch = "depth";
     ch += std::to_string(static_cast<std::size_t>(level));
     ch += "@";
     ch += std::to_string(static_cast<std::size_t>(freq)) + "ms";
-    return pimpl->start_channel(pair, ch.c_str(), std::move(cb));
+    return pimpl->start_channel(pair, ch.c_str(), std::move(cb), timeout);
 }
 
 /*************************************************************************************************/
 
-websockets::handle websockets::diff_depth(const char *pair, e_freq freq, on_diff_depths_received_cb cb) {
+websockets::handle websockets::diff_depth(const char *pair, e_freq freq, on_diff_depths_received_cb cb, boost::posix_time::time_duration timeout) {
     std::string ch = "depth@" + std::to_string(static_cast<std::size_t>(freq)) + "ms";
-    return pimpl->start_channel(pair, ch.c_str(), std::move(cb));
+    return pimpl->start_channel(pair, ch.c_str(), std::move(cb), timeout);
 }
 
 /*************************************************************************************************/
 
-websockets::handle websockets::klines(const char *pair, const char *period, on_kline_received_cb cb) {
+websockets::handle websockets::klines(const char *pair, const char *period, on_kline_received_cb cb, boost::posix_time::time_duration timeout) {
     static const auto switch_ = [](const char *period) -> const char * {
         const auto hash = fnv1a(period);
         switch ( hash ) {
@@ -450,42 +502,42 @@ websockets::handle websockets::klines(const char *pair, const char *period, on_k
     const char *p = switch_(period);
     assert(p != nullptr);
 
-    return pimpl->start_channel(pair, p, std::move(cb));
+    return pimpl->start_channel(pair, p, std::move(cb), timeout);
 }
 
 /*************************************************************************************************/
 
-websockets::handle websockets::trade(const char *pair, on_trade_received_cb cb)
-{ return pimpl->start_channel(pair, "trade", std::move(cb)); }
+websockets::handle websockets::trade(const char *pair, on_trade_received_cb cb, boost::posix_time::time_duration timeout)
+{ return pimpl->start_channel(pair, "trade", std::move(cb), timeout); }
 
 /*************************************************************************************************/
 
-websockets::handle websockets::agg_trade(const char *pair, on_agg_trade_received_cb cb)
-{ return pimpl->start_channel(pair, "aggTrade", std::move(cb)); }
+websockets::handle websockets::agg_trade(const char *pair, on_agg_trade_received_cb cb, boost::posix_time::time_duration timeout)
+{ return pimpl->start_channel(pair, "aggTrade", std::move(cb), timeout); }
 
 /*************************************************************************************************/
 
-websockets::handle websockets::mini_ticker(const char *pair, on_mini_ticker_received_cb cb)
-{ return pimpl->start_channel(pair, "miniTicker", std::move(cb)); }
+websockets::handle websockets::mini_ticker(const char *pair, on_mini_ticker_received_cb cb, boost::posix_time::time_duration timeout)
+{ return pimpl->start_channel(pair, "miniTicker", std::move(cb), timeout); }
 
-websockets::handle websockets::mini_tickers(on_mini_tickers_received_cb cb)
-{ return pimpl->start_channel("!miniTicker", "arr", std::move(cb)); }
-
-/*************************************************************************************************/
-
-websockets::handle websockets::market(const char *pair, on_market_received_cb cb)
-{ return pimpl->start_channel(pair, "ticker", std::move(cb)); }
-
-websockets::handle websockets::markets(on_markets_received_cb cb)
-{ return pimpl->start_channel("!ticker", "arr", std::move(cb)); }
+websockets::handle websockets::mini_tickers(on_mini_tickers_received_cb cb, boost::posix_time::time_duration timeout)
+{ return pimpl->start_channel("!miniTicker", "arr", std::move(cb), timeout); }
 
 /*************************************************************************************************/
 
-websockets::handle websockets::book(const char *pair, on_book_received_cb cb)
-{ return pimpl->start_channel(pair, "bookTicker", std::move(cb)); }
+websockets::handle websockets::market(const char *pair, on_market_received_cb cb, boost::posix_time::time_duration timeout)
+{ return pimpl->start_channel(pair, "ticker", std::move(cb), timeout); }
 
-websockets::handle websockets::books(on_books_received_cb cb)
-{ return pimpl->start_channel(nullptr, "!bookTicker", std::move(cb)); }
+websockets::handle websockets::markets(on_markets_received_cb cb, boost::posix_time::time_duration timeout)
+{ return pimpl->start_channel("!ticker", "arr", std::move(cb), timeout); }
+
+/*************************************************************************************************/
+
+websockets::handle websockets::book(const char *pair, on_book_received_cb cb, boost::posix_time::time_duration timeout)
+{ return pimpl->start_channel(pair, "bookTicker", std::move(cb), timeout); }
+
+websockets::handle websockets::books(on_books_received_cb cb, boost::posix_time::time_duration timeout)
+{ return pimpl->start_channel(nullptr, "!bookTicker", std::move(cb), timeout); }
 
 /*************************************************************************************************/
 
@@ -493,7 +545,8 @@ websockets::handle websockets::userdata(
      const char *lkey
     ,on_account_update_cb account_update
     ,on_balance_update_cb balance_update
-    ,on_order_update_cb order_update)
+    ,on_order_update_cb order_update
+    ,boost::posix_time::time_duration timeout)
 {
     auto cb = [acb=std::move(account_update), bcb=std::move(balance_update), ocb=std::move(order_update)]
         (const char *fl, int ec, std::string errmsg, userdata::userdata_stream_t msg)
@@ -537,7 +590,7 @@ websockets::handle websockets::userdata(
         return false;
     };
 
-    return pimpl->start_channel(nullptr, lkey, std::move(cb));
+    return pimpl->start_channel(nullptr, lkey, std::move(cb), timeout);
 }
 
 /*************************************************************************************************/
