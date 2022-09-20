@@ -22,15 +22,6 @@
 #include <boost/beast/websocket/ssl.hpp>
 #include <boost/asio/strand.hpp>
 
-/*
-#include <boost/asio/io_context.hpp>
-#include <boost/asio/io_context_strand.hpp>
-#include <boost/asio/dispatch.hpp>
-#include <boost/asio/connect.hpp>
-#include <boost/asio/ip/tcp.hpp>
-#include <boost/asio/ssl/stream.hpp>
-*/
-
 #include <boost/callable_traits.hpp>
 #include <boost/algorithm/string/case_conv.hpp>
 
