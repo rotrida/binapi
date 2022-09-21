@@ -33,8 +33,8 @@
 
 //#include <iostream> // TODO: comment out
 
-#define __BINAPI_CB_ON_ERROR(cb, ec) \
-    cb(__FILE__ "(" BOOST_PP_STRINGIZE(__LINE__) ")", ec.value(), ec.message(), nullptr, 0);
+#define __BINAPI_CB_ON_ERROR(cb, ec, hnd) \
+    cb(__FILE__ "(" BOOST_PP_STRINGIZE(__LINE__) ")", ec.value(), ec.message(), nullptr, 0, hnd);
 
 namespace binapi {
 namespace ws {
@@ -47,7 +47,7 @@ struct websocket: std::enable_shared_from_this<websocket> {
     friend struct websockets;
 
     using on_message_received_cb = std::function<
-        bool(const char* fl, int ec, std::string errmsg, const char* ptr, std::size_t size)
+        bool(const char* fl, int ec, std::string errmsg, const char* ptr, std::size_t size, void * hnd)
     >; // when 'false' returned the stop will called
 
     explicit websocket(boost::asio::io_context& ioctx, on_message_received_cb cb, boost::posix_time::time_duration timeout)
@@ -108,7 +108,7 @@ private:
             ,[this, holder=std::move(holder)]
              (boost::system::error_code ec, boost::asio::ip::tcp::resolver::results_type res) mutable {
                 if ( ec ) {
-                    if ( !m_stop_requested ) { __BINAPI_CB_ON_ERROR(m_cb, ec); }
+                    if ( !m_stop_requested ) { __BINAPI_CB_ON_ERROR(m_cb, ec, this); }
                 } else {
                     async_connect(std::move(res), std::move(holder));
                 }
@@ -122,7 +122,7 @@ private:
                 ,boost::asio::error::get_ssl_category()
             );
 
-            __BINAPI_CB_ON_ERROR(m_cb, error_code);
+            __BINAPI_CB_ON_ERROR(m_cb, error_code, this);
 
             return;
         }
@@ -133,7 +133,7 @@ private:
             ,[this, holder=std::move(holder)]
              (boost::system::error_code ec, boost::asio::ip::tcp::resolver::iterator) mutable {
                 if ( ec ) {
-                    if ( !m_stop_requested ) { __BINAPI_CB_ON_ERROR(m_cb, ec); }
+                    if ( !m_stop_requested ) { __BINAPI_CB_ON_ERROR(m_cb, ec, this); }
                 } else {
                     on_connected(std::move(holder));
                 }
@@ -172,7 +172,7 @@ private:
             ,[this, holder=std::move(holder)]
              (boost::system::error_code ec) mutable {
                 if ( ec ) {
-                    if ( !m_stop_requested ) { __BINAPI_CB_ON_ERROR(m_cb, ec); }
+                    if ( !m_stop_requested ) { __BINAPI_CB_ON_ERROR(m_cb, ec, this); }
                 } else {
                     on_async_ssl_handshake(std::move(holder));
                 }
@@ -191,7 +191,7 @@ private:
 
         if (m_last_message_received + m_timeout < now)
         {
-            m_cb(__FILE__, -1, "Websocket timeout", nullptr, 0);
+            m_cb(__FILE__, -1, "Websocket timeout", nullptr, 0, this);
             stop();
 
             return;
@@ -205,7 +205,7 @@ private:
                     if (!ec)
                         return;
 
-                    __BINAPI_CB_ON_ERROR(m_cb, ec);
+                    __BINAPI_CB_ON_ERROR(m_cb, ec, this);
                 }
             );
         }
@@ -240,7 +240,7 @@ private:
     void start_read(boost::system::error_code ec, holder_type holder) {
         if ( ec ) {
             if ( !m_stop_requested ) {
-                __BINAPI_CB_ON_ERROR(m_cb, ec);
+                __BINAPI_CB_ON_ERROR(m_cb, ec, this);
             }
 
             stop();
@@ -260,7 +260,7 @@ private:
     void on_read(boost::system::error_code ec, std::size_t rd, holder_type holder) {
         if ( ec ) {
             if ( !m_stop_requested ) {
-                __BINAPI_CB_ON_ERROR(m_cb, ec);
+                __BINAPI_CB_ON_ERROR(m_cb, ec, this);
             }
 
             stop();
@@ -281,7 +281,7 @@ private:
         }
         m_buf.consume(m_buf.size());
 
-        bool ok = m_cb(nullptr, 0, std::string{}, strbuf.data(), strbuf.size());
+        bool ok = m_cb(nullptr, 0, std::string{}, strbuf.data(), strbuf.size(), this);
         if ( !ok ) {
             stop();
         } else {
@@ -352,11 +352,11 @@ struct websockets::impl {
         std::string schannel = make_channel_name(pair, channel);
 
         auto wscb = [this, schannel, cb = std::move(cb)]
-            (const char *fl, int ec, std::string errmsg, const char *ptr, std::size_t size) -> bool
+            (const char *fl, int ec, std::string errmsg, const char *ptr, std::size_t size, handle hnd) -> bool
         {
             if ( ec ) {
                 try {
-                    cb(fl, ec, std::move(errmsg), message_type{});
+                    cb(fl, ec, std::move(errmsg), message_type{}, hnd);
                 } catch (const std::exception &ex) {
                     std::fprintf(stderr, "%s: %s\n", __MAKE_FILELINE, ex.what());
                     std::fflush(stderr);
@@ -373,7 +373,7 @@ struct websockets::impl {
 
                 try {
                     message_type message{};
-                    return cb(__MAKE_FILELINE, ecode, std::move(emsg), std::move(message));
+                    return cb(__MAKE_FILELINE, ecode, std::move(emsg), std::move(message), hnd);
                 } catch (const std::exception &ex) {
                     std::fprintf(stderr, "%s: %s\n", __MAKE_FILELINE, ex.what());
                     std::fflush(stderr);
@@ -389,7 +389,7 @@ struct websockets::impl {
 
             try {
                 message_type message = message_type::construct(json);
-                return cb(fl, ec, std::move(errmsg), std::move(message));
+                return cb(fl, ec, std::move(errmsg), std::move(message), hnd);
             } catch (const std::exception &ex) {
                 std::fprintf(stderr, "%s: %s\n", __MAKE_FILELINE, ex.what());
                 std::fflush(stderr);
@@ -573,12 +573,12 @@ websockets::handle websockets::userdata(
     ,boost::posix_time::time_duration timeout)
 {
     auto cb = [acb=std::move(account_update), bcb=std::move(balance_update), ocb=std::move(order_update)]
-        (const char *fl, int ec, std::string errmsg, userdata::userdata_stream_t msg)
+        (const char *fl, int ec, std::string errmsg, userdata::userdata_stream_t msg, handle hnd)
     {
         if ( ec ) {
-            acb(fl, ec, errmsg, userdata::account_update_t{});
-            bcb(fl, ec, errmsg, userdata::balance_update_t{});
-            ocb(fl, ec, std::move(errmsg), userdata::order_update_t{});
+            acb(fl, ec, errmsg, userdata::account_update_t{}, hnd);
+            bcb(fl, ec, errmsg, userdata::balance_update_t{}, hnd);
+            ocb(fl, ec, std::move(errmsg), userdata::order_update_t{}, hnd);
 
             return false;
         }
@@ -591,15 +591,15 @@ websockets::handle websockets::userdata(
         switch ( ehash ) {
             case fnv1a("outboundAccountPosition"): {
                 userdata::account_update_t res = userdata::account_update_t::construct(json);
-                return acb(fl, ec, std::move(errmsg), std::move(res));
+                return acb(fl, ec, std::move(errmsg), std::move(res), hnd);
             }
             case fnv1a("balanceUpdate"): {
                 userdata::balance_update_t res = userdata::balance_update_t::construct(json);
-                return bcb(fl, ec, std::move(errmsg), std::move(res));
+                return bcb(fl, ec, std::move(errmsg), std::move(res), hnd);
             }
             case fnv1a("executionReport"): {
                 userdata::order_update_t res = userdata::order_update_t::construct(json);
-                return ocb(fl, ec, std::move(errmsg), std::move(res));
+                return ocb(fl, ec, std::move(errmsg), std::move(res), hnd);
             }
             case fnv1a("listStatus"): {
                 assert(!"not implemented");
