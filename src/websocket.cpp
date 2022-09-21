@@ -182,6 +182,11 @@ private:
 
     void on_timeout_timer_control(boost::system::error_code ec)
     {
+        if (ec)
+        {
+            return;
+        }
+
         const auto now = boost::posix_time::second_clock::universal_time();
 
         if (m_last_message_received + m_timeout < now)
