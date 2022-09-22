@@ -1,0 +1,5 @@
+CMakeFiles/*
+libbinapi.a
+cmake_install.cmake
+binapi_proj
+CMakeCache.txt

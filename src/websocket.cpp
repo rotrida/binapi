@@ -53,8 +53,8 @@ struct websocket: std::enable_shared_from_this<websocket> {
     explicit websocket(boost::asio::io_context& ioctx, on_message_received_cb cb, boost::posix_time::time_duration timeout)
         :m_ioctx{ioctx}
         ,m_strand{ioctx}
-        ,m_timeout_timer{ioctx}
         ,m_timeout{timeout}
+        ,m_timeout_timer{ioctx}
         ,m_cb(cb)
         ,m_ssl{boost::asio::ssl::context::sslv23_client}
         ,m_resolver{m_ioctx}
@@ -145,6 +145,7 @@ private:
         m_ws.control_callback(boost::asio::bind_executor(m_strand,
             [this] (boost::beast::websocket::frame_type kind, boost::beast::string_view payload) mutable 
             {
+                (void)kind; (void)payload;
                 m_last_message_received = boost::posix_time::second_clock::universal_time();
             }
         ));

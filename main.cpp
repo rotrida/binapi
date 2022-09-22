@@ -211,7 +211,8 @@ int main(int argc, char **argv) {
     std::cout << "start_uds=" << start_uds.v << std::endl << std::endl;
 
     auto user_data_stream = wsp.userdata(start_uds.v.listenKey.c_str(),
-        [](const char *fl, int ec, std::string errmsg, binapi::userdata::account_update_t msg) -> bool {
+        [](const char *fl, int ec, std::string errmsg, binapi::userdata::account_update_t msg, binapi::ws::websockets::handle hnd) -> bool {
+             (void)hnd;
              if ( ec ) {
                  std::cout << "account update: fl=" << fl << ", ec=" << ec << ", errmsg: " << errmsg << ", msg: " << msg << std::endl;
                  return false;
@@ -220,7 +221,8 @@ int main(int argc, char **argv) {
              std::cout << "account update:\n" << msg << std::endl;
              return true;
         }
-        ,[](const char *fl, int ec, std::string errmsg, binapi::userdata::balance_update_t msg) -> bool {
+        ,[](const char *fl, int ec, std::string errmsg, binapi::userdata::balance_update_t msg, binapi::ws::websockets::handle hnd) -> bool {
+            (void)hnd;
             if ( ec ) {
                 std::cout << "balance update: fl=" << fl << ", ec=" << ec << ", errmsg: " << errmsg << ", msg: " << msg << std::endl;
                 return false;
@@ -229,7 +231,8 @@ int main(int argc, char **argv) {
             std::cout << "balance update:\n" << msg << std::endl;
             return true;
         }
-        ,[](const char *fl, int ec, std::string errmsg, binapi::userdata::order_update_t msg) -> bool {
+        ,[](const char *fl, int ec, std::string errmsg, binapi::userdata::order_update_t msg, binapi::ws::websockets::handle hnd) -> bool {
+            (void)hnd;
             if ( ec ) {
                 std::cout << "order update: fl=" << fl << ", ec=" << ec << ", errmsg: " << errmsg << ", msg: " << msg << std::endl;
                 return false;
@@ -240,7 +243,8 @@ int main(int argc, char **argv) {
         }
     );
     wsp.diff_depth(testpair, binapi::e_freq::_100ms,
-        [](const char *fl, int ec, std::string errmsg, binapi::ws::diff_depths_t msg) -> bool {
+        [](const char *fl, int ec, std::string errmsg, binapi::ws::diff_depths_t msg, binapi::ws::websockets::handle hnd) -> bool {
+            (void)hnd;
             if ( ec ) {
                 std::cout << "subscribe_depth(): fl=" << fl << ", ec=" << ec << ", errmsg: " << errmsg << ", msg: " << msg << std::endl;
                 return false;
@@ -251,7 +255,8 @@ int main(int argc, char **argv) {
         }
     );
     wsp.trade(testpair,
-        [](const char *fl, int ec, std::string errmsg, binapi::ws::trade_t msg) -> bool {
+        [](const char *fl, int ec, std::string errmsg, binapi::ws::trade_t msg, binapi::ws::websockets::handle hnd) -> bool {
+            (void)hnd;
             if ( ec ) {
                 std::cout << "subscribe_trade(): fl=" << fl << ", ec=" << ec << ", errmsg: " << errmsg << ", msg: " << msg << std::endl;
                 return false;
