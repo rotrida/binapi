@@ -42,6 +42,9 @@
     <ClCompile Include="include\binapi\dtf.cpp">
       <Filter>Header Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\renewable_websocket.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\binapi\api.hpp">
@@ -87,6 +90,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\binapi\websocket.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\binapi\renewable_websocket.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

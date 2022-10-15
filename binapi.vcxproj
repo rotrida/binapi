@@ -162,6 +162,7 @@
     <ClCompile Include="src\enums.cpp" />
     <ClCompile Include="src\errors.cpp" />
     <ClCompile Include="src\pairslist.cpp" />
+    <ClCompile Include="src\renewable_websocket.cpp" />
     <ClCompile Include="src\reports.cpp" />
     <ClCompile Include="src\tools.cpp" />
     <ClCompile Include="src\types.cpp" />
@@ -179,6 +180,7 @@
     <ClInclude Include="include\binapi\iofmt.hpp" />
     <ClInclude Include="include\binapi\message.hpp" />
     <ClInclude Include="include\binapi\pairslist.hpp" />
+    <ClInclude Include="include\binapi\renewable_websocket.h" />
     <ClInclude Include="include\binapi\reports.hpp" />
     <ClInclude Include="include\binapi\tools.hpp" />
     <ClInclude Include="include\binapi\types.hpp" />
