@@ -146,6 +146,11 @@
   <ItemGroup>
     <ClCompile Include="test.cpp" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\binapi.vcxproj">
+      <Project>{2feb0fc1-879f-469d-bef0-48c02cc31537}</Project>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

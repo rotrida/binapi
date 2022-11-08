@@ -26,6 +26,22 @@ int main() {
         ,"9443"
     };
 
+    //const char *pair, on_book_received_cb cb, boost::posix_time::time_duration timeout
+    ws.book("BTCUSDT", [](const char* fl, int ec, std::string errmsg, binapi::ws::book_ticker_t msg, binapi::ws::websockets::handle hnd)
+        {
+            if (ec) {
+                std::cerr << "subscribe book error: fl=" << fl << ", ec=" << ec << ", emsg=" << errmsg << std::endl;
+
+                return false;
+            }
+
+            std::cout << "book: " << msg << std::endl;
+
+
+            return true;
+        });
+
+
     /*
     ws.part_depth("BTCUSDT", binapi::e_levels::_5, binapi::e_freq::_100ms,
         [](const char* fl, int ec, std::string emsg, auto depths) {
@@ -40,9 +56,11 @@ int main() {
             return true;
         }
     );
+    */
 
+    /*
     ws.diff_depth("BTCUSDT", binapi::e_freq::_100ms,
-        [](const char* fl, int ec, std::string emsg, auto depths) {
+        [](const char* fl, int ec, std::string emsg, auto depths, binapi::ws::websockets::handle h) {
             if (ec) {
                 std::cerr << "subscribe diff_depth error: fl=" << fl << ", ec=" << ec << ", emsg=" << emsg << std::endl;
 
@@ -55,6 +73,7 @@ int main() {
         }
     );
     */
+    /*
 
     ws.trade("BTCUSDT",
         [](const char* fl, int ec, std::string emsg, auto trades) {
