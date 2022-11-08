@@ -3,3 +3,11 @@ libbinapi.a
 cmake_install.cmake
 binapi_proj
 CMakeCache.txt
+/.vs/binapi
+/binapi/.vs/binapi
+/test/x64/Debug/test.tlog
+*.bak
+/test/x64/Debug
+/test/x64/Release
+/x64/Debug
+/x64/Release
