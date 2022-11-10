@@ -30,8 +30,8 @@ namespace binapi
 
 			renewable_websocket(boost::asio::io_context& ioc, binapi::ws::websockets& websocket, boost::posix_time::time_duration web_socket_timeout, boost::posix_time::time_duration web_socket_channel_renew);
 
-			void start();
-			void stop();
+			virtual void start();
+			virtual void stop();
 		};
 	}
 }

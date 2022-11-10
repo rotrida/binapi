@@ -44,12 +44,12 @@ void renewable_websocket::internal_switch_to_secondary_channel()
     _secondary_channel = nullptr;
 }
 
-void renewable_websocket::start()
+/*virtual*/ void renewable_websocket::start()
 {
     create_channel(_active_channel);
 }
 
-void renewable_websocket::stop()
+/*virtual*/ void renewable_websocket::stop()
 {
     const auto unsubscribe_channel = [&](auto& handle)
     {
