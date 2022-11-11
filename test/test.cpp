@@ -26,7 +26,30 @@ int main() {
         ,"9443"
     };
 
-    //const char *pair, on_book_received_cb cb, boost::posix_time::time_duration timeout
+    binapi::rest::api rest(ioctx, "api.binance.com", "443", "p3V5ByZ0EEyjnnsmxCGaDLFkAJjDIWks8vkeNzPDCS11aKnMXBhPz7TqDDJconO6", "C1wKjSXdBrQcl9ROhJYN7luOk767zaYYdrwU2VrngPVvBcr1HOPCg4Xc1l3Ild4y", 59000);
+    
+    rest.my_trades("ADAUSDT", 0, 0, 0, 500, [](const char* fl, int ec, std::string errmsg, binapi::rest::my_trades_info_t res)
+        {
+            return true;
+        });
+    
+    /*
+    rest.account_info([](const char* fl, int ec, std::string errmsg, binapi::rest::account_info_t res)
+        {
+
+            return true;
+        });
+        */
+
+    /*
+    rest.all_orders("ADAUSDT", 0, 0, 0, 0, [](const char* fl, int ec, std::string errmsg, binapi::rest::orders_info_t res)
+        {
+
+
+            return true;
+        });
+    */
+    /*
     ws.book("BTCUSDT", [](const char* fl, int ec, std::string errmsg, binapi::ws::book_ticker_t msg, binapi::ws::websockets::handle hnd)
         {
             if (ec) {
@@ -40,7 +63,7 @@ int main() {
 
             return true;
         });
-
+        */
 
     /*
     ws.part_depth("BTCUSDT", binapi::e_levels::_5, binapi::e_freq::_100ms,
