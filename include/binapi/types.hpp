@@ -19,6 +19,7 @@
 
 #include <string>
 #include <vector>
+#include <unordered_map>
 #include <map>
 #include <cstdint>
 #include <cassert>
@@ -134,7 +135,7 @@ struct account_info_t {
         static balance_t construct(const flatjson::fjson &json);
         friend std::ostream &operator<<(std::ostream &os, const balance_t &f);
     };
-    std::map<std::string, balance_t> balances;
+    std::unordered_map<std::string, balance_t> balances;
 
     const balance_t& get_balance(const std::string &symbol) const
         { return get_balance(symbol.c_str()); }
@@ -879,7 +880,7 @@ struct account_update_t {
     std::string e;
     std::size_t E;
     std::size_t u;
-    std::map<std::string, balance_t> B;
+    std::unordered_map<std::string, balance_t> B;
 
     static account_update_t construct(const flatjson::fjson &json);
     friend std::ostream& operator<<(std::ostream &os, const account_update_t &o);

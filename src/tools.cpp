@@ -84,6 +84,11 @@ double_type percents_val_by_percent(const double_type &v, const double_type &p) 
     return (v / 100) * p;
 }
 
+int64_t remove_decimals(const double_type& v, const int decimal_places)
+{
+    return static_cast<int64_t>(v * pow(10, decimal_places));
+}
+
 /*************************************************************************************************/
 
 bool is_my_orderid(const char *client_order_id) {

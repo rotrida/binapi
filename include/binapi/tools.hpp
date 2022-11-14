@@ -35,6 +35,8 @@ double_type percents_add(const double_type &v, const double_type &p);
 double_type percents_sub(const double_type &v, const double_type &p);
 double_type percents_val_by_percent(const double_type &v, const double_type &p);
 
+int64_t remove_decimals(const double_type& v, const int decimal_places);
+
 /*************************************************************************************************/
 
 bool is_my_orderid(const std::string &client_order_id);
