@@ -914,6 +914,7 @@ struct order_update_t {
     double_type q;
     double_type p;
     double_type P;
+    double_type d;
     double_type F;
     std::string C;
     std::string x;
