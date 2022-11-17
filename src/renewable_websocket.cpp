@@ -14,12 +14,15 @@ renewable_websocket::renewable_websocket(boost::asio::io_context& ioc, binapi::w
 {
 }
 
-void renewable_websocket::create_channel(binapi::ws::websockets::handle& handle)
+void renewable_websocket::create_channel(async_channel_creation_callback callback)
 {
-    handle = subscribe_channel();
+    subscribe_channel(boost::asio::bind_executor(_strand, [this, callback](binapi::ws::websockets::handle handle)
+        {
+            _channel_renew_timer.expires_from_now(_web_socket_channel_renew);
+            _channel_renew_timer.async_wait(boost::asio::bind_executor(_strand, std::bind(&renewable_websocket::deal_channel_renew_timer_event, this, std::placeholders::_1)));
 
-	_channel_renew_timer.expires_from_now(_web_socket_channel_renew);
-	_channel_renew_timer.async_wait(boost::asio::bind_executor(_strand, std::bind(&renewable_websocket::deal_channel_renew_timer_event, this, std::placeholders::_1)));
+            callback(handle);
+        }));
 }
 
 void renewable_websocket::deal_channel_renew_timer_event(boost::system::error_code ec)
@@ -29,7 +32,15 @@ void renewable_websocket::deal_channel_renew_timer_event(boost::system::error_co
         return;
     }
 
-    create_channel(_secondary_channel);
+    create_channel(boost::asio::bind_executor(_strand,[this](binapi::ws::websockets::handle handle)
+        {
+            _secondary_channel = handle;
+        }));
+}
+
+/*virtual*/ void renewable_websocket::unsubscribe_channel(binapi::ws::websockets::handle handle)
+{
+    _websockets.async_unsubscribe(handle);
 }
 
 void renewable_websocket::internal_switch_to_secondary_channel()
@@ -39,23 +50,26 @@ void renewable_websocket::internal_switch_to_secondary_channel()
         return;
     }
 
-    _websockets.unsubscribe(_active_channel);
+    unsubscribe_channel(_active_channel);
     _active_channel = _secondary_channel;
     _secondary_channel = nullptr;
 }
 
 /*virtual*/ void renewable_websocket::start()
 {
-    create_channel(_active_channel);
+    create_channel(boost::asio::bind_executor(_strand, [this](binapi::ws::websockets::handle handle)
+        {
+            _active_channel = handle;
+        }));
 }
 
 /*virtual*/ void renewable_websocket::stop()
 {
-    const auto unsubscribe_channel = [&](auto& handle)
+    const auto unsubscribe_channel = [this](auto& handle)
     {
         if (handle)
         {
-            _websockets.async_unsubscribe(handle);
+            this->unsubscribe_channel(handle);
             handle = nullptr;
         }
     };

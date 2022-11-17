@@ -20,8 +20,11 @@ namespace binapi
 			binapi::ws::websockets::handle _active_channel;
 			binapi::ws::websockets::handle _secondary_channel;
 
-			void create_channel(binapi::ws::websockets::handle& handle);
-			virtual binapi::ws::websockets::handle subscribe_channel() = 0;
+			using async_channel_creation_callback = std::function<void(binapi::ws::websockets::handle)>;
+			void create_channel(async_channel_creation_callback callback);
+			
+			virtual void subscribe_channel(async_channel_creation_callback callback) = 0;
+			virtual void unsubscribe_channel(binapi::ws::websockets::handle handle);
 
 			void deal_channel_renew_timer_event(boost::system::error_code ec);
 			virtual void internal_switch_to_secondary_channel();
