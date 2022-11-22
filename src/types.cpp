@@ -2118,7 +2118,7 @@ order_update_t order_update_t::construct(const flatjson::fjson &json) {
     __BINAPI_GET(q);
     __BINAPI_GET(p);
     __BINAPI_GET(P);
-    __BINAPI_GET(d);
+    //__BINAPI_GET(d);
     __BINAPI_GET(F);
     __BINAPI_GET(C);
     __BINAPI_GET(x);

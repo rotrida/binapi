@@ -96,10 +96,10 @@ int main() {
         }
     );
     */
+    
     /*
-
     ws.trade("BTCUSDT",
-        [](const char* fl, int ec, std::string emsg, auto trades) {
+        [](const char* fl, int ec, std::string emsg, auto trades, binapi::ws::websockets::handle h) {
             if (ec) {
                 std::cerr << "subscribe trades error: fl=" << fl << ", ec=" << ec << ", emsg=" << emsg << std::endl;
 
@@ -111,6 +111,13 @@ int main() {
             return true;
         }
     );
+    */
+
+    ws.book("BTCUSDT", [](const char* fl, int ec, std::string emsg, auto book, binapi::ws::websockets::handle hnd) {
+
+            std::cout << "book: " << book << std::endl;
+            return true;
+        });
 
     /*
     auto book_handler = ws.book("BTCUSDT",
