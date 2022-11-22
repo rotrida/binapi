@@ -12,7 +12,7 @@ namespace binapi
 		protected:
 
 			boost::asio::io_context& _ioc;
-			boost::asio::io_context::strand _strand;
+			boost::asio::io_context::strand &_strand;
 			boost::asio::deadline_timer _channel_renew_timer;
 			binapi::ws::websockets& _websockets;
 			boost::posix_time::time_duration _web_socket_timeout;
@@ -31,7 +31,7 @@ namespace binapi
 
 		public:
 
-			renewable_websocket(boost::asio::io_context& ioc, binapi::ws::websockets& websocket, boost::posix_time::time_duration web_socket_timeout, boost::posix_time::time_duration web_socket_channel_renew);
+			renewable_websocket(boost::asio::io_context& ioc, boost::asio::io_context::strand& strand, binapi::ws::websockets& websocket, boost::posix_time::time_duration web_socket_timeout, boost::posix_time::time_duration web_socket_channel_renew);
 
 			virtual void start();
 			virtual void stop();
