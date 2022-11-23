@@ -2,9 +2,9 @@
 
 using namespace binapi::ws;
 
-renewable_websocket::renewable_websocket(boost::asio::io_context& ioc, boost::asio::io_context::strand& strand, binapi::ws::websockets& websocket, boost::posix_time::time_duration web_socket_timeout, boost::posix_time::time_duration web_socket_channel_renew) :
+renewable_websocket::renewable_websocket(boost::asio::io_context& ioc, binapi::ws::websockets& websocket, boost::posix_time::time_duration web_socket_timeout, boost::posix_time::time_duration web_socket_channel_renew) :
 	_ioc(ioc),
-	_strand(strand),
+	_strand(ioc),
 	_channel_renew_timer(ioc),
     _websockets(websocket),
 	_web_socket_timeout(web_socket_timeout),
