@@ -90,6 +90,15 @@ const char* e_trade_resp_type_to_string(e_trade_resp_type resp);
 
 /*************************************************************************************************/
 
+enum class e_side_effect_type : size_t {
+    NO_SIDE_EFFECT
+    , MARGIN_BUY
+    , AUTO_REPAY
+};
+
+e_side_effect_type e_side_effect_type_from_string(const char* str);
+const char* e_side_effect_type_to_string(e_side_effect_type side_effect);
+
 } // ns binapi
 
 #endif // __binapi__enums_hpp

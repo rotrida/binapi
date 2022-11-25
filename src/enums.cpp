@@ -126,6 +126,31 @@ const char* e_trade_resp_type_to_string(e_trade_resp_type resp) {
     return nullptr;
 }
 
+e_side_effect_type e_side_effect_type_from_string(const char* str)
+{
+    const auto hash = fnv1a(str);
+    switch (hash) {
+    case fnv1a("NO_SIDE_EFFECT"): return e_side_effect_type::NO_SIDE_EFFECT;
+    case fnv1a("MARGIN_BUY"): return e_side_effect_type::MARGIN_BUY;
+    case fnv1a("AUTO_REPAY"): return e_side_effect_type::AUTO_REPAY;
+    }
+
+    assert(!"unreachable");
+}
+
+const char* e_side_effect_type_to_string(e_side_effect_type side_effect)
+{
+    switch (side_effect) {
+    case e_side_effect_type::NO_SIDE_EFFECT: return "NO_SIDE_EFFECT";
+    case e_side_effect_type::MARGIN_BUY: return "MARGIN_BUY";
+    case e_side_effect_type::AUTO_REPAY: return "AUTO_REPAY";
+    }
+
+    assert(!"unreachable");
+
+    return nullptr;
+}
+
 /*************************************************************************************************/
 
 } // ns binapi

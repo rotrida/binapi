@@ -936,6 +936,75 @@ api::result<cancel_order_info_t> api::cancel_order(
 
 /*************************************************************************************************/
 
+api::result<new_order_resp_type>
+api::new_margin_order(
+    const char* symbol
+    , const e_side side
+    , const e_type type
+    , const e_time time
+    , const e_trade_resp_type resp
+    , const char* amount
+    , const char* price
+    , const char* client_order_id
+    , const char* stop_price
+    , const char* iceberg_amount
+    , const bool is_isolated
+    , e_side_effect_type side_effect_type
+    , new_order_cb cb
+) {
+    const char* side_str = e_side_to_string(side);
+    assert(side_str);
+
+    const char* type_str = e_type_to_string(type);
+    assert(type_str);
+
+    const char* time_str = type == e_type::market
+        ? nullptr
+        : e_time_to_string(time)
+        ;
+
+    const char* responce_type = e_trade_resp_type_to_string(resp);
+    assert(responce_type);
+
+    const impl::init_list_type map = {
+         {"symbol", symbol}
+        ,{"side", side_str}
+        ,{"type", type_str}
+        ,{"timeInForce", time_str}
+        ,{"quantity", amount}
+        ,{"price", price}
+        ,{"newClientOrderId", client_order_id}
+        ,{"stopPrice", stop_price}
+        ,{"icebergQty", iceberg_amount}
+        ,{"newOrderRespType", responce_type}
+        ,{"isIsolated", is_isolated}
+        ,{"sideEffectType", e_side_effect_type_to_string(side_effect_type)}
+    };
+
+    return pimpl->post(true, "/api/v1/margin/order", boost::beast::http::verb::post, map, std::move(cb));
+}
+
+/*************************************************************************************************/
+
+api::result<cancel_order_info_t> api::cancel_margin_order(
+    const char* symbol
+    , std::size_t order_id
+    , const char* client_order_id
+    , const char* new_client_order_id
+    , cancel_order_cb cb
+) {
+    const impl::init_list_type map = {
+         {"symbol", symbol}
+        ,{"orderId", order_id}
+        ,{"origClientOrderId", client_order_id}
+        ,{"newClientOrderId", new_client_order_id}
+    };
+
+    return pimpl->post(true, "/api/v1/margin/order", boost::beast::http::verb::delete_, map, std::move(cb));
+}
+
+
+/*************************************************************************************************/
 api::result<my_trades_info_t> api::my_trades(
      const char *symbol
     ,std::size_t start_time

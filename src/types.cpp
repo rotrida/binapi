@@ -28,6 +28,13 @@ __get_json(T &v, const char *member, const flatjson::fjson &j) {
 }
 
 template<typename T>
+typename std::enable_if<std::is_integral<T>::value>::type
+__get_json_def(T &v, const char *member, const flatjson::fjson &j, T default_value) {
+    const auto& o = j.at(member);
+    v = (o.is_null() ? default_value : o.to<T>());
+}
+
+template<typename T>
 typename std::enable_if<std::is_same<T, std::string>::value>::type
 __get_json(T &v, const char *member, const flatjson::fjson &j) {
     const auto &o = j.at(member);
@@ -40,10 +47,16 @@ __get_json(T &v, const char *member, const flatjson::fjson &j) {
     v.assign(j.at(member).to_string());
 }
 
+
 #define __BINAPI_GET2(obj, member, json) \
     __get_json(obj.member, #member, json)
 
+#define __BINAPI_GET2_DEF(obj, member, json, default_value) \
+    __get_json_def(obj.member, #member, json, default_value)
+
 #define __BINAPI_GET(member) __BINAPI_GET2(res, member, json)
+
+#define __BINAPI_GET_DEFAULT(member, default_value) __BINAPI_GET2_DEF(res, member, json, default_value)
 
 /*************************************************************************************************/
 
@@ -1253,6 +1266,7 @@ new_order_info_full_t new_order_info_full_t::construct(const flatjson::fjson &js
     __BINAPI_GET(timeInForce);
     __BINAPI_GET(type);
     __BINAPI_GET(side);
+    __BINAPI_GET_DEFAULT(isIsolated, false);
     const auto fills = json.at("fills");
     for ( auto idx = 0u; idx < fills.size(); ++idx ) {
         new_order_info_full_t::fill_part item{};

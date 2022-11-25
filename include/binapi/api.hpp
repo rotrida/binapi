@@ -317,6 +317,26 @@ struct api {
     result<cancel_order_info_t>
     cancel_order(const char *symbol, std::size_t order_id, const char *client_order_id, const char *new_client_order_id, cancel_order_cb cb = {});
 
+    result<new_order_resp_type>
+        new_margin_order(
+            const char* symbol
+            , const e_side side
+            , const e_type type
+            , const e_time time
+            , const e_trade_resp_type resp
+            , const char* amount
+            , const char* price
+            , const char* client_order_id
+            , const char* stop_price
+            , const char* iceberg_amount
+            , const bool is_isolated
+            ,e_side_effect_type side_effect_type
+            , new_order_cb cb = {}
+    );
+
+    result<cancel_order_info_t>
+        cancel_margin_order(const char* symbol, std::size_t order_id, const char* client_order_id, const char* new_client_order_id, cancel_order_cb cb = {});
+
     // https://github.com/binance/binance-spot-api-docs/blob/master/rest-api.md#account-trade-list-user_data
     using my_trades_cb = std::function<bool(const char *fl, int ec, std::string errmsg, my_trades_info_t res)>;
     result<my_trades_info_t>

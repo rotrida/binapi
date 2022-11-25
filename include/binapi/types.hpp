@@ -479,6 +479,7 @@ struct new_order_info_full_t {
     std::string timeInForce;
     std::string type;
     std::string side;
+    bool isIsolated;
     struct fill_part {
         double_type price;
         double_type qty;
