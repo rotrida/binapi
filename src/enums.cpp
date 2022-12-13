@@ -114,7 +114,7 @@ e_trade_resp_type e_trade_resp_type_from_string(const char *str) {
 
 const char* e_trade_resp_type_to_string(e_trade_resp_type resp) {
     switch ( resp ) {
-        case e_trade_resp_type::ACK: return "ASK";
+        case e_trade_resp_type::ACK: return "ACK";
         case e_trade_resp_type::RESULT: return "RESULT";
         case e_trade_resp_type::FULL: return "FULL";
         case e_trade_resp_type::TEST: return "TEST";

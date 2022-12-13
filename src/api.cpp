@@ -919,15 +919,13 @@ api::new_test_order(
 
 api::result<cancel_order_info_t> api::cancel_order(
      const char *symbol
-    ,std::size_t order_id
-    ,const char *client_order_id
+    ,const std::size_t order_id
     ,const char *new_client_order_id
     ,cancel_order_cb cb
 ) {
     const impl::init_list_type map = {
          {"symbol", symbol}
         ,{"orderId", order_id}
-        ,{"origClientOrderId", client_order_id}
         ,{"newClientOrderId", new_client_order_id}
     };
 
@@ -988,15 +986,13 @@ api::new_margin_order(
 
 api::result<cancel_order_info_t> api::cancel_margin_order(
     const char* symbol
-    , std::size_t order_id
-    , const char* client_order_id
+    , const std::size_t order_id
     , const char* new_client_order_id
     , cancel_order_cb cb
 ) {
     const impl::init_list_type map = {
          {"symbol", symbol}
         ,{"orderId", order_id}
-        ,{"origClientOrderId", client_order_id}
         ,{"newClientOrderId", new_client_order_id}
     };
 

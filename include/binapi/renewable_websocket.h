@@ -24,7 +24,7 @@ namespace binapi
 			void create_channel(async_channel_creation_callback callback);
 			
 			virtual void subscribe_channel(async_channel_creation_callback callback) = 0;
-			virtual void unsubscribe_channel(binapi::ws::websockets::handle handle);
+			virtual void unsubscribe_channel(binapi::ws::websockets::handle handle, binapi::ws::websockets::async_stop_callback callback);
 
 			void deal_channel_renew_timer_event(boost::system::error_code ec);
 			virtual void internal_switch_to_secondary_channel();
@@ -34,7 +34,7 @@ namespace binapi
 			renewable_websocket(boost::asio::io_context& ioc, binapi::ws::websockets& websocket, boost::posix_time::time_duration web_socket_timeout, boost::posix_time::time_duration web_socket_channel_renew);
 
 			virtual void start();
-			virtual void stop();
+			virtual void stop(binapi::ws::websockets::async_stop_callback callback);
 		};
 	}
 }

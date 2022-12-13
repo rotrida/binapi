@@ -38,9 +38,9 @@ void renewable_websocket::deal_channel_renew_timer_event(boost::system::error_co
         }));
 }
 
-/*virtual*/ void renewable_websocket::unsubscribe_channel(binapi::ws::websockets::handle handle)
+/*virtual*/ void renewable_websocket::unsubscribe_channel(binapi::ws::websockets::handle handle, binapi::ws::websockets::async_stop_callback callback)
 {
-    _websockets.async_unsubscribe(handle);
+    _websockets.async_unsubscribe(handle, callback);
 }
 
 void renewable_websocket::internal_switch_to_secondary_channel()
@@ -50,7 +50,7 @@ void renewable_websocket::internal_switch_to_secondary_channel()
         return;
     }
 
-    unsubscribe_channel(_active_channel);
+    unsubscribe_channel(_active_channel, []() {});
     _active_channel = _secondary_channel;
     _secondary_channel = nullptr;
 }
@@ -63,16 +63,40 @@ void renewable_websocket::internal_switch_to_secondary_channel()
         }));
 }
 
-/*virtual*/ void renewable_websocket::stop()
+/*virtual*/ void renewable_websocket::stop(binapi::ws::websockets::async_stop_callback callback)
 {
-    const auto unsubscribe_channel = [this](auto& handle)
+    auto counter_ptr = std::make_shared<int>(0);
+
+    const auto add_if_exists = [&counter_ptr](auto& handle)
+    {
+        if (handle)
+            ++(*counter_ptr);
+    };
+
+    const auto unsubscribe_channel = [this, callback, counter_ptr](auto& handle)
     {
         if (handle)
         {
-            this->unsubscribe_channel(handle);
+            this->unsubscribe_channel(handle, [callback, counter_ptr]()
+            {
+                if (--(*counter_ptr) == 0)
+                {
+                    callback();
+                }
+            });
+
             handle = nullptr;
         }
     };
+
+    add_if_exists(_secondary_channel);
+    add_if_exists(_active_channel);
+
+    if (*counter_ptr == 0)
+    {
+        callback();
+        return;
+    }
 
     unsubscribe_channel(_secondary_channel);
     unsubscribe_channel(_active_channel);

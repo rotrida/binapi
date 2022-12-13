@@ -85,14 +85,14 @@ struct websocket: std::enable_shared_from_this<websocket> {
         m_timeout_timer.cancel();
     }
 
-    void async_stop() {
+    void async_stop(websockets::async_stop_callback callback) {
         m_stop_requested = true;
         holder_type holder = shared_from_this();
 
         if ( m_ws.is_open() ) {
             m_ws.async_close(
                  boost::beast::websocket::close_code::normal
-                ,[holder=std::move(holder)](const boost::system::error_code &){}
+                , [holder = std::move(holder), callback](const boost::system::error_code&) { callback(); }
             );
         }
     }
@@ -432,8 +432,8 @@ struct websockets::impl {
     void stop_channel(handle h) {
         return stop_channel_impl(h, [](auto sp){ sp->stop(); });
     }
-    void async_stop_channel(handle h) {
-        return stop_channel_impl(h, [](auto sp){ sp->async_stop(); });
+    void async_stop_channel(handle h, async_stop_callback callback) {
+        return stop_channel_impl(h, [callback](auto sp){ sp->async_stop(callback); });
     }
 
     template<typename F>
@@ -451,8 +451,8 @@ struct websockets::impl {
     void unsubscribe_all() {
         return unsubscribe_all_impl([](auto sp){ sp->stop(); });
     }
-    void async_unsubscribe_all() {
-        return unsubscribe_all_impl([](auto sp){ sp->async_stop(); });
+    void async_unsubscribe_all(async_stop_callback callback) {
+        return unsubscribe_all_impl([callback](auto sp){ sp->async_stop(callback); });
     }
 
     boost::asio::io_context &m_ioctx;
@@ -621,10 +621,10 @@ websockets::handle websockets::userdata(
 /*************************************************************************************************/
 
 void websockets::unsubscribe(const handle &h) { return pimpl->stop_channel(h); }
-void websockets::async_unsubscribe(const handle &h) { return pimpl->async_stop_channel(h); }
+void websockets::async_unsubscribe(const handle &h, async_stop_callback callback) { return pimpl->async_stop_channel(h, callback); }
 
 void websockets::unsubscribe_all() { return pimpl->unsubscribe_all(); }
-void websockets::async_unsubscribe_all() { return pimpl->async_unsubscribe_all(); }
+void websockets::async_unsubscribe_all(async_stop_callback callback) { return pimpl->async_unsubscribe_all(callback); }
 
 /*************************************************************************************************/
 /*************************************************************************************************/

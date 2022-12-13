@@ -302,20 +302,18 @@ struct api {
     cancel_order(
          const std::string &symbol
         ,std::size_t order_id
-        ,const std::string &client_order_id
         ,const std::string &new_client_order_id
         ,cancel_order_cb cb = {}
     ) {
         return cancel_order(
              symbol.c_str()
             ,order_id
-            ,(client_order_id.empty() ? nullptr : client_order_id.c_str())
             ,(new_client_order_id.empty() ? nullptr : new_client_order_id.c_str())
             ,std::move(cb)
         );
     }
     result<cancel_order_info_t>
-    cancel_order(const char *symbol, std::size_t order_id, const char *client_order_id, const char *new_client_order_id, cancel_order_cb cb = {});
+    cancel_order(const char *symbol, std::size_t order_id, const char *new_client_order_id, cancel_order_cb cb = {});
 
     result<new_order_resp_type>
         new_margin_order(
@@ -335,7 +333,7 @@ struct api {
     );
 
     result<cancel_order_info_t>
-        cancel_margin_order(const char* symbol, std::size_t order_id, const char* client_order_id, const char* new_client_order_id, cancel_order_cb cb = {});
+        cancel_margin_order(const char* symbol, std::size_t order_id, const char* new_client_order_id, cancel_order_cb cb = {});
 
     // https://github.com/binance/binance-spot-api-docs/blob/master/rest-api.md#account-trade-list-user_data
     using my_trades_cb = std::function<bool(const char *fl, int ec, std::string errmsg, my_trades_info_t res)>;

@@ -66,6 +66,7 @@ struct websockets {
     ~websockets();
 
     using handle = void *;
+    using async_stop_callback = std::function<void()>;
 
     // https://github.com/binance/binance-spot-api-docs/blob/master/web-socket-streams.md#partial-book-depth-streams
     using on_part_depths_received_cb = std::function<bool(const char *fl, int ec, std::string errmsg, part_depths_t msg, handle hnd)>;
@@ -124,9 +125,9 @@ struct websockets {
     );
 
     void unsubscribe(const handle &h);
-    void async_unsubscribe(const handle &h);
+    void async_unsubscribe(const handle &h, async_stop_callback callback);
     void unsubscribe_all();
-    void async_unsubscribe_all();
+    void async_unsubscribe_all(async_stop_callback callback);
 
 private:
     struct impl;
