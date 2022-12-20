@@ -65,6 +65,8 @@ void renewable_websocket::internal_switch_to_secondary_channel()
 
 /*virtual*/ void renewable_websocket::stop(binapi::ws::websockets::async_stop_callback callback)
 {
+    _channel_renew_timer.cancel();
+
     auto counter_ptr = std::make_shared<int>(0);
 
     const auto add_if_exists = [&counter_ptr](auto& handle)

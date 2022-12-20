@@ -199,9 +199,11 @@ private:
         }
         else if (m_last_message_received + m_timeout_verification < now)
         {
+            auto me = shared_from_this();
+
             m_ws.async_ping(
                 boost::beast::websocket::ping_data{}
-                , [this](boost::beast::error_code ec)
+                , [this, me](boost::beast::error_code ec)
                 { 
                     if (!ec)
                         return;
