@@ -212,7 +212,7 @@ private:
         }
 
         m_timeout_timer.expires_from_now(m_timeout_verification);
-        m_timeout_timer.async_wait(boost::asio::bind_executor(m_strand, std::bind(&websocket::on_timeout_timer_control, this, std::placeholders::_1)));
+        m_timeout_timer.async_wait(boost::asio::bind_executor(m_strand, std::bind(&websocket::on_timeout_timer_control, shared_from_this(), std::placeholders::_1)));
     }
 
     void on_async_ssl_handshake(holder_type holder) {
@@ -234,7 +234,7 @@ private:
             m_last_message_received = boost::posix_time::second_clock::universal_time();
 
             m_timeout_timer.expires_from_now(m_timeout_verification);
-            m_timeout_timer.async_wait(boost::asio::bind_executor(m_strand, std::bind(&websocket::on_timeout_timer_control, this, std::placeholders::_1)));
+            m_timeout_timer.async_wait(boost::asio::bind_executor(m_strand, std::bind(&websocket::on_timeout_timer_control, shared_from_this(), std::placeholders::_1)));
         }
     }
 
@@ -418,7 +418,7 @@ struct websockets::impl {
 
     template<typename F>
     void stop_channel_impl(handle h, F f) {
-        boost::asio::dispatch(m_strand, [this, h, f]() 
+        boost::asio::dispatch(m_strand, [this, h, f]()
         {
             auto it = m_websockets.find(h);
             if (it == m_websockets.end()) { return; }
