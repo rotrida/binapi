@@ -10,7 +10,8 @@ renewable_websocket::renewable_websocket(boost::asio::io_context& ioc, binapi::w
 	_web_socket_timeout(web_socket_timeout),
 	_web_socket_channel_renew(web_socket_channel_renew),
 	_active_channel(nullptr),
-	_secondary_channel(nullptr)
+	_secondary_channel(nullptr),
+    _stopped(false)
 {
 }
 
@@ -66,6 +67,7 @@ void renewable_websocket::internal_switch_to_secondary_channel()
 /*virtual*/ void renewable_websocket::stop(binapi::ws::websockets::async_stop_callback callback)
 {
     _channel_renew_timer.cancel();
+    _stopped = true;
 
     auto counter_ptr = std::make_shared<int>(0);
 

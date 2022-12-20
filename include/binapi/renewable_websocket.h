@@ -19,6 +19,7 @@ namespace binapi
 			boost::posix_time::time_duration _web_socket_channel_renew;
 			binapi::ws::websockets::handle _active_channel;
 			binapi::ws::websockets::handle _secondary_channel;
+			bool _stopped;
 
 			using async_channel_creation_callback = std::function<void(binapi::ws::websockets::handle)>;
 			void create_channel(async_channel_creation_callback callback);
