@@ -26,8 +26,19 @@ int main() {
         ,"9443"
     };
 
-    binapi::rest::api rest(ioctx, "api.binance.com", "443", "p3V5ByZ0EEyjnnsmxCGaDLFkAJjDIWks8vkeNzPDCS11aKnMXBhPz7TqDDJconO6", "C1wKjSXdBrQcl9ROhJYN7luOk767zaYYdrwU2VrngPVvBcr1HOPCg4Xc1l3Ild4y", 59000);
+    binapi::rest::api rest(ioctx, "api.binance.com", "443", "8zbEmVU3Ec7AAPYphdAVMV8gni9Q8rvVgapnDvvbPVzzeHrgrLaNttM44kWeB1x6", "LfRwhS6inC8WK8Grf621uYvCEe8PWPRp9F4aHuykOpY4N2JXXAnlsyIzveRs8tXt", 1000);
     
+    rest.start_user_data_stream([](const char *fl, int ec, std::string errmsg, binapi::rest::start_user_data_stream_t res)
+        {
+            if(ec)
+            {
+                int g = 2;
+            }
+
+
+            return true;
+        });
+
     rest.my_trades("ADAUSDT", 0, 0, 0, 500, [](const char* fl, int ec, std::string errmsg, binapi::rest::my_trades_info_t res)
         {
             return true;
@@ -176,11 +187,11 @@ int main() {
 //        });
 
     boost::asio::steady_timer timer2{ ioctx, std::chrono::steady_clock::now() + std::chrono::seconds(30) };
-    timer2.async_wait([&ws](const auto&/*ec*/) {
+/*    timer2.async_wait([&ws](const auto& ec) {
         std::cout << "async unsubscribing all" << std::endl;
         ws.async_unsubscribe_all();
         });
-
+        */
     ioctx.run();
 
     return EXIT_SUCCESS;

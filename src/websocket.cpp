@@ -142,13 +142,16 @@ private:
     }
     void on_connected(holder_type holder) {
         
-        m_ws.control_callback(boost::asio::bind_executor(m_strand,
-            [this] (boost::beast::websocket::frame_type kind, boost::beast::string_view payload) mutable 
+        m_ws.control_callback([this, me_ptr=shared_from_this()] (boost::beast::websocket::frame_type kind, boost::beast::string_view payload) mutable 
             {
                 (void)kind; (void)payload;
-                m_last_message_received = boost::posix_time::second_clock::universal_time();
+
+                boost::asio::dispatch(m_strand, [this, me_ptr]() 
+                {
+                    m_last_message_received = boost::posix_time::second_clock::universal_time();
+                });
             }
-        ));
+        );
 
         // Turn off the timeout on the tcp_stream, because
         // the websocket stream has its own timeout system.
@@ -221,7 +224,7 @@ private:
         m_ws.async_handshake(
             m_host
             ,m_target
-            ,boost::asio::bind_executor(m_strand, [this, holder = std::move(holder)]
+            ,m_strand.wrap([this, holder = std::move(holder)]
                 (boost::system::error_code ec) mutable
                 { 
                     start_read(ec, std::move(holder)); 
@@ -253,7 +256,7 @@ private:
 
         m_ws.async_read(
              m_buf,
-            boost::asio::bind_executor(m_strand, 
+            m_strand.wrap(
                 [this, holder = std::move(holder)]
                 (boost::system::error_code ec, std::size_t rd) mutable
                 { on_read(ec, rd, std::move(holder)); }

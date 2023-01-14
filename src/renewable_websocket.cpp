@@ -17,13 +17,16 @@ renewable_websocket::renewable_websocket(boost::asio::io_context& ioc, binapi::w
 
 void renewable_websocket::create_channel(async_channel_creation_callback callback)
 {
-    subscribe_channel(boost::asio::bind_executor(_strand, [this, callback](binapi::ws::websockets::handle handle)
+    subscribe_channel([this, me_ptr = shared_from_this(), callback](binapi::ws::websockets::handle handle)
         {
-            _channel_renew_timer.expires_from_now(_web_socket_channel_renew);
-            _channel_renew_timer.async_wait(boost::asio::bind_executor(_strand, std::bind(&renewable_websocket::deal_channel_renew_timer_event, this, std::placeholders::_1)));
+            boost::asio::dispatch(_strand, [this, me_ptr, callback, handle]() 
+                {
+                    _channel_renew_timer.expires_from_now(_web_socket_channel_renew);
+                    _channel_renew_timer.async_wait(boost::asio::bind_executor(_strand, std::bind(&renewable_websocket::deal_channel_renew_timer_event, this, std::placeholders::_1)));
 
-            callback(handle);
-        }));
+                    callback(handle);    
+                });
+        });
 }
 
 void renewable_websocket::deal_channel_renew_timer_event(boost::system::error_code ec)
@@ -33,10 +36,13 @@ void renewable_websocket::deal_channel_renew_timer_event(boost::system::error_co
         return;
     }
 
-    create_channel(boost::asio::bind_executor(_strand,[this](binapi::ws::websockets::handle handle)
+    create_channel([this](binapi::ws::websockets::handle handle)
         {
-            _secondary_channel = handle;
-        }));
+            boost::asio::dispatch(_strand, [this, me_ptr=shared_from_this(), handle]()
+                {
+                    _secondary_channel = handle;    
+                });
+        });
 }
 
 /*virtual*/ void renewable_websocket::unsubscribe_channel(binapi::ws::websockets::handle handle, binapi::ws::websockets::async_stop_callback callback)
@@ -58,10 +64,13 @@ void renewable_websocket::internal_switch_to_secondary_channel()
 
 /*virtual*/ void renewable_websocket::start()
 {
-    create_channel(boost::asio::bind_executor(_strand, [this](binapi::ws::websockets::handle handle)
+    create_channel([this](binapi::ws::websockets::handle handle)
         {
-            _active_channel = handle;
-        }));
+            boost::asio::dispatch(_strand, [this, me_ptr=shared_from_this(), handle]() 
+                {
+                    _active_channel = handle;    
+                });
+        });
 }
 
 /*virtual*/ void renewable_websocket::stop(binapi::ws::websockets::async_stop_callback callback)

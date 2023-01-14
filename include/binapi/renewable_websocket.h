@@ -7,7 +7,7 @@ namespace binapi
 {
 	namespace ws
 	{
-		class renewable_websocket
+		class renewable_websocket: public std::enable_shared_from_this<renewable_websocket>
 		{
 		protected:
 
