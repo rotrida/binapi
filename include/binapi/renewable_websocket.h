@@ -12,7 +12,7 @@ namespace binapi
 		protected:
 
 			boost::asio::io_context& _ioc;
-			boost::asio::io_context::strand _strand;
+			std::shared_ptr<boost::asio::io_context::strand> _strand_ptr;
 			boost::asio::deadline_timer _channel_renew_timer;
 			binapi::ws::websockets& _websockets;
 			boost::posix_time::time_duration _web_socket_timeout;
