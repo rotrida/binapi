@@ -807,6 +807,16 @@ api::result<orders_info_t> api::open_orders(const char *symbol, open_orders_cb c
 
 /*************************************************************************************************/
 
+api::result<margin_orders_info_t> api::open_margin_orders(const char *symbol, open_margin_orders_cb cb) {
+    const impl::init_list_type map = {
+        {"symbol", symbol}
+    };
+
+    return pimpl->post(true, "/api/v1/margin/openOrders", boost::beast::http::verb::get, map, std::move(cb));
+}
+
+/*************************************************************************************************/
+
 api::result<orders_info_t> api::all_orders(
      const char *symbol
     ,std::size_t orderid

@@ -176,6 +176,12 @@ struct api {
     result<orders_info_t>
     open_orders(const char *symbol, open_orders_cb cb = {});
 
+    using open_margin_orders_cb = std::function<bool(const char *fl, int ec, std::string errmsg, margin_orders_info_t res)>;
+    result<margin_orders_info_t>
+    open_margin_orders(const std::string &symbol, open_orders_cb cb = {}) { return open_margin_orders(symbol.c_str(), std::move(cb)); }
+    result<margin_orders_info_t>
+    open_margin_orders(const char *symbol, open_margin_orders_cb cb = {});
+
     // https://github.com/binance/binance-spot-api-docs/blob/master/rest-api.md#all-orders-user_data
     using all_orders_cb = std::function<bool(const char *fl, int ec, std::string errmsg, orders_info_t res)>;
     result<orders_info_t>
