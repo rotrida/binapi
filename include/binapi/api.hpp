@@ -206,6 +206,35 @@ struct api {
         ,all_orders_cb cb = {}
     );
 
+    using all_margin_orders_cb = std::function<bool(const char *fl, int ec, std::string errmsg, margin_orders_info_t res)>;
+    result<margin_orders_info_t>
+    all_margin_orders(
+         const std::string &symbol
+        ,std::size_t orderid = 0
+        ,std::size_t start_time = 0
+        ,std::size_t end_time = 0
+        ,std::size_t limit = 0
+        ,all_margin_orders_cb cb = {}
+    ) {
+        return all_margin_orders(
+             symbol.empty() ? nullptr : symbol.c_str()
+            ,orderid
+            ,start_time
+            ,end_time
+            ,limit
+            ,std::move(cb)
+        );
+    }
+    result<margin_orders_info_t>
+    all_margin_orders(
+         const char *symbol
+        ,std::size_t orderid = 0
+        ,std::size_t start_time = 0
+        ,std::size_t end_time = 0
+        ,std::size_t limit = 0
+        ,all_margin_orders_cb cb = {}
+    );
+
     // https://github.com/binance/binance-spot-api-docs/blob/master/rest-api.md#new-order--trade
     // NOTE: if 'ec' not zero - the 'res' arg is in undefined state.
     using new_order_cb = std::function<bool(const char *fl, int ec, std::string errmsg, new_order_resp_type res)>;

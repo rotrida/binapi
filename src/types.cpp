@@ -1103,6 +1103,60 @@ std::ostream &operator<<(std::ostream &os, const order_info_t &o) {
 
 /*************************************************************************************************/
 
+/*************************************************************************************************/
+
+margin_order_info_t margin_order_info_t::construct(const flatjson::fjson &json) {
+    assert(json.is_valid());
+
+    margin_order_info_t res{};
+    __BINAPI_GET(symbol);
+    __BINAPI_GET(orderId);
+    __BINAPI_GET(clientOrderId);
+    __BINAPI_GET(price);
+    __BINAPI_GET(origQty);
+    __BINAPI_GET(executedQty);
+    __BINAPI_GET(cummulativeQuoteQty);
+    __BINAPI_GET(status);
+    __BINAPI_GET(timeInForce);
+    __BINAPI_GET(type);
+    __BINAPI_GET(side);
+    __BINAPI_GET(stopPrice);
+    __BINAPI_GET(icebergQty);
+    __BINAPI_GET(time);
+    __BINAPI_GET(updateTime);
+    __BINAPI_GET(isWorking);
+    __BINAPI_GET(isIsolated);
+
+    return res;
+}
+
+std::ostream &operator<<(std::ostream &os, const margin_order_info_t &o) {
+    os
+    << "{"
+    << "\"symbol\":\"" << o.symbol << "\","
+    << "\"orderId\":" << o.orderId << ","
+    << "\"clientOrderId\":\"" << o.clientOrderId << "\","
+    << "\"price\":\"" << o.price << "\","
+    << "\"origQty\":\"" << o.origQty << "\","
+    << "\"executedQty\":\"" << o.executedQty << "\","
+    << "\"cummulativeQuoteQty\":\"" << o.cummulativeQuoteQty << "\","
+    << "\"status\":\"" << o.status << "\","
+    << "\"timeInForce\":\"" << o.timeInForce << "\","
+    << "\"type\":\"" << o.type << "\","
+    << "\"side\":\"" << o.side << "\","
+    << "\"stopPrice\":\"" << o.stopPrice << "\","
+    << "\"icebergQty\":\"" << o.icebergQty << "\","
+    << "\"time\":" << o.time << ","
+    << "\"updateTime\":" << o.updateTime << ","
+    << "\"isWorking\":" << (o.isWorking ? "true" : "false")
+    << "\"isIsolated\":" << (o.isIsolated ? "true" : "false")
+    << "}";
+
+    return os;
+}
+
+/*************************************************************************************************/
+
 orders_info_t orders_info_t::construct(const flatjson::fjson &json) {
     assert(json.is_valid());
 
@@ -1134,6 +1188,58 @@ orders_info_t orders_info_t::construct(const flatjson::fjson &json) {
 }
 
 std::ostream &operator<<(std::ostream &os, const orders_info_t &o) {
+    os
+    << "[";
+    for ( const auto &it: o.orders ) {
+        for ( auto vit = it.second.begin(); vit != it.second.end(); ++vit ) {
+            os << *vit;
+            if ( std::next(vit) != it.second.end() ) {
+                os << ",";
+            }
+        }
+    }
+    os
+    << "]";
+
+    return os;
+}
+
+/*************************************************************************************************/
+
+/*************************************************************************************************/
+
+margin_orders_info_t margin_orders_info_t::construct(const flatjson::fjson &json) {
+    assert(json.is_valid());
+
+    margin_orders_info_t res{};
+    for ( auto idx = 0u; idx < json.size(); ++idx ) {
+        margin_order_info_t item{};
+        const auto it = json.at(idx);
+        __BINAPI_GET2(item, symbol, it);
+        __BINAPI_GET2(item, orderId, it);
+        __BINAPI_GET2(item, clientOrderId, it);
+        __BINAPI_GET2(item, price, it);
+        __BINAPI_GET2(item, origQty, it);
+        __BINAPI_GET2(item, executedQty, it);
+        __BINAPI_GET2(item, cummulativeQuoteQty, it);
+        __BINAPI_GET2(item, status, it);
+        __BINAPI_GET2(item, timeInForce, it);
+        __BINAPI_GET2(item, type, it);
+        __BINAPI_GET2(item, side, it);
+        __BINAPI_GET2(item, stopPrice, it);
+        __BINAPI_GET2(item, icebergQty, it);
+        __BINAPI_GET2(item, time, it);
+        __BINAPI_GET2(item, updateTime, it);
+        __BINAPI_GET2(item, isWorking, it);
+        __BINAPI_GET2(item, isIsolated, it);
+
+        res.orders[item.symbol].push_back(std::move(item));
+    }
+
+    return res;
+}
+
+std::ostream &operator<<(std::ostream &os, const margin_orders_info_t &o) {
     os
     << "[";
     for ( const auto &it: o.orders ) {

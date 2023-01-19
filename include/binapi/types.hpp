@@ -428,12 +428,42 @@ struct order_info_t {
     friend std::ostream &operator<<(std::ostream &os, const order_info_t &o);
 };
 
+struct margin_order_info_t {
+    std::string symbol;
+    std::size_t orderId;
+    std::string clientOrderId;
+    double_type price;
+    double_type origQty;
+    double_type executedQty;
+    double_type cummulativeQuoteQty;
+    std::string status;
+    std::string timeInForce;
+    std::string type;
+    std::string side;
+    double_type stopPrice;
+    double_type icebergQty;
+    std::size_t time;
+    std::size_t updateTime;
+    bool isWorking;
+    bool isIsolated;
+
+    static margin_order_info_t construct(const flatjson::fjson &json);
+    friend std::ostream &operator<<(std::ostream &os, const margin_order_info_t &o);
+};
+
 // https://github.com/binance-exchange/binance-official-api-docs/blob/master/rest-api.md#current-open-orders-user_data
 // https://github.com/binance-exchange/binance-official-api-docs/blob/master/rest-api.md#all-orders-user_data
 struct orders_info_t {
-    std::map<std::string, std::vector<order_info_t>> orders;
+    std::unordered_map<std::string, std::vector<order_info_t>> orders;
 
     static orders_info_t construct(const flatjson::fjson &json);
+    friend std::ostream &operator<<(std::ostream &os, const orders_info_t &o);
+};
+
+struct margin_orders_info_t {
+    std::unordered_map<std::string, std::vector<margin_order_info_t>> orders;
+
+    static margin_orders_info_t construct(const flatjson::fjson &json);
     friend std::ostream &operator<<(std::ostream &os, const orders_info_t &o);
 };
 

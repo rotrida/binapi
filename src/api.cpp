@@ -828,6 +828,29 @@ api::result<orders_info_t> api::all_orders(
 
 /*************************************************************************************************/
 
+/*************************************************************************************************/
+
+api::result<margin_orders_info_t> api::all_margin_orders(
+     const char *symbol
+    ,std::size_t orderid
+    ,std::size_t start_time
+    ,std::size_t end_time
+    ,std::size_t limit
+    ,all_margin_orders_cb cb
+) {
+    const impl::init_list_type map = {
+         {"symbol", symbol}
+        ,{"orderId", orderid}
+        ,{"startTime", start_time}
+        ,{"endTime", end_time}
+        ,{"limit", limit}
+    };
+
+    return pimpl->post(true, "/api/v1/margin/allOrders", boost::beast::http::verb::get, map, std::move(cb));
+}
+
+/*************************************************************************************************/
+
 api::result<new_order_resp_type>
 api::new_order(
      const char *symbol
