@@ -812,7 +812,7 @@ api::result<margin_orders_info_t> api::open_margin_orders(const char *symbol, op
         {"symbol", symbol}
     };
 
-    return pimpl->post(true, "/api/v1/margin/openOrders", boost::beast::http::verb::get, map, std::move(cb));
+    return pimpl->post(true, "/sapi/v1/margin/openOrders", boost::beast::http::verb::get, map, std::move(cb));
 }
 
 /*************************************************************************************************/
@@ -856,7 +856,7 @@ api::result<margin_orders_info_t> api::all_margin_orders(
         ,{"limit", limit}
     };
 
-    return pimpl->post(true, "/api/v1/margin/allOrders", boost::beast::http::verb::get, map, std::move(cb));
+    return pimpl->post(true, "/sapi/v1/margin/allOrders", boost::beast::http::verb::get, map, std::move(cb));
 }
 
 /*************************************************************************************************/
