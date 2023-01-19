@@ -428,23 +428,7 @@ struct order_info_t {
     friend std::ostream &operator<<(std::ostream &os, const order_info_t &o);
 };
 
-struct margin_order_info_t {
-    std::string symbol;
-    std::size_t orderId;
-    std::string clientOrderId;
-    double_type price;
-    double_type origQty;
-    double_type executedQty;
-    double_type cummulativeQuoteQty;
-    std::string status;
-    std::string timeInForce;
-    std::string type;
-    std::string side;
-    double_type stopPrice;
-    double_type icebergQty;
-    std::size_t time;
-    std::size_t updateTime;
-    bool isWorking;
+struct margin_order_info_t : public order_info_t{
     bool isIsolated;
 
     static margin_order_info_t construct(const flatjson::fjson &json);
