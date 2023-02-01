@@ -163,7 +163,7 @@ struct api::impl {
         ,typename R = typename std::tuple_element<3, Args>::type
     >
     api::result<R>
-    post(bool _signed, const char *target, boost::beast::http::verb action, const std::initializer_list<kv_type> &map, CB cb) {
+    post(bool _signed, const char *target, boost::beast::http::verb action, const std::deque<kv_type> &map, CB cb) {
         static_assert(std::tuple_size<Args>::value == 4, "callback signature is wrong!");
 
         auto is_valid_value = [](const val_type &v) -> bool {
@@ -956,13 +956,15 @@ api::result<cancel_order_info_t> api::cancel_order(
     ,const char *new_client_order_id
     ,cancel_order_cb cb
 ) {
-    const impl::init_list_type map = {
+    std::deque<impl::kv_type> deq = {
          {"symbol", symbol}
         ,{"orderId", order_id}
-        ,{"newClientOrderId", new_client_order_id}
     };
 
-    return pimpl->post(true, "/api/v3/order", boost::beast::http::verb::delete_, map, std::move(cb));
+    if(new_client_order_id)
+        deq.emplace_back(impl::kv_type({"newClientOrderId", new_client_order_id}));
+
+    return pimpl->post(true, "/api/v3/order", boost::beast::http::verb::delete_, deq, std::move(cb));
 }
 
 /*************************************************************************************************/
