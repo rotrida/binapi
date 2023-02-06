@@ -395,21 +395,47 @@ struct api {
     // https://github.com/binance/binance-spot-api-docs/blob/master/rest-api.md#start-user-data-stream-user_stream
     using start_user_data_stream_cb = std::function<bool(const char *fl, int ec, std::string errmsg, start_user_data_stream_t res)>;
     result<start_user_data_stream_t>
-    start_user_data_stream(start_user_data_stream_cb cb = {});
+    start_user_data_stream_spot(start_user_data_stream_cb cb = {});
 
     // https://github.com/binance/binance-spot-api-docs/blob/master/rest-api.md#keepalive-user-data-stream-user_stream
     using ping_user_data_stream_cb = std::function<bool(const char *fl, int ec, std::string errmsg, ping_user_data_stream_t res)>;
     result<ping_user_data_stream_t>
-    ping_user_data_stream(const std::string &listen_key, ping_user_data_stream_cb cb = {}) { return ping_user_data_stream(listen_key.c_str(), std::move(cb)); }
+    ping_user_data_stream_spot(const std::string &listen_key, ping_user_data_stream_cb cb = {}) { return ping_user_data_stream_spot(listen_key.c_str(), std::move(cb)); }
     result<ping_user_data_stream_t>
-    ping_user_data_stream(const char *listen_key, ping_user_data_stream_cb cb = {});
+    ping_user_data_stream_spot(const char *listen_key, ping_user_data_stream_cb cb = {});
 
     // https://github.com/binance/binance-spot-api-docs/blob/master/rest-api.md#close-user-data-stream-user_stream
     using close_user_data_stream_cb = std::function<bool(const char *fl, int ec, std::string errmsg, close_user_data_stream_t res)>;
     result<close_user_data_stream_t>
-    close_user_data_stream(const std::string &listen_key, close_user_data_stream_cb cb = {}) { return close_user_data_stream(listen_key.c_str(), std::move(cb)); }
+    close_user_data_stream_spot(const std::string &listen_key, close_user_data_stream_cb cb = {}) { return close_user_data_stream_spot(listen_key.c_str(), std::move(cb)); }
     result<close_user_data_stream_t>
-    close_user_data_stream(const char *listen_key, close_user_data_stream_cb cb = {});
+    close_user_data_stream_spot(const char *listen_key, close_user_data_stream_cb cb = {});
+
+    result<start_user_data_stream_t>
+    start_user_data_stream_cross_margin(start_user_data_stream_cb cb = {});
+    result<ping_user_data_stream_t>
+    ping_user_data_stream_cross_margin(const std::string &listen_key, ping_user_data_stream_cb cb = {}) { return ping_user_data_stream_cross_margin(listen_key.c_str(), std::move(cb)); }
+    result<ping_user_data_stream_t>
+    ping_user_data_stream_cross_margin(const char *listen_key, ping_user_data_stream_cb cb = {});
+
+    // https://github.com/binance/binance-spot-api-docs/blob/master/rest-api.md#close-user-data-stream-user_stream
+    result<close_user_data_stream_t>
+    close_user_data_stream_cross_margin(const std::string &listen_key, close_user_data_stream_cb cb = {}) { return close_user_data_stream_cross_margin(listen_key.c_str(), std::move(cb)); }
+    result<close_user_data_stream_t>
+    close_user_data_stream_cross_margin(const char *listen_key, close_user_data_stream_cb cb = {});
+
+    result<start_user_data_stream_t>
+    start_user_data_stream_isolated_margin(start_user_data_stream_cb cb = {});
+    result<ping_user_data_stream_t>
+    ping_user_data_stream_isolated_margin(const std::string &listen_key, ping_user_data_stream_cb cb = {}) { return ping_user_data_stream_isolated_margin(listen_key.c_str(), std::move(cb)); }
+    result<ping_user_data_stream_t>
+    ping_user_data_stream_isolated_margin(const char *listen_key, ping_user_data_stream_cb cb = {});
+
+    // https://github.com/binance/binance-spot-api-docs/blob/master/rest-api.md#close-user-data-stream-user_stream
+    result<close_user_data_stream_t>
+    close_user_data_stream_isolated_margin(const std::string &listen_key, close_user_data_stream_cb cb = {}) { return close_user_data_stream_isolated_margin(listen_key.c_str(), std::move(cb)); }
+    result<close_user_data_stream_t>
+    close_user_data_stream_isolated_margin(const char *listen_key, close_user_data_stream_cb cb = {});
 
 private:
     struct impl;
