@@ -425,17 +425,17 @@ struct api {
     close_user_data_stream_cross_margin(const char *listen_key, close_user_data_stream_cb cb = {});
 
     result<start_user_data_stream_t>
-    start_user_data_stream_isolated_margin(start_user_data_stream_cb cb = {});
+    start_user_data_stream_isolated_margin(const char *symbol, start_user_data_stream_cb cb = {});
     result<ping_user_data_stream_t>
-    ping_user_data_stream_isolated_margin(const std::string &listen_key, ping_user_data_stream_cb cb = {}) { return ping_user_data_stream_isolated_margin(listen_key.c_str(), std::move(cb)); }
+    ping_user_data_stream_isolated_margin(const std::string &symbol, const std::string &listen_key, ping_user_data_stream_cb cb = {}) { return ping_user_data_stream_isolated_margin(symbol.c_str(), listen_key.c_str(), std::move(cb)); }
     result<ping_user_data_stream_t>
-    ping_user_data_stream_isolated_margin(const char *listen_key, ping_user_data_stream_cb cb = {});
+    ping_user_data_stream_isolated_margin(const char *symbol, const char *listen_key, ping_user_data_stream_cb cb = {});
 
     // https://github.com/binance/binance-spot-api-docs/blob/master/rest-api.md#close-user-data-stream-user_stream
     result<close_user_data_stream_t>
-    close_user_data_stream_isolated_margin(const std::string &listen_key, close_user_data_stream_cb cb = {}) { return close_user_data_stream_isolated_margin(listen_key.c_str(), std::move(cb)); }
+    close_user_data_stream_isolated_margin(const std::string &symbol, const std::string &listen_key, close_user_data_stream_cb cb = {}) { return close_user_data_stream_isolated_margin(symbol.c_str(), listen_key.c_str(), std::move(cb)); }
     result<close_user_data_stream_t>
-    close_user_data_stream_isolated_margin(const char *listen_key, close_user_data_stream_cb cb = {});
+    close_user_data_stream_isolated_margin(const char *symbol,const char *listen_key, close_user_data_stream_cb cb = {});
 
 private:
     struct impl;

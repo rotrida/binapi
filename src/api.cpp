@@ -1109,14 +1109,19 @@ api::result<close_user_data_stream_t> api::close_user_data_stream_cross_margin(c
 
 /*************************************************************************************************/
 
-api::result<start_user_data_stream_t> api::start_user_data_stream_isolated_margin(start_user_data_stream_cb cb) {
-    return pimpl->post(false, "/sapi/v1/userDataStream/isolated", boost::beast::http::verb::post, {}, std::move(cb));
+api::result<start_user_data_stream_t> api::start_user_data_stream_isolated_margin(const char *symbol, start_user_data_stream_cb cb) {
+    const impl::init_list_type map = {
+        {"symbol", symbol}
+    };
+    
+    return pimpl->post(false, "/sapi/v1/userDataStream/isolated", boost::beast::http::verb::post, map, std::move(cb));
 }
 
 /*************************************************************************************************/
 
-api::result<ping_user_data_stream_t> api::ping_user_data_stream_isolated_margin(const char *listen_key, ping_user_data_stream_cb cb) {
+api::result<ping_user_data_stream_t> api::ping_user_data_stream_isolated_margin(const char *symbol, const char *listen_key, ping_user_data_stream_cb cb) {
     const impl::init_list_type map = {
+        {"symbol", symbol},
         {"listenKey", listen_key}
     };
 
@@ -1125,8 +1130,9 @@ api::result<ping_user_data_stream_t> api::ping_user_data_stream_isolated_margin(
 
 /*************************************************************************************************/
 
-api::result<close_user_data_stream_t> api::close_user_data_stream_isolated_margin(const char *listen_key, close_user_data_stream_cb cb) {
+api::result<close_user_data_stream_t> api::close_user_data_stream_isolated_margin(const char *symbol, const char *listen_key, close_user_data_stream_cb cb) {
     const impl::init_list_type map = {
+        {"symbol", symbol},
         {"listenKey", listen_key}
     };
 
