@@ -82,6 +82,17 @@ struct api {
     result<exchange_info_t>
     exchange_info(const std::vector<std::string> &symbols, exchange_info_cb cb = {});
 
+    // https://binance-docs.github.io/apidocs/voptions/en/#exchange-information
+    using options_exchange_info_cb = std::function<bool(const char *fl, int ec, std::string errmsg, options_exchange_info_t res)>;
+    result<options_exchange_info_t>
+    options_exchange_info(options_exchange_info_cb cb = {});
+    result<options_exchange_info_t>
+    options_exchange_info(const char *symbol, options_exchange_info_cb cb = {});
+    result<options_exchange_info_t>
+    options_exchange_info(const std::string &symbol, options_exchange_info_cb cb = {}) { return options_exchange_info(symbol.c_str(), std::move(cb)); }
+    result<options_exchange_info_t>
+    options_exchange_info(const std::vector<std::string> &symbols, options_exchange_info_cb cb = {});
+
     // https://github.com/binance/binance-spot-api-docs/blob/master/rest-api.md#order-book
     using depths_cb = std::function<bool(const char *fl, int ec, std::string errmsg, depths_t res)>;
     result<depths_t>

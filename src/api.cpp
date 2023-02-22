@@ -698,6 +698,38 @@ api::result<exchange_info_t> api::exchange_info(const std::vector<std::string> &
 
     return pimpl->post(false, "/api/v3/exchangeInfo", boost::beast::http::verb::get, map, std::move(cb));
 }
+/*************************************************************************************************/
+
+api::result<options_exchange_info_t> api::options_exchange_info(options_exchange_info_cb cb) {
+    return pimpl->post(false, "/eapi/v1/exchangeInfo", boost::beast::http::verb::get, {}, std::move(cb));
+}
+
+api::result<options_exchange_info_t> api::options_exchange_info(const char *symbol, options_exchange_info_cb cb) {
+    const impl::init_list_type map = {
+         {"symbol", symbol}
+    };
+
+    return pimpl->post(false, "/eapi/v1/exchangeInfo", boost::beast::http::verb::get, map, std::move(cb));
+}
+
+api::result<options_exchange_info_t> api::options_exchange_info(const std::vector<std::string> &symbols, options_exchange_info_cb cb) {
+    std::string symstr = "[";
+    for ( auto it = symbols.begin(); it != symbols.end(); ++it) {
+        symstr += "\"";
+        symstr += *it;
+        symstr += "\"";
+        if ( std::next(it) != symbols.end()) {
+            symstr += ",";
+        }
+    }
+    symstr += "]";
+
+    const impl::init_list_type map = {
+         {"symbols", symstr.c_str()}
+    };
+
+    return pimpl->post(false, "/eapi/v1/exchangeInfo", boost::beast::http::verb::get, map, std::move(cb));
+}
 
 /*************************************************************************************************/
 
