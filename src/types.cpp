@@ -780,6 +780,229 @@ std::ostream& operator<<(std::ostream &os, const exchange_info_t &o) {
 
 /*************************************************************************************************/
 
+std::ostream& operator<<(std::ostream &os, const options_exchange_info_t::rate_limit_t &o) {
+    os
+    << "{"
+    << "\"rateLimitType\":\"" << o.rateLimitType << "\","
+    << "\"interval\":\"" << o.interval << "\","
+    << "\"intervalNum\":\"" << o.intervalNum << "\","
+    << "\"limit\":" << o.limit
+    << "}";
+
+    return os;
+}
+
+std::ostream& operator<<(std::ostream &os, const options_exchange_info_t::option_contract_t &o) {
+    os
+    << "{"
+    << "\"id\":\"" << o.id << "\","
+    << "\"baseAsset\":\"" << o.baseAsset << "\","
+    << "\"quoteAsset\":\"" << o.quoteAsset << "\","
+    << "\"underlying\":" << o.underlying
+    << "\"settleAsset\":" << o.settleAsset
+    << "}";
+
+    return os;
+}
+
+std::ostream &operator<<(std::ostream &os, const options_exchange_info_t::option_symbol_t::filter_t::price_t &o) {
+    os
+    << "{"
+    << "\"filterType\":\"PRICE_FILTER\","
+    << "\"minPrice\":\"" << o.minPrice << "\","
+    << "\"maxPrice\":\"" << o.maxPrice << "\","
+    << "\"tickSize\":\"" << o.tickSize << "\""
+    << "}";
+
+    return os;
+}
+
+std::ostream &operator<<(std::ostream &os, const options_exchange_info_t::option_symbol_t::filter_t::lot_size_t &o) {
+    os
+    << "{"
+    << "\"filterType\":\"LOT_SIZE\","
+    << "\"minQty\":\"" << o.minQty << "\","
+    << "\"maxQty\":\"" << o.maxQty << "\","
+    << "\"stepSize\":\"" << o.stepSize << "\""
+    << "}";
+
+    return os;
+}
+
+std::ostream &operator<<(std::ostream &os, const options_exchange_info_t::option_symbol_t &o) {
+
+    os
+    << "{"
+    << "\"contractId\":\"" << o.contractId << "\","
+    << "\"expiryDate\":\"" << o.expiryDate << "\","
+	<< "\"id\":\"" << o.id << "\","
+    << "\"symbol\":\"" << o.symbol << "\","
+    << "\"side\":\"" << o.side << "\","
+    << "\"strikePrice\":\"" << o.strikePrice << "\","
+    << "\"underlying\":\"" << o.underlying << "\","
+    << "\"unit\":\"" << o.unit << "\","
+    << "\"makerFeeRate\":\"" << o.makerFeeRate << "\","
+    << "\"takerFeeRate\":\"" << o.takerFeeRate << "\","
+    << "\"minQty\":\"" << o.minQty << "\","
+    << "\"maxQty\":\"" << o.maxQty << "\","
+    << "\"initialMargin\":\"" << o.initialMargin << "\","
+    << "\"maintenanceMargin\":\"" << o.maintenanceMargin << "\","
+    << "\"minInitialMargin\":\"" << o.minInitialMargin << "\","
+    << "\"minMaintenanceMargin\":\"" << o.minMaintenanceMargin << "\","
+    << "\"priceScale\":\"" << o.priceScale << "\","
+    << "\"quantityScale\":\"" << o.quantityScale << "\","
+    << "\"quoteAsset\":\"" << o.quoteAsset << "\","
+    << "\"filters\":[";
+    for ( auto it = o.filters.begin(); it != o.filters.end(); ++it ) {
+        os << *it;
+        if ( std::next(it) != o.filters.end() ) {
+            os << ",";
+        }
+    }
+    os
+    << "]";
+
+    os
+    << "}";
+
+    return os;
+}
+
+bool options_exchange_info_t::is_valid_symbol(const char *sym) const {
+    return optionSymbols.find(sym) != optionSymbols.end();
+}
+const options_exchange_info_t::option_symbol_t& options_exchange_info_t::get_by_symbol(const char *sym) const {
+    auto it = optionSymbols.find(sym);
+    if ( it != optionSymbols.end() ) {
+        return it->second;
+    }
+
+    assert(!"unreachable");
+}
+
+options_exchange_info_t options_exchange_info_t::construct(const flatjson::fjson &json) {
+    assert(json.is_valid());
+
+    options_exchange_info_t res{};
+    __BINAPI_GET(timezone);
+    __BINAPI_GET(serverTime);
+
+    const auto option_contracts = json.at("optionContracts");
+    assert(option_contracts.is_array());
+    for ( auto idx = 0u; idx < option_contracts.size(); ++idx ) {
+        options_exchange_info_t::option_contract_t item{};
+        const auto it = option_contracts.at(idx);
+        __BINAPI_GET2(item, id, it);
+        __BINAPI_GET2(item, baseAsset, it);
+        __BINAPI_GET2(item, quoteAsset, it);
+        __BINAPI_GET2(item, underlying, it);
+        __BINAPI_GET2(item, settleAsset, it);
+        res.optionContracts.emplace_back(std::move(item));
+    }
+
+    const auto option_assets = json.at("optionAssets");
+    assert(option_assets.is_array());
+    for ( auto idx = 0u; idx < option_assets.size(); ++idx ) {
+        options_exchange_info_t::option_asset_t item{};
+        const auto it = option_assets.at(idx);
+        __BINAPI_GET2(item, id, it);
+        __BINAPI_GET2(item, name, it);
+        res.optionAssets.emplace_back(std::move(item));
+    }
+
+    const auto limits = json.at("rateLimits");
+    assert(limits.is_array());
+    for ( auto idx = 0u; idx < limits.size(); ++idx ) {
+        options_exchange_info_t::rate_limit_t item{};
+        const auto it = limits.at(idx);
+        __BINAPI_GET2(item, rateLimitType, it);
+        __BINAPI_GET2(item, interval, it);
+        __BINAPI_GET2(item, intervalNum, it);
+        __BINAPI_GET2(item, limit, it);
+
+        res.rateLimits.emplace_back(std::move(item));
+    }
+
+    const auto symbols = json.at("optionSymbols");
+    assert(symbols.is_array());
+    for ( auto idx = 0u; idx < symbols.size(); ++idx ) {
+        options_exchange_info_t::option_symbol_t sym{};
+        const auto sit = symbols.at(idx);
+        __BINAPI_GET2(sym, contractId, sit);
+        __BINAPI_GET2(sym, expiryDate, sit);
+		__BINAPI_GET2(sym, id, sit);
+        __BINAPI_GET2(sym, symbol, sit);
+        __BINAPI_GET2(sym, side, sit);
+        __BINAPI_GET2(sym, strikePrice, sit);
+        __BINAPI_GET2(sym, underlying, sit);
+        __BINAPI_GET2(sym, unit, sit);
+        __BINAPI_GET2(sym, makerFeeRate, sit);
+        __BINAPI_GET2(sym, takerFeeRate, sit);
+        __BINAPI_GET2(sym, minQty, sit);
+        __BINAPI_GET2(sym, maxQty, sit);
+        __BINAPI_GET2(sym, initialMargin, sit);
+        __BINAPI_GET2(sym, maintenanceMargin, sit);
+        __BINAPI_GET2(sym, minInitialMargin, sit);
+        __BINAPI_GET2(sym, minMaintenanceMargin, sit);
+        __BINAPI_GET2(sym, priceScale, sit);
+        __BINAPI_GET2(sym, quantityScale, sit);
+        __BINAPI_GET2(sym, quoteAsset, sit);
+
+        res.optionSymbols.emplace(sym.symbol, std::move(sym));
+    }
+
+    return res;
+}
+
+std::ostream& operator<<(std::ostream &os, const options_exchange_info_t &o) {
+    os
+    << "{"
+    << "\"timezone\":\"" << o.timezone << "\","
+    << "\"serverTime\":" << o.serverTime << ","
+    << "\"optionContracts\":[";
+    for ( auto it = o.optionContracts.begin(); it != o.optionContracts.end(); ++it ) {
+        os << "\"" << *it << "\"";
+        if ( std::next(it) != o.optionContracts.end() ) {
+            os << ",";
+        }
+    }
+    os
+    << "],"
+    << "\"optionAssets\":[";
+    for ( auto it = o.optionAssets.begin(); it != o.optionAssets.end(); ++it ) {
+        os << "\"" << *it << "\"";
+        if ( std::next(it) != o.optionAssets.end() ) {
+            os << ",";
+        }
+    }
+    os
+    << "],"
+    << "\"rateLimits\":[";
+    for ( auto it = o.rateLimits.begin(); it != o.rateLimits.end(); ++it ) {
+        os << *it;
+        if ( std::next(it) != o.rateLimits.end() ) {
+            os << ",";
+        }
+    }
+    os
+    << "],"
+    << "\"optionSymbols\":[";
+    for ( auto it = o.optionSymbols.begin(); it != o.optionSymbols.end(); ++it ) {
+        os << it->second;
+        if ( std::next(it) != o.optionSymbols.end() ) {
+            os << ",";
+        }
+    }
+    os
+    << "]";
+
+    os << "}";
+
+    return os;
+}
+
+/*************************************************************************************************/
+
 std::ostream &operator<<(std::ostream &os, const depths_t::depth_t &o) {
     os
     << "["

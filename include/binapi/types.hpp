@@ -308,7 +308,7 @@ struct exchange_info_t {
         friend std::ostream &operator<<(std::ostream &os, const symbol_t &s);
     };
 
-    std::map<std::string, symbol_t> symbols;
+    std::unordered_map<std::string, symbol_t> symbols;
 
     bool is_valid_symbol(const std::string &sym) const
         { return is_valid_symbol(sym.c_str()); }
@@ -320,6 +320,126 @@ struct exchange_info_t {
 
     static exchange_info_t construct(const flatjson::fjson &json);
     friend std::ostream& operator<<(std::ostream &os, const exchange_info_t &s);
+};
+
+struct options_exchange_info_t 
+{
+	std::string timezone;
+	std::size_t serverTime;
+	
+	struct rate_limit_t {
+        std::string rateLimitType;
+        std::string interval;
+		size_t intervalNum;
+        std::size_t limit;
+
+        friend std::ostream &operator<<(std::ostream &os, const rate_limit_t &f);
+    };
+    std::vector<rate_limit_t> rateLimits;
+	
+	struct option_contract_t
+	{
+		int id;
+		std::string baseAsset;
+		std::string quoteAsset;
+		std::string underlying;
+		std::string settleAsset;
+
+        friend std::ostream &operator<<(std::ostream &os, const option_contract_t &f);
+	};
+	std::vector<option_contract_t> optionContracts;
+
+	struct option_asset_t
+	{
+		int id;
+		std::string name;
+
+        friend std::ostream &operator<<(std::ostream &os, const option_asset_t &f);
+	};
+	std::vector<option_asset_t> optionAssets;
+
+	struct option_symbol_t
+	{
+		int contractId;
+        std::size_t expiryDate;
+		size_t id;
+        std::string symbol;
+        std::string side;
+        double_type strikePrice;
+        std::string underlying;
+        size_t unit;
+        double_type makerFeeRate;
+        double_type takerFeeRate;
+        double_type minQty;
+        size_t maxQty;
+        double_type initialMargin;
+        double_type maintenanceMargin;
+        double_type minInitialMargin;
+        double_type minMaintenanceMargin;
+        size_t priceScale;
+        size_t quantityScale;
+        std::string quoteAsset;
+        
+		struct filter_t {
+            struct price_t {
+                double_type minPrice;
+                double_type maxPrice;
+                double_type tickSize;
+
+                friend std::ostream &operator<<(std::ostream &os, const price_t &f);
+            };
+			struct lot_size_t {
+                double_type minQty;
+                double_type maxQty;
+                double_type stepSize;
+
+                friend std::ostream &operator<<(std::ostream &os, const lot_size_t &f);
+            };
+			
+			std::string filterType;
+			
+			boost::variant<
+				 price_t
+				,lot_size_t
+			> filter;
+
+			friend std::ostream &operator<<(std::ostream &os, const filter_t &f);
+		};
+		std::vector<filter_t> filters;
+        
+		template<typename T>
+		const T& get_filter() const {
+			for ( const auto &it: filters ) {
+				const T *p = boost::get<T>(&it.filter);
+				if ( p ) {
+					return *p;
+				}
+			}
+
+			assert("bad T type" == nullptr);
+		}
+
+		const filter_t::price_t& get_filter_price() const
+		{ return get_filter<filter_t::price_t>(); }
+
+		const filter_t::lot_size_t& get_filter_lot_size() const
+		{ return get_filter<filter_t::lot_size_t>(); }
+		
+		friend std::ostream &operator<<(std::ostream &os, const option_symbol_t &s);
+	};
+
+	std::unordered_map<std::string, option_symbol_t> optionSymbols;
+
+    bool is_valid_symbol(const std::string &sym) const
+        { return is_valid_symbol(sym.c_str()); }
+    bool is_valid_symbol(const char *sym) const;
+
+    const option_symbol_t& get_by_symbol(const std::string &sym) const
+        { return get_by_symbol(sym.c_str()); }
+    const option_symbol_t& get_by_symbol(const char *sym) const;
+
+    static options_exchange_info_t construct(const flatjson::fjson &json);
+    friend std::ostream& operator<<(std::ostream &os, const options_exchange_info_t &s);
 };
 
 // https://github.com/binance-exchange/binance-official-api-docs/blob/master/rest-api.md#order-book
