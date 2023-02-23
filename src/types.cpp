@@ -805,6 +805,16 @@ std::ostream& operator<<(std::ostream &os, const options_exchange_info_t::option
     return os;
 }
 
+std::ostream& operator<<(std::ostream &os, const options_exchange_info_t::option_asset_t &o) {
+    os
+    << "{"
+    << "\"id\":\"" << o.id << "\","
+    << "\"name\":\"" << o.name
+    << "}";
+
+    return os;
+}
+
 std::ostream &operator<<(std::ostream &os, const options_exchange_info_t::option_symbol_t::filter_t::price_t &o) {
     os
     << "{"
@@ -825,6 +835,13 @@ std::ostream &operator<<(std::ostream &os, const options_exchange_info_t::option
     << "\"maxQty\":\"" << o.maxQty << "\","
     << "\"stepSize\":\"" << o.stepSize << "\""
     << "}";
+
+    return os;
+}
+
+std::ostream &operator<<(std::ostream &os, const options_exchange_info_t::option_symbol_t::filter_t &o) {
+    static const auto visitor = [&os](const auto &o){ os << o; };
+    boost::apply_visitor(visitor, o.filter);
 
     return os;
 }
