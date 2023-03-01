@@ -2101,6 +2101,49 @@ std::ostream& operator<<(std::ostream &os, const diff_depths_t &o) {
 
 /*************************************************************************************************/
 
+/*static*/ new_symbol_info_t new_symbol_info_t::construct(const flatjson::fjson& json)
+{
+    assert(json.is_valid());
+
+    new_symbol_info_t res{};
+
+    __BINAPI_GET(E);
+    __BINAPI_GET(id);
+    __BINAPI_GET(cid);
+    __BINAPI_GET(u);
+    __BINAPI_GET(qa);
+    __BINAPI_GET(s);
+    __BINAPI_GET(unit);
+    __BINAPI_GET(mq);
+    __BINAPI_GET(d);
+    __BINAPI_GET(sp);
+    __BINAPI_GET(expiryDate);
+
+    return res;
+}
+
+/*friend*/ std::ostream& operator<<(std::ostream& os, const new_symbol_info_t& o)
+{
+    os
+    << "{"
+    << "\"E\":" << o.E <<","
+    << "\"id\":" << o.id <<","
+    << "\"cid\":" << o.cid <<","
+    << "\"u\":" << o.u <<","
+    << "\"qa\":" << o.qa <<","
+    << "\"s\":" << o.s <<","
+    << "\"unit\":" << o.unit <<","
+    << "\"mq\":" << o.mq <<","
+    << "\"d\":" << o.d <<","
+    << "\"sp\":" << o.sp <<","
+    << "\"expiryDate\":" << o.expiryDate <<","
+    << "}";
+
+    return os;
+}
+
+/*************************************************************************************************/
+
 kline_t kline_t::construct(const flatjson::fjson &json) {
     assert(json.is_valid());
 

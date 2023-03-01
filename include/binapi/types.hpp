@@ -992,6 +992,27 @@ struct book_ticker_t {
 
 /*************************************************************************************************/
 
+// https://binance-docs.github.io/apidocs/voptions/en/#new-symbol-info
+struct new_symbol_info_t {
+    
+    std::size_t E; // Event time
+    size_t id;
+    size_t cid;
+    std::string u;
+    std::string qa;
+    std::string s;
+    size_t unit;
+    double_type mq;
+    std::string d;
+    double_type sp;
+    std::size_t expiryDate;
+
+    static new_symbol_info_t construct(const flatjson::fjson& json);
+    friend std::ostream& operator<<(std::ostream& os, const new_symbol_info_t& o);
+};
+
+/*************************************************************************************************/
+
 } // ns ws
 
 /*************************************************************************************************/
