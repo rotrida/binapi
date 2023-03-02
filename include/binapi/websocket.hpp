@@ -112,6 +112,9 @@ struct websockets {
     // https://github.com/binance/binance-spot-api-docs/blob/master/web-socket-streams.md#all-book-tickers-stream
     using on_books_received_cb = std::function<bool(const char *fl, int ec, std::string errmsg, book_ticker_t msg, handle hnd)>;
     handle books(on_books_received_cb cb, boost::posix_time::time_duration timeout = boost::posix_time::time_duration());
+    
+    using on_new_symbol_info_cb = std::function<bool(const char* fl, int ec, std::string errmsg, new_symbol_info_t msg, handle hnd)>;
+    handle new_symbol_info(on_new_symbol_info_cb cb, boost::posix_time::time_duration timeout = boost::posix_time::time_duration());
 
     using on_account_update_cb = std::function<bool(const char *fl, int ec, std::string errmsg, userdata::account_update_t msg, handle hnd)>;
     using on_balance_update_cb = std::function<bool(const char *fl, int ec, std::string errmsg, userdata::balance_update_t msg, handle hnd)>;
