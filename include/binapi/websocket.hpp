@@ -46,6 +46,7 @@ struct mini_tickers_t;
 struct market_ticker_t;
 struct markets_tickers_t;
 struct book_ticker_t;
+struct new_symbol_info_t;
 
 /*************************************************************************************************/
 

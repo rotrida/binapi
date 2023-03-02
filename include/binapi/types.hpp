@@ -1005,7 +1005,7 @@ struct new_symbol_info_t {
     double_type mq;
     std::string d;
     double_type sp;
-    std::size_t expiryDate;
+    std::size_t ed;
 
     static new_symbol_info_t construct(const flatjson::fjson& json);
     friend std::ostream& operator<<(std::ostream& os, const new_symbol_info_t& o);

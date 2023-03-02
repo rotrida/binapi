@@ -570,8 +570,8 @@ websockets::handle websockets::books(on_books_received_cb cb, boost::posix_time:
 { return pimpl->start_channel(nullptr, "!bookTicker", std::move(cb), timeout); }
 
 /*************************************************************************************************/
-websockets::handle new_symbol_info(on_new_symbol_info_cb cb, boost::posix_time::time_duration timeout)
-{ return pimpl->start_channel(pair, "option_pair", std::move(cb), timeout); }
+websockets::handle websockets::new_symbol_info(on_new_symbol_info_cb cb, boost::posix_time::time_duration timeout)
+{ return pimpl->start_channel(nullptr, "option_pair", std::move(cb), timeout); }
 
 /*************************************************************************************************/
 

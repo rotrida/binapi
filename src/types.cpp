@@ -2117,7 +2117,7 @@ std::ostream& operator<<(std::ostream &os, const diff_depths_t &o) {
     __BINAPI_GET(mq);
     __BINAPI_GET(d);
     __BINAPI_GET(sp);
-    __BINAPI_GET(expiryDate);
+    __BINAPI_GET(ed);
 
     return res;
 }
@@ -2136,7 +2136,7 @@ std::ostream& operator<<(std::ostream &os, const diff_depths_t &o) {
     << "\"mq\":" << o.mq <<","
     << "\"d\":" << o.d <<","
     << "\"sp\":" << o.sp <<","
-    << "\"expiryDate\":" << o.expiryDate <<","
+    << "\"ed\":" << o.ed <<","
     << "}";
 
     return os;
