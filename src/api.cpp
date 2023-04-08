@@ -733,6 +733,17 @@ api::result<options_exchange_info_t> api::options_exchange_info(const std::vecto
 
 /*************************************************************************************************/
 
+api::result<depths_t> api::options_depths(const char *symbol, std::size_t limit, depths_cb cb) {
+    const impl::init_list_type map = {
+         {"symbol", symbol}
+        ,{"limit", limit}
+    };
+
+    return pimpl->post(false, "/api/v3/depth", boost::beast::http::verb::get, map, std::move(cb));
+}
+
+/*************************************************************************************************/
+
 api::result<depths_t> api::depths(const char *symbol, std::size_t limit, depths_cb cb) {
     const impl::init_list_type map = {
          {"symbol", symbol}

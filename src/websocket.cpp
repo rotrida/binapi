@@ -350,6 +350,18 @@ struct websockets::impl {
         return res;
     }
 
+    static std::string make_options_channel_name(const char *pair, const char *channel) {
+        std::string res{"/eoptions/stream?streams="};
+        if ( pair ) {
+            res += pair;
+            res += '@';
+        }
+
+        res += channel;
+
+        return res;
+    }
+
     template<typename F>
     websockets::handle start_channel(const char *pair, const char *channel, F cb, boost::posix_time::time_duration timeout) {
         using args_tuple = typename boost::callable_traits::args<F>::type;
@@ -388,6 +400,79 @@ struct websockets::impl {
 
             try {
                 if ( m_on_message ) { m_on_message(schannel.c_str(), ptr, size); }
+            } catch (const std::exception &ex) {
+                std::fprintf(stderr, "%s: %s\n", __MAKE_FILELINE, ex.what());
+                std::fflush(stderr);
+            }
+
+            try {
+                message_type message = message_type::construct(json);
+                return cb(fl, ec, std::move(errmsg), std::move(message), hnd);
+            } catch (const std::exception &ex) {
+                std::fprintf(stderr, "%s: %s\n", __MAKE_FILELINE, ex.what());
+                std::fflush(stderr);
+            }
+
+            return false;
+        };
+
+        std::shared_ptr<websocket> ws = std::make_shared<websocket>(m_ioctx, wscb, timeout);
+
+        ws->start(
+             m_host
+            ,m_port
+            ,schannel
+            ,ws
+        );
+
+        boost::asio::dispatch(m_strand, [this, ws]()
+        {
+            m_websockets.insert(std::make_pair(ws.get(), ws));
+        });
+        
+        return ws.get();
+    }
+
+    template<typename F>
+    websockets::handle start_options_channel(const char *pair, const char *channel, F cb, boost::posix_time::time_duration timeout) {
+        using args_tuple = typename boost::callable_traits::args<F>::type;
+        using message_type = typename std::tuple_element<3, args_tuple>::type;
+
+        std::string schannel = make_options_channel_name(pair, channel);
+
+        auto wscb = [this, schannel, cb = std::move(cb)]
+            (const char *fl, int ec, std::string errmsg, const char *ptr, std::size_t size, handle hnd) -> bool
+        {
+            if ( ec ) {
+                try {
+                    cb(fl, ec, std::move(errmsg), message_type{}, hnd);
+                } catch (const std::exception &ex) {
+                    std::fprintf(stderr, "%s: %s\n", __MAKE_FILELINE, ex.what());
+                    std::fflush(stderr);
+                }
+
+                return false;
+            }
+
+            const flatjson::fjson json{ptr, size};
+            if ( json.is_object() && binapi::rest::is_api_error(json) ) {
+                auto error = binapi::rest::construct_error(json);
+                auto ecode = error.first;
+                auto emsg  = std::move(error.second);
+
+                try {
+                    message_type message{};
+                    return cb(__MAKE_FILELINE, ecode, std::move(emsg), std::move(message), hnd);
+                } catch (const std::exception &ex) {
+                    std::fprintf(stderr, "%s: %s\n", __MAKE_FILELINE, ex.what());
+                    std::fflush(stderr);
+                }
+            }
+
+            try {
+                if ( m_on_message ) { 
+                    m_on_message(schannel.c_str(), ptr, size); 
+                }
             } catch (const std::exception &ex) {
                 std::fprintf(stderr, "%s: %s\n", __MAKE_FILELINE, ex.what());
                 std::fflush(stderr);
@@ -497,6 +582,13 @@ websockets::handle websockets::part_depth(const char *pair, e_levels level, e_fr
 websockets::handle websockets::diff_depth(const char *pair, e_freq freq, on_diff_depths_received_cb cb, boost::posix_time::time_duration timeout) {
     std::string ch = "depth@" + std::to_string(static_cast<std::size_t>(freq)) + "ms";
     return pimpl->start_channel(pair, ch.c_str(), std::move(cb), timeout);
+}
+
+/*************************************************************************************************/
+
+websockets::handle websockets::diff_depth_options(const char *pair, on_diff_depths_received_cb cb, boost::posix_time::time_duration timeout) {
+    std::string ch = "depth1000";
+    return pimpl->start_options_channel(pair, ch.c_str(), std::move(cb), timeout);
 }
 
 /*************************************************************************************************/
