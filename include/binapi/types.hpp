@@ -1000,6 +1000,46 @@ struct book_ticker_t {
 
 /*************************************************************************************************/
 
+// https://github.com/binance/binance-spot-api-docs/blob/master/web-socket-streams.md#individual-symbol-book-ticker-streams
+struct option_ticker_t {
+
+    std::string e;
+    int64_t E;
+    std::string s;
+    double_type o;
+    double_type h;
+    double_type l;
+    double_type c;
+    double_type V;
+    double_type A;
+    double_type P;
+    double_type p;
+    double_type Q;
+    std::string F;
+    std::string L;
+    int64_t n;
+    double_type bo;
+    double_type ao;
+    double_type bq;
+    double_type aq;
+    double_type b;
+    double_type a;
+    double_type d;
+    double_type t;
+    double_type g;
+    double_type v;
+    double_type vo;
+    double_type mp;
+    double_type hl;
+    double_type ll;
+    double_type eep;
+    
+    static option_ticker_t construct(const flatjson::fjson &json);
+    friend std::ostream& operator<<(std::ostream &os, const option_ticker_t &o);
+};
+
+/*************************************************************************************************/
+
 // https://binance-docs.github.io/apidocs/voptions/en/#new-symbol-info
 struct new_symbol_info_t {
     

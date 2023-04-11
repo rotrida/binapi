@@ -2453,6 +2453,64 @@ std::ostream& operator<<(std::ostream &os, const book_ticker_t &o) {
 }
 
 /*************************************************************************************************/
+
+/*************************************************************************************************/
+
+option_ticker_t option_ticker_t::construct(const flatjson::fjson &json) {
+    assert(json.is_valid());
+
+    option_ticker_t res{};
+
+    __BINAPI_GET(e);
+    __BINAPI_GET(E);
+    __BINAPI_GET(s);
+    __BINAPI_GET(o);
+    __BINAPI_GET(h);
+    __BINAPI_GET(l);
+    __BINAPI_GET(c);
+    __BINAPI_GET(V);
+    __BINAPI_GET(A);
+    __BINAPI_GET(P);
+    __BINAPI_GET(p);
+    __BINAPI_GET(Q);
+    __BINAPI_GET(F);
+    __BINAPI_GET(L);
+    __BINAPI_GET(n);
+    __BINAPI_GET(bo);
+    __BINAPI_GET(ao);
+    __BINAPI_GET(bq);
+    __BINAPI_GET(aq);
+    __BINAPI_GET(b);
+    __BINAPI_GET(a);
+    __BINAPI_GET(d);
+    __BINAPI_GET(t);
+    __BINAPI_GET(g);
+    __BINAPI_GET(v);
+    __BINAPI_GET(vo);
+    __BINAPI_GET(mp);
+    __BINAPI_GET(hl);
+    __BINAPI_GET(ll);
+    __BINAPI_GET(eep);
+
+    return res;
+}
+
+std::ostream& operator<<(std::ostream &os, const option_ticker_t &o) {
+/*    os
+    << "{"
+    << "\"u\":" << o.u << ","
+    << "\"s\":\"" << o.s << "\","
+    << "\"b\":\"" << o.b << "\","
+    << "\"B\":\"" << o.B << "\","
+    << "\"a\":\"" << o.a << "\","
+    << "\"A\":\"" << o.A << "\""
+    << "}";
+    */
+    return os;
+}
+
+/*************************************************************************************************/
+
 /*************************************************************************************************/
 /*************************************************************************************************/
 

@@ -47,6 +47,7 @@ struct market_ticker_t;
 struct markets_tickers_t;
 struct book_ticker_t;
 struct new_symbol_info_t;
+struct option_ticker_t;
 
 /*************************************************************************************************/
 
@@ -115,7 +116,12 @@ struct websockets {
     // https://github.com/binance/binance-spot-api-docs/blob/master/web-socket-streams.md#all-book-tickers-stream
     using on_books_received_cb = std::function<bool(const char *fl, int ec, std::string errmsg, book_ticker_t msg, handle hnd)>;
     handle books(on_books_received_cb cb, boost::posix_time::time_duration timeout = boost::posix_time::time_duration());
-    
+
+    using on_option_ticker_received_cb = std::function<bool(const char *fl, int ec, std::string errmsg, option_ticker_t msg, handle hnd)>;
+    handle option_ticker(const char *pair, on_option_ticker_received_cb cb, boost::posix_time::time_duration timeout = boost::posix_time::time_duration());
+
+    handle option_tickers(const char *currency, int expire, on_option_ticker_received_cb cb, boost::posix_time::time_duration timeout = boost::posix_time::time_duration());
+
     using on_new_symbol_info_cb = std::function<bool(const char* fl, int ec, std::string errmsg, new_symbol_info_t msg, handle hnd)>;
     handle new_symbol_info(on_new_symbol_info_cb cb, boost::posix_time::time_duration timeout = boost::posix_time::time_duration());
 

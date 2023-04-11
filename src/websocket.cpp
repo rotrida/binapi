@@ -350,7 +350,7 @@ struct websockets::impl {
         return res;
     }
 
-    static std::string make_options_channel_name(const char *pair, const char *channel) {
+    static std::string make_options_channel_name(const char *pair, const char *channel, const std::deque<std::string> & additional_params) {
         std::string res{"/eoptions/stream?streams="};
         if ( pair ) {
             res += pair;
@@ -358,6 +358,11 @@ struct websockets::impl {
         }
 
         res += channel;
+
+        for(auto additional_param : additional_params)
+        {
+            res += "@" + additional_param;
+        }
 
         return res;
     }
@@ -434,11 +439,11 @@ struct websockets::impl {
     }
 
     template<typename F>
-    websockets::handle start_options_channel(const char *pair, const char *channel, F cb, boost::posix_time::time_duration timeout) {
+    websockets::handle start_options_channel(const char *pair, const char *channel, F cb, boost::posix_time::time_duration timeout, std::deque<std::string> additional_params=std::deque<std::string>()) {
         using args_tuple = typename boost::callable_traits::args<F>::type;
         using message_type = typename std::tuple_element<3, args_tuple>::type;
 
-        std::string schannel = make_options_channel_name(pair, channel);
+        std::string schannel = make_options_channel_name(pair, channel, additional_params);
 
         auto wscb = [this, schannel, cb = std::move(cb)]
             (const char *fl, int ec, std::string errmsg, const char *ptr, std::size_t size, handle hnd) -> bool
@@ -660,6 +665,12 @@ websockets::handle websockets::book(const char *pair, on_book_received_cb cb, bo
 
 websockets::handle websockets::books(on_books_received_cb cb, boost::posix_time::time_duration timeout)
 { return pimpl->start_channel(nullptr, "!bookTicker", std::move(cb), timeout); }
+
+websockets::handle websockets::option_ticker(const char *pair, on_option_ticker_received_cb cb, boost::posix_time::time_duration timeout)
+{return pimpl->start_options_channel(pair, "ticker", std::move(cb), timeout); }
+
+websockets::handle websockets::option_tickers(const char *currency, int expire, on_option_ticker_received_cb cb, boost::posix_time::time_duration timeout)
+{return pimpl->start_options_channel(currency, "ticker", std::move(cb), timeout, std::deque<std::string>({ std::to_string(expire)})); }
 
 /*************************************************************************************************/
 websockets::handle websockets::new_symbol_info(on_new_symbol_info_cb cb, boost::posix_time::time_duration timeout)
