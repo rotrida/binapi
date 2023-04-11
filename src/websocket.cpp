@@ -351,7 +351,7 @@ struct websockets::impl {
     }
 
     static std::string make_options_channel_name(const char *pair, const char *channel, const std::deque<std::string> & additional_params) {
-        std::string res{"/eoptions/stream?streams="};
+        std::string res{"/eoptions/ws/"};
         if ( pair ) {
             res += pair;
             res += '@';
