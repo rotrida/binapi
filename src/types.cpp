@@ -1091,6 +1091,44 @@ std::ostream &operator<<(std::ostream &os, const depths_t &o) {
 
 /*************************************************************************************************/
 
+/*static*/ option_depths_t option_depths_t::construct(const flatjson::fjson& json)
+{
+    assert(json.is_valid());
+
+    option_depths_t res{};
+    __BINAPI_GET(T);
+    __BINAPI_GET(u);
+
+    res.lastUpdateId = res.u;
+
+    const auto bids = json.at("bids");
+    assert(bids.is_array());
+    for ( auto idx = 0u; idx < bids.size(); ++idx ) {
+        depths_t::depth_t item{};
+        const auto it = bids.at(idx);
+        assert(it.is_array());
+        item.price.assign(it.at(0).to_string());
+        item.amount.assign(it.at(1).to_string());
+
+        res.bids.push_back(std::move(item));
+    }
+    const auto asks = json.at("asks");
+    assert(asks.is_array());
+    for ( auto idx = 0u; idx < asks.size(); ++idx ) {
+        depths_t::depth_t item{};
+        const auto it = asks.at(idx);
+        assert(it.is_array());
+        item.price.assign(it.at(0).to_string());
+        item.amount.assign(it.at(1).to_string());
+
+        res.asks.push_back(std::move(item));
+    }
+
+    return res;
+}
+
+/*************************************************************************************************/
+
 trades_t::trade_t trades_t::trade_t::construct(const flatjson::fjson &json) {
     assert(json.is_valid());
 

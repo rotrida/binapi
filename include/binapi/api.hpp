@@ -100,8 +100,9 @@ struct api {
     result<depths_t>
     depths(const char *symbol, std::size_t limit, depths_cb cb = {});
 
-    result<depths_t> options_depths(const std::string &symbol, std::size_t limit, depths_cb cb = {}) { return options_depths(symbol.c_str(), limit, std::move(cb)); }
-    result<depths_t> options_depths(const char *symbol, std::size_t limit, depths_cb cb={});
+    using option_depths_cb = std::function<bool(const char *fl, int ec, std::string errmsg, option_depths_t res)>;
+    result<option_depths_t> options_depths(const std::string &symbol, std::size_t limit, option_depths_cb cb = {}) { return options_depths(symbol.c_str(), limit, std::move(cb)); }
+    result<option_depths_t> options_depths(const char *symbol, std::size_t limit, option_depths_cb cb={});
 
     // https://github.com/binance/binance-spot-api-docs/blob/master/rest-api.md#recent-trades-list
     using trade_cb = std::function<bool(const char *fl, int ec, std::string errmsg, trades_t::trade_t res)>;

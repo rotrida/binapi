@@ -459,6 +459,14 @@ struct depths_t {
     friend std::ostream &operator<<(std::ostream &os, const depths_t &s);
 };
 
+struct option_depths_t : public depths_t
+{
+    int64_t T;
+    std::size_t u;
+
+    static option_depths_t construct(const flatjson::fjson &json);
+};
+
 // https://github.com/binance-exchange/binance-official-api-docs/blob/master/rest-api.md#recent-trades-list
 struct trades_t {
     struct trade_t {
