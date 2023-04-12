@@ -639,6 +639,11 @@ websockets::handle websockets::trade(const char *pair, on_trade_received_cb cb, 
 
 /*************************************************************************************************/
 
+websockets::handle websockets::options_trade(const char *pair, on_trade_received_cb cb, boost::posix_time::time_duration timeout)
+{ return pimpl->start_options_channel(pair, "trade", std::move(cb), timeout); }
+
+/*************************************************************************************************/
+
 websockets::handle websockets::agg_trade(const char *pair, on_agg_trade_received_cb cb, boost::posix_time::time_duration timeout)
 { return pimpl->start_channel(pair, "aggTrade", std::move(cb), timeout); }
 

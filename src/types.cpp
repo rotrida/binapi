@@ -30,8 +30,16 @@ __get_json(T &v, const char *member, const flatjson::fjson &j) {
 template<typename T>
 typename std::enable_if<std::is_integral<T>::value>::type
 __get_json_def(T &v, const char *member, const flatjson::fjson &j, T default_value) {
-    const auto& o = j.at(member);
-    v = (o.is_null() ? default_value : o.to<T>());
+    
+    if(j.contains(member))
+    {
+        const auto& o = j.at(member);
+        v = (o.is_null() ? default_value : o.to<T>());
+    }
+    else
+    {
+        v = default_value;
+    }
 }
 
 template<typename T>
@@ -1987,8 +1995,8 @@ trade_t trade_t::construct(const flatjson::fjson &json) {
     __BINAPI_GET(b);
     __BINAPI_GET(a);
     __BINAPI_GET(T);
-    __BINAPI_GET(m);
-    __BINAPI_GET(M);
+    __BINAPI_GET_DEFAULT(m, false);
+    __BINAPI_GET_DEFAULT(M, false);
 
     return res;
 }

@@ -89,6 +89,8 @@ struct websockets {
     using on_trade_received_cb = std::function<bool(const char *fl, int ec, std::string errmsg, trade_t msg, handle hnd)>;
     handle trade(const char *pair, on_trade_received_cb cb, boost::posix_time::time_duration timeout = boost::posix_time::time_duration());
 
+    handle options_trade(const char *pair, on_trade_received_cb cb, boost::posix_time::time_duration timeout = boost::posix_time::time_duration());
+
     // https://github.com/binance/binance-spot-api-docs/blob/master/web-socket-streams.md#aggregate-trade-streams
     using on_agg_trade_received_cb = std::function<bool(const char *fl, int ec, std::string errmsg, agg_trade_t msg, handle hnd)>;
     handle agg_trade(const char *pair, on_agg_trade_received_cb cb, boost::posix_time::time_duration timeout = boost::posix_time::time_duration());
