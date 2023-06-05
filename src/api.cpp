@@ -346,12 +346,13 @@ struct api::impl {
         if ( action != boost::beast::http::verb::get ) {
             req.body() = std::move(data);
             req.set(boost::beast::http::field::content_length, std::to_string(req.body().length()));
+            req.set(boost::beast::http::field::content_type, "application/x-www-form-urlencoded");
+            
         }
 
         req.insert("X-MBX-APIKEY", m_pk);
         req.set(boost::beast::http::field::host, m_host);
         req.set(boost::beast::http::field::user_agent, m_client_api_string);
-        req.set(boost::beast::http::field::content_type, "application/x-www-form-urlencoded");
 
         boost::beast::http::write(ssl_stream, req, ec);
         if ( ec ) {
@@ -406,13 +407,14 @@ struct api::impl {
         if ( action != boost::beast::http::verb::get ) {
             req->body() = std::move(data);
             req->set(boost::beast::http::field::content_length, std::to_string(req->body().length()));
+            req->set(boost::beast::http::field::content_type, "application/x-www-form-urlencoded");
         }
 
         req->target(target);
         req->insert("X-MBX-APIKEY", m_pk);
         req->set(boost::beast::http::field::host, m_host);
         req->set(boost::beast::http::field::user_agent, m_client_api_string);
-        req->set(boost::beast::http::field::content_type, "application/x-www-form-urlencoded");
+        
 
         //std::cout << target << " REQUEST:\n" << m_req << std::endl;
 
