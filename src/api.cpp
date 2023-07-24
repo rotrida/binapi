@@ -810,12 +810,14 @@ api::result<agg_trades_t> api::agg_trades(const char *symbol, std::size_t limit,
 
 /*************************************************************************************************/
 
-api::result<klines_t> api::klines(const char *symbol, const char *interval, std::size_t limit, std::optional<int64_t> start_time, std::optional<int64_t> end_time, klines_cb cb) {
+api::result<klines_t> api::klines(const char *symbol, const char *interval, std::optional<std::size_t> limit, std::optional<int64_t> start_time, std::optional<int64_t> end_time, klines_cb cb) {
     std::deque<impl::kv_type> deq = {
          {"symbol", symbol}
-        ,{"limit", limit}
         ,{"interval", interval}
     };
+
+    if (limit)
+        deq.emplace_back(impl::kv_type({ "limit", *limit }));
 
     if (start_time)
         deq.emplace_back(impl::kv_type({ "startTime", *start_time }));
