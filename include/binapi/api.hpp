@@ -17,6 +17,7 @@
 
 #include <memory>
 #include <functional>
+#include <optional>
 
 namespace boost {
 namespace asio {
@@ -167,9 +168,9 @@ struct api {
     // https://github.com/binance/binance-spot-api-docs/blob/master/rest-api.md#klinecandlestick-data
     using klines_cb = std::function<bool(const char *fl, int ec, std::string errmsg, klines_t res)>;
     result<klines_t>
-    klines(const std::string &symbol, const std::string &interval, std::size_t limit, klines_cb cb = {}) { return klines(symbol.c_str(), interval.c_str(), limit, std::move(cb)); }
+    klines(const std::string &symbol, const std::string &interval, std::size_t limit, std::optional<int64_t> start_time, std::optional<int64_t> end_time, klines_cb cb = {}) { return klines(symbol.c_str(), interval.c_str(), limit, start_time, end_time, std::move(cb)); }
     result<klines_t>
-    klines(const char *symbol, const char *interval, std::size_t limit, klines_cb cb = {});
+    klines(const char *symbol, const char *interval, std::size_t limit, std::optional<int64_t> start_time, std::optional<int64_t> end_time, klines_cb cb = {});
 
     // https://github.com/binance/binance-spot-api-docs/blob/master/rest-api.md#account-information-user_data
     using account_info_cb = std::function<bool(const char *fl, int ec, std::string errmsg, account_info_t res)>;

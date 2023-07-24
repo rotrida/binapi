@@ -810,14 +810,20 @@ api::result<agg_trades_t> api::agg_trades(const char *symbol, std::size_t limit,
 
 /*************************************************************************************************/
 
-api::result<klines_t> api::klines(const char *symbol, const char *interval, std::size_t limit, klines_cb cb) {
-    const impl::init_list_type map = {
+api::result<klines_t> api::klines(const char *symbol, const char *interval, std::size_t limit, std::optional<int64_t> start_time, std::optional<int64_t> end_time, klines_cb cb) {
+    std::deque<impl::kv_type> deq = {
          {"symbol", symbol}
         ,{"limit", limit}
         ,{"interval", interval}
     };
 
-    return pimpl->post(false, "/api/v3/klines", boost::beast::http::verb::get, map, std::move(cb));
+    if (start_time)
+        deq.emplace_back(impl::kv_type({ "startTime", *start_time }));
+
+    if (end_time)
+        deq.emplace_back(impl::kv_type({ "endTime", *end_time }));
+
+    return pimpl->post(false, "/api/v3/klines", boost::beast::http::verb::get, deq, std::move(cb));
 }
 
 /*************************************************************************************************/
