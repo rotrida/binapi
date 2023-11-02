@@ -11,3 +11,13 @@ CMakeCache.txt
 /test/x64/Release
 /x64/Debug
 /x64/Release
+*.cmake
+CMakePresets.json
+conanbuild.sh
+conanrun.sh
+.gitignore
+deactivate_conanbuild.sh
+deactivate_conanrun.sh
+conanrunenv-debug-x86_64.sh
+conanbuildenv-debug-x86_64.sh
+Makefile
