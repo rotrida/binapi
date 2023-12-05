@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.2)
+cmake_minimum_required(VERSION 3.7)
 project(binapi)
 
 set(CMAKE_CXX_STANDARD 23)
@@ -34,6 +34,7 @@ set(BINAPI_HEADERS
     binapi/tools.hpp
     binapi/types.hpp
     binapi/websocket.hpp
+    binapi/renewable_websocket.hpp
 )
 
 set(BINAPI_SOURCES
@@ -45,6 +46,7 @@ set(BINAPI_SOURCES
     src/tools.cpp
     src/types.cpp
     src/websocket.cpp
+    src/renewable_websocket.cpp
 )
 
 ADD_LIBRARY( binapi STATIC
@@ -55,7 +57,8 @@ ADD_LIBRARY( binapi STATIC
              src/reports.cpp
              src/tools.cpp
              src/types.cpp
-             src/websocket.cpp )
+             src/websocket.cpp
+             src/renewable_websocket.cpp )
 
 set_target_properties(binapi PROPERTIES ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib")
 

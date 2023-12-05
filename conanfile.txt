@@ -1,5 +1,11 @@
 [requires]
+pkgconf/1.9.3
+zlib/1.2.13
+openssl/3.1.2
+cryptopp/8.7.0
 boost/1.83.0
+fmt/10.1.1
+yaml-cpp/0.8.0
 
 [generators]
 CMakeDeps
