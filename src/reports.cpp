@@ -294,7 +294,7 @@ void make_trades_report(
         market.cycles += it.second.cycles;
 
         //std::cout << syminfo.quoteAsset << " " << diff << std::endl;
-        os << (boost::format("%-10s: %11s") % it.first % diff.str(8, iofmt)) << " " << syminfo.quoteAsset;
+        os << (boost::format("%-10s: %11s") % it.first % diff.to_string()) << " " << syminfo.quoteAsset;
 
         // следующий код нужен для того, чтоб в случае если у нас котируемая
         // валюта не является USDT - отобразить профит в пересчете к USDT.
@@ -465,10 +465,10 @@ void make_open_orders_resume(
         os << std::endl;
     }
 
-    if ( buy_total ) {
+    if ( buy_total != 0 ) {
         os << "BUY  TOTAL: " << buy_total << std::endl;
     }
-    if ( sell_total ) {
+    if ( sell_total != 0 ) {
         os << "SELL TOTAL: " << sell_total << std::endl;
     }
 }
@@ -542,7 +542,7 @@ void make_balance_report(
     (void)exinfo;
 
     for ( const auto &it: accinfo.balances ) {
-        if ( it.second.free ) {
+        if ( it.second.free != 0 ) {
             os << boost::format("%-10s: ") % it.first;
             os << it.second.free << std::endl;
         }
@@ -602,10 +602,10 @@ void show_exchanger_price_for_orders(
     for ( const auto &it: out_items ) {
         const auto price_prec = binapi::num_fractions_from_double_type(exinfo.get_by_symbol(it.pair).get_filter_price().tickSize);
         os
-        << it.pair << ": " << it.exchanger_price.str(price_prec, iofmt) << ", "
-        << percents_diff(prices.get_by_symbol(it.pair).price, it.order_price.front()).str(2, iofmt) << "% : ";
+        << it.pair << ": " << it.exchanger_price.to_string() << ", "
+        << percents_diff(prices.get_by_symbol(it.pair).price, it.order_price.front()).to_string() << "% : ";
         for ( auto oit = it.order_price.begin(); oit != it.order_price.end(); ++oit ) {
-            os << oit->str(price_prec, iofmt);
+            os << oit->to_string();
             if ( std::next(oit) != it.order_price.end() ) {
                 os << ", ";
             }
@@ -674,10 +674,10 @@ void calc_loss_for_orders(
         const auto &sym = exinfo.get_by_symbol(it.pair);
         const auto price_prec = binapi::num_fractions_from_double_type(exinfo.get_by_symbol(it.pair).get_filter_price().tickSize);
         os
-        << it.pair << ": " << it.loss.str(price_prec, iofmt) << " " << sym.quoteAsset << std::endl;
+        << it.pair << ": " << it.loss.to_string() << " " << sym.quoteAsset << std::endl;
     }
     os
-    << "   TOTAL LOSS: " << total_loss.str(2, iofmt) << std::endl;
+    << "   TOTAL LOSS: " << total_loss.to_string() << std::endl;
 }
 
 /*************************************************************************************************/

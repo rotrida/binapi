@@ -371,7 +371,7 @@ struct options_exchange_info_t
         double_type makerFeeRate;
         double_type takerFeeRate;
         double_type minQty;
-        size_t maxQty;
+        double_type maxQty;
         double_type initialMargin;
         double_type maintenanceMargin;
         double_type minInitialMargin;

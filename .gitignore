@@ -21,3 +21,4 @@ deactivate_conanrun.sh
 conanrunenv-debug-x86_64.sh
 conanbuildenv-debug-x86_64.sh
 Makefile
+lib/CMakeFiles/*

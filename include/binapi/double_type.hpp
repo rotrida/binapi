@@ -12,16 +12,17 @@
 #ifndef __binapi__double_type_hpp
 #define __binapi__double_type_hpp
 
-#include <boost/multiprecision/cpp_dec_float.hpp>
+//#include <boost/multiprecision/cpp_dec_float.hpp>
+#include "fixed_point.h"
 
 /*************************************************************************************************/
 
 namespace binapi {
 
-using double_type = boost::multiprecision::number<
+using double_type = trida::fixed_point<>; /* boost::multiprecision::number<
      boost::multiprecision::cpp_dec_float<8>
     ,boost::multiprecision::et_off
->;
+>;*/
 
 } // ns binapi
 
