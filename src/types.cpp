@@ -1033,7 +1033,6 @@ std::ostream &operator<<(std::ostream &os, const depths_t::depth_t &o) {
     << "["
     << "\"" << o.price << "\","
     << "\"" << o.amount << "\","
-    << "[]"
     << "]";
 
     return os;

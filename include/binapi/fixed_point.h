@@ -7,6 +7,7 @@
 #include <string_view>
 #include <string>
 #include <limits>
+#include "fmt/format.h"
 
 namespace trida
 {
@@ -14,7 +15,7 @@ namespace trida
     struct fixed_point
     {
         int64_t value;
-        static constexpr int64_t scale_factor = S; // 3 decimal places
+        static constexpr int64_t scale_factor = S;
 
     public:
         fixed_point() {}
@@ -85,12 +86,12 @@ namespace trida
 
         std::string to_string() const
         {
-            return std::to_string(to_double());
+            return fmt::format("{:.{}f}", to_double(), 6);
         }
 
         // Stream Insertion Operator
         friend std::ostream& operator<<(std::ostream& os, const fixed_point& fp) {
-            os << fp.to_double();
+            os << fp.to_string();
             return os;
         }
 
