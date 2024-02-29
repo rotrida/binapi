@@ -34,8 +34,8 @@ std::size_t num_fractions_from_double_type(const double_type &v) {
 }
 
 double_type adjust_to_step(const double_type &v, const double_type &s, bool increase) {
-    int64_t step1 =  v.value;
-    int64_t step2 = step1 % s.value;
+    int64_t step1 =  v.remove_decimals();
+    int64_t step2 = step1 % s.remove_decimals();
     int64_t step3 = step1 - step2;
     double_type res = double_type(step3) / 100000000;
     res += (increase ? s : 0.0);
@@ -86,7 +86,7 @@ double_type percents_val_by_percent(const double_type &v, const double_type &p) 
 
 int64_t remove_decimals(const double_type& v, const int decimal_places)
 {
-    return v.value; // static_cast<int64_t>(v * pow(10, decimal_places));
+    return v.remove_decimals(); // static_cast<int64_t>(v * pow(10, decimal_places));
 }
 
 /*************************************************************************************************/
