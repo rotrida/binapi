@@ -1,0 +1,7 @@
+*.cmake
+*.sh
+Makefile
+CMakeFiles/
+Makefile
+CMakePresets.json
+CMakeCache.txt

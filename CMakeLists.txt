@@ -1,7 +1,14 @@
-cmake_minimum_required(VERSION 3.2)
-project(binapi_proj)
+cmake_minimum_required(VERSION 3.7)
+project(binapi)
 
-set(CMAKE_CXX_STANDARD 14)
+set(CMAKE_CXX_STANDARD 23)
+
+# Add the following lines to include Boost
+set(Boost_USE_STATIC_LIBS ON)  # Link with Boost static libraries
+set(Boost_USE_MULTITHREAD ON)
+
+find_package(Boost 1.84 REQUIRED COMPONENTS system json options)
+find_package(OpenSSL REQUIRED)
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -fsanitize=address")
 
@@ -11,14 +18,8 @@ add_definitions(
 )
 
 include_directories(
-    ./include
+    ./include ${Boost_INCLUDE_DIR} ${OpenSSL_INCLUDE_DIR}
 )
-
-if (DEFINED ${BOOST_INCLUDE_DIR})
-    include_directories(
-        ${BOOST_INCLUDE_DIR}
-    )
-endif()
 
 set(BINAPI_HEADERS
     binapi/api.hpp
@@ -57,13 +58,7 @@ ADD_LIBRARY( binapi STATIC
              src/types.cpp
              src/websocket.cpp )
 
-add_executable(
-    ${PROJECT_NAME}
-    #
-    main.cpp
-    #
-    ${BINAPI_SOURCES}
-)
+set_target_properties(binapi PROPERTIES ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib")
 
 if (DEFINED ${BOOST_LIB_DIR})
     target_link_libraries(
