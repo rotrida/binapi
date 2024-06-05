@@ -147,11 +147,16 @@ struct api::impl {
         ,m_sk{std::move(sk)}
         ,m_timeout{timeout}
         ,m_client_api_string{std::move(client_api_string)}
-        ,m_write_in_process{}
-        ,m_async_requests{}
         ,m_ssl_ctx{boost::asio::ssl::context::sslv23_client}
         ,m_resolver{m_ioctx}
     {}
+
+    struct async_req_item {
+        std::string target;
+        boost::beast::http::verb action;
+        std::string data;
+        detail::invoker_ptr invoker;
+    };
 
     using val_type = boost::variant<std::size_t, const char *>;
     using kv_type = std::pair<const char *, val_type>;
@@ -291,9 +296,8 @@ struct api::impl {
                 ,std::move(data)
                 ,std::make_shared<invoker_type>(std::move(cb))
             };
-            m_async_requests.push(std::move(item));
-
-            async_post();
+            
+            async_post(std::move(item));
         }
 
         return res;
@@ -388,17 +392,13 @@ struct api::impl {
     using ssl_socket_ptr = std::unique_ptr<boost::asio::ssl::stream<boost::asio::ip::tcp::socket>>;
     using ssl_socket_type = typename ssl_socket_ptr::element_type;
 
-    void async_post() {
-        if ( m_write_in_process ) {
-            return;
-        }
+    void async_post( impl::async_req_item && request) {
 
-        m_write_in_process = true;
+        auto original_request_ptr = std::make_shared<async_req_item>(std::move(request));
 
-        auto &front = m_async_requests.front();
-        auto action = front.action;
-        std::string data = std::move(front.data);
-        std::string target = front.target;
+        auto action = original_request_ptr->action;
+        std::string data = std::move(original_request_ptr->data);
+        std::string target = original_request_ptr->target;
         //std::cout << "async_post(): target=" << target << std::endl;
 
         auto req = std::make_unique<request_type>();
@@ -422,19 +422,19 @@ struct api::impl {
         m_resolver.async_resolve(
              m_host
             ,m_port
-            ,[this, req=std::move(req)]
+            ,[this, req=std::move(req), original_request_ptr]
              (const boost::system::error_code &ec, boost::asio::ip::tcp::resolver::results_type res) mutable
-             { on_resolve(ec, std::move(req), std::move(res)); }
+             { on_resolve(ec, std::move(req), std::move(res), original_request_ptr); }
         );
     }
     void on_resolve(
          const boost::system::error_code &ec
         ,request_ptr req
-        ,boost::asio::ip::tcp::resolver::results_type results)
+        ,boost::asio::ip::tcp::resolver::results_type results
+        ,std::shared_ptr<async_req_item> original_request_ptr)
     {
         if ( ec ) {
-            m_write_in_process = false;
-            process_reply(__MAKE_FILELINE, ec.value(), ec.message(), std::string{});
+            process_reply(__MAKE_FILELINE, ec.value(), ec.message(), std::string{}, original_request_ptr);
             return;
         }
 
@@ -453,19 +453,19 @@ struct api::impl {
              sptr->next_layer()
             ,results.begin()
             ,results.end()
-            ,[this, req=std::move(req), ssl_socket=std::move(ssl_socket)]
+            ,[this, req=std::move(req), ssl_socket=std::move(ssl_socket), original_request_ptr]
              (const boost::system::error_code &ec, auto) mutable
-             { on_connect(ec, std::move(req), std::move(ssl_socket)); }
+             { on_connect(ec, std::move(req), std::move(ssl_socket), original_request_ptr); }
         );
     }
     void on_connect(
          const boost::system::error_code &ec
         ,request_ptr req
-        ,ssl_socket_ptr ssl_socket)
+        ,ssl_socket_ptr ssl_socket
+        ,std::shared_ptr<async_req_item> original_request_ptr)
     {
         if ( ec ) {
-            m_write_in_process = false;
-            process_reply(__MAKE_FILELINE, ec.value(), ec.message(), std::string{});
+            process_reply(__MAKE_FILELINE, ec.value(), ec.message(), std::string{}, original_request_ptr);
             return;
         }
 
@@ -474,19 +474,19 @@ struct api::impl {
         // Perform the SSL handshake
         sptr->async_handshake(
              boost::asio::ssl::stream_base::client
-            ,[this, req=std::move(req), ssl_socket=std::move(ssl_socket)]
+            ,[this, req=std::move(req), ssl_socket=std::move(ssl_socket), original_request_ptr]
              (const boost::system::error_code &ec) mutable
-             { on_handshake(ec, std::move(req), std::move(ssl_socket)); }
+             { on_handshake(ec, std::move(req), std::move(ssl_socket), original_request_ptr); }
         );
     }
     void on_handshake(
          const boost::system::error_code &ec
         ,request_ptr req
-        ,ssl_socket_ptr ssl_socket)
+        ,ssl_socket_ptr ssl_socket
+        ,std::shared_ptr<async_req_item> original_request_ptr)
     {
         if ( ec ) {
-            m_write_in_process = false;
-            process_reply(__MAKE_FILELINE, ec.value(), ec.message(), std::string{});
+            process_reply(__MAKE_FILELINE, ec.value(), ec.message(), std::string{}, original_request_ptr);
             return;
         }
 
@@ -497,18 +497,18 @@ struct api::impl {
         boost::beast::http::async_write(
             *socket_ptr
             ,*request_ptr
-            ,[this, req=std::move(req), ssl_socket=std::move(ssl_socket)]
+            ,[this, req=std::move(req), ssl_socket=std::move(ssl_socket), original_request_ptr]
              (const boost::system::error_code &ec, std::size_t wr) mutable
-             { on_write(ec, std::move(req), std::move(ssl_socket), wr); }
+             { on_write(ec, std::move(req), std::move(ssl_socket), wr, original_request_ptr); }
         );
     }
-    void on_write(const boost::system::error_code &ec, request_ptr req, ssl_socket_ptr ssl_socket, std::size_t wr) {
+    void on_write(const boost::system::error_code &ec, request_ptr req, ssl_socket_ptr ssl_socket, std::size_t wr, std::shared_ptr<async_req_item> original_request_ptr) {
         boost::ignore_unused(wr);
         boost::ignore_unused(req);
 
         if ( ec ) {
-            m_write_in_process = false;
-            process_reply(__MAKE_FILELINE, ec.value(), ec.message(), std::string{});
+            
+            process_reply(__MAKE_FILELINE, ec.value(), ec.message(), std::string{}, original_request_ptr);
             return;
         }
 
@@ -516,56 +516,53 @@ struct api::impl {
         auto *resp_ptr = resp.get();
         auto *socket_ptr = ssl_socket.get();
 
+        auto buffer_ptr = std::make_shared<boost::beast::flat_buffer>();
+
         // Receive the HTTP response
         boost::beast::http::async_read(
              *socket_ptr
-            ,m_buffer
+            ,*buffer_ptr
             ,*resp_ptr
-            ,[this, resp=std::move(resp), ssl_socket=std::move(ssl_socket)]
+            ,[this, resp=std::move(resp), ssl_socket=std::move(ssl_socket), buffer_ptr, original_request_ptr]
              (const boost::system::error_code &ec, std::size_t rd) mutable
-             { on_read(ec, std::move(resp), std::move(ssl_socket), rd); }
+             { on_read(ec, std::move(resp), std::move(ssl_socket), rd, buffer_ptr, original_request_ptr); }
         );
     }
-    void on_read(const boost::system::error_code &ec, response_ptr resp, ssl_socket_ptr ssl_socket, std::size_t rd) {
+    void on_read(const boost::system::error_code &ec, response_ptr resp, ssl_socket_ptr ssl_socket, std::size_t rd, std::shared_ptr<boost::beast::flat_buffer> buffer_ptr, std::shared_ptr<async_req_item> original_request_ptr) {
         boost::ignore_unused(rd);
 
         if ( ec ) {
-            m_write_in_process = false;
-            process_reply(__MAKE_FILELINE, ec.value(), ec.message(), std::string{});
+            process_reply(__MAKE_FILELINE, ec.value(), ec.message(), std::string{}, original_request_ptr);
             return;
         }
 
         auto *socket_ptr = ssl_socket.get();
 
         socket_ptr->async_shutdown(
-            [this, resp=std::move(resp), ssl_socket=std::move(ssl_socket)]
+            [this, resp=std::move(resp), ssl_socket=std::move(ssl_socket), original_request_ptr]
             (const boost::system::error_code &ec) mutable
-            { on_shutdown(ec, std::move(resp), std::move(ssl_socket)); }
+            { on_shutdown(ec, std::move(resp), std::move(ssl_socket), original_request_ptr); }
         );
     }
-    void on_shutdown(const boost::system::error_code &ec, response_ptr resp, ssl_socket_ptr ssl_socket) {
+    void on_shutdown(const boost::system::error_code &ec, response_ptr resp, ssl_socket_ptr ssl_socket, std::shared_ptr<async_req_item> original_request_ptr) {
         boost::ignore_unused(ec);
         boost::ignore_unused(ssl_socket);
 
         std::string body = std::move(resp->body());
-        process_reply(__MAKE_FILELINE, 0, std::string{}, std::move(body));
+        process_reply(__MAKE_FILELINE, 0, std::string{}, std::move(body), original_request_ptr);
 
-        m_write_in_process = false;
-
-        if ( !m_async_requests.empty() ) {
+/*        if ( !m_async_requests.empty() ) {
             async_post();
-        }
+        } */
     }
 
-    void process_reply(const char *fl, int ec, std::string errmsg, std::string body) {
-        assert(!m_async_requests.empty());
+    void process_reply(const char *fl, int ec, std::string errmsg, std::string body, std::shared_ptr<async_req_item> original_request_ptr) {
+        //assert(!m_async_requests.empty());
 
         __TRY_BLOCK() {
-            const auto item = std::move(m_async_requests.front());
-            m_async_requests.pop();
 
             //std::cout << "process_reply(): target=" << item.target << std::endl;
-            item.invoker->invoke(fl, ec, std::move(errmsg), body.c_str(), body.size());
+            original_request_ptr->invoker->invoke(fl, ec, std::move(errmsg), body.c_str(), body.size());
         } __CATCH_BLOCK(
             std::cout,
             (std::exception)
@@ -580,17 +577,8 @@ struct api::impl {
     const std::size_t m_timeout;
     const std::string m_client_api_string;
 
-    bool m_write_in_process;
-    struct async_req_item {
-        std::string target;
-        boost::beast::http::verb action;
-        std::string data;
-        detail::invoker_ptr invoker;
-    };
-    std::queue<async_req_item> m_async_requests;
     boost::asio::ssl::context m_ssl_ctx;
     boost::asio::ip::tcp::resolver m_resolver;
-    boost::beast::flat_buffer m_buffer; // (Must persist between reads)
 };
 
 /*************************************************************************************************/

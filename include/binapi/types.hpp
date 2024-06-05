@@ -110,7 +110,7 @@ struct _24hrs_tickers_t {
         friend std::ostream &operator<<(std::ostream &os, const _24hrs_ticker_t &f);
     };
 
-    std::map<std::string, _24hrs_ticker_t> tickers;
+    std::unordered_map<std::string, _24hrs_ticker_t> tickers;
 
     static _24hrs_tickers_t construct(const flatjson::fjson &json);
     friend std::ostream &operator<<(std::ostream &os, const _24hrs_tickers_t &f);
@@ -977,7 +977,7 @@ struct market_ticker_t {
 
 // https://github.com/binance-exchange/binance-official-api-docs/blob/master/web-socket-streams.md#all-market-tickers-stream
 struct markets_tickers_t {
-    std::map<std::string, market_ticker_t> tickers;
+    std::unordered_map<std::string, market_ticker_t> tickers;
 
     static markets_tickers_t construct(const flatjson::fjson &json);
     friend std::ostream& operator<<(std::ostream &os, const markets_tickers_t &o);
