@@ -3,7 +3,18 @@ project(binapi)
 
 set(CMAKE_CXX_STANDARD 23)
 
+<<<<<<< HEAD
 #set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -fsanitize=address")
+=======
+# Add the following lines to include Boost
+set(Boost_USE_STATIC_LIBS ON)  # Link with Boost static libraries
+set(Boost_USE_MULTITHREAD ON)
+
+find_package(Boost 1.84 REQUIRED COMPONENTS system json options)
+find_package(OpenSSL REQUIRED)
+
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -fsanitize=address")
+>>>>>>> 145cbee74632b02c30d2f6e6de59d695fb67373e
 
 add_definitions(
     -UNDEBUG
@@ -11,14 +22,8 @@ add_definitions(
 )
 
 include_directories(
-    ./include
+    ./include ${Boost_INCLUDE_DIR} ${OpenSSL_INCLUDE_DIR}
 )
-
-if (DEFINED ${BOOST_INCLUDE_DIR})
-    include_directories(
-        ${BOOST_INCLUDE_DIR}
-    )
-endif()
 
 set(BINAPI_HEADERS
     binapi/api.hpp
