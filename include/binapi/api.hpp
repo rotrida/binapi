@@ -48,6 +48,8 @@ struct api {
         explicit operator bool() const { return errmsg.empty(); }
     };
 
+    using log_callback = std::function<void(const std::string_view)>;
+
     api(
          boost::asio::io_context &ioctx
         ,std::string host
@@ -55,6 +57,7 @@ struct api {
         ,std::string pk
         ,std::string sk
         ,std::size_t timeout
+        ,log_callback log_callback_
         ,std::string client_api_string = "binapi-0.0.1"
     );
     virtual ~api();

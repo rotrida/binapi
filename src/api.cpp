@@ -138,6 +138,7 @@ struct api::impl {
         ,std::string pk
         ,std::string sk
         ,std::size_t timeout
+        ,log_callback log_callback_
         ,std::string client_api_string
     )
         :m_ioctx{ioctx}
@@ -148,7 +149,8 @@ struct api::impl {
         ,m_timeout{timeout}
         ,m_client_api_string{std::move(client_api_string)}
         ,m_ssl_ctx{boost::asio::ssl::context::sslv23_client}
-        ,m_resolver{m_ioctx}
+        ,m_resolver{m_ioctx},
+        _log_callback(log_callback_)
     {}
 
     struct async_req_item {
@@ -254,6 +256,8 @@ struct api::impl {
             starget += data;
             data.clear();
         }
+
+        _log_callback(std::format("REST Data sent. Target: {}, Body {}", starget, data));
 
         api::result<R> res{};
         if ( !cb ) {
@@ -531,6 +535,8 @@ struct api::impl {
     void on_read(const boost::system::error_code &ec, response_ptr resp, ssl_socket_ptr ssl_socket, std::size_t rd, std::shared_ptr<boost::beast::flat_buffer> buffer_ptr, std::shared_ptr<async_req_item> original_request_ptr) {
         boost::ignore_unused(rd);
 
+        _log_callback(std::format("REST Data read {}", resp->body()));
+
         if ( ec ) {
             process_reply(__MAKE_FILELINE, ec.value(), ec.message(), std::string{}, original_request_ptr);
             return;
@@ -576,6 +582,7 @@ struct api::impl {
     const std::string m_sk;
     const std::size_t m_timeout;
     const std::string m_client_api_string;
+    log_callback _log_callback;
 
     boost::asio::ssl::context m_ssl_ctx;
     boost::asio::ip::tcp::resolver m_resolver;
@@ -590,6 +597,7 @@ api::api(
     ,std::string pk
     ,std::string sk
     ,std::size_t timeout
+    ,log_callback log_callback_
     ,std::string client_api_string
 )
     :pimpl{std::make_unique<impl>(
@@ -599,6 +607,7 @@ api::api(
         ,std::move(pk)
         ,std::move(sk)
         ,timeout
+        ,log_callback_
         ,std::move(client_api_string)
     )}
 {}

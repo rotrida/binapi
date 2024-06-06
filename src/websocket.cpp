@@ -50,7 +50,7 @@ struct websocket: std::enable_shared_from_this<websocket> {
         bool(const char* fl, int ec, std::string errmsg, const char* ptr, std::size_t size, void * hnd)
     >; // when 'false' returned the stop will called
 
-    explicit websocket(boost::asio::io_context& ioctx, on_message_received_cb cb, boost::posix_time::time_duration timeout)
+    explicit websocket(boost::asio::io_context& ioctx, on_message_received_cb cb, boost::posix_time::time_duration timeout, websockets::log_callback log_callback_)
         :m_ioctx{ioctx}
         ,m_strand{ioctx}
         ,m_timeout{timeout}
@@ -63,6 +63,7 @@ struct websocket: std::enable_shared_from_this<websocket> {
         ,m_host{}
         ,m_target{}
         ,m_stop_requested{}
+        ,_log_callback(log_callback_)
     {}
     
     virtual ~websocket()
@@ -287,6 +288,8 @@ private:
         }
         m_buf.consume(m_buf.size());
 
+        _log_callback(std::format("WS Rcv: {}", strbuf.data()));
+
         bool ok = m_cb(nullptr, 0, std::string{}, strbuf.data(), strbuf.size(), this);
         if ( !ok ) {
             stop();
@@ -301,6 +304,7 @@ private:
     boost::posix_time::time_duration m_timeout_verification;
     boost::asio::deadline_timer m_timeout_timer;
     on_message_received_cb m_cb;
+    websockets::log_callback _log_callback;
     boost::posix_time::ptime m_last_message_received;
     boost::asio::ssl::context m_ssl;
     boost::asio::ip::tcp::resolver m_resolver;
@@ -322,12 +326,13 @@ struct websocket_id_getter {
 /*************************************************************************************************/
 
 struct websockets::impl {
-    impl(boost::asio::io_context &ioctx, std::string host, std::string port, on_message_received_cb cb)
+    impl(boost::asio::io_context &ioctx, std::string host, std::string port, log_callback log_callback_, on_message_received_cb cb)
         :m_ioctx{ioctx}
         ,m_strand{ioctx}
         ,m_host{std::move(host)}
         ,m_port{std::move(port)}
         ,m_on_message{std::move(cb)}
+        ,_log_callback(log_callback_)
     {}
     
     ~impl() {
@@ -421,7 +426,7 @@ struct websockets::impl {
             return false;
         };
 
-        std::shared_ptr<websocket> ws = std::make_shared<websocket>(m_ioctx, wscb, timeout);
+        std::shared_ptr<websocket> ws = std::make_shared<websocket>(m_ioctx, wscb, timeout, _log_callback);
 
         ws->start(
              m_host
@@ -494,7 +499,7 @@ struct websockets::impl {
             return false;
         };
 
-        std::shared_ptr<websocket> ws = std::make_shared<websocket>(m_ioctx, wscb, timeout);
+        std::shared_ptr<websocket> ws = std::make_shared<websocket>(m_ioctx, wscb, timeout, _log_callback);
 
         ws->start(
              m_host
@@ -555,6 +560,7 @@ struct websockets::impl {
     std::string m_host;
     std::string m_port;
     on_message_received_cb m_on_message;
+    log_callback _log_callback;
     std::unordered_map<handle, std::shared_ptr<websocket>> m_websockets;
 };
 
@@ -564,9 +570,10 @@ websockets::websockets(
      boost::asio::io_context &ioctx
     ,std::string host
     ,std::string port
+    ,log_callback log_callback_
     ,on_message_received_cb cb
 )
-    :pimpl{std::make_unique<impl>(ioctx, std::move(host), std::move(port),cb)}
+    :pimpl{std::make_unique<impl>(ioctx, std::move(host), std::move(port), log_callback_, cb)}
 {}
 
 websockets::~websockets()

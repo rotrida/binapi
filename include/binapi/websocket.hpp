@@ -58,11 +58,13 @@ struct websockets {
     websockets& operator= (websockets &&) noexcept = default;
 
     using on_message_received_cb = std::function<void(const char *channel, const char *ptr, std::size_t size)>;
+    using log_callback = std::function<void(const std::string_view)>;
 
     websockets(
          boost::asio::io_context &ioctx
         ,std::string host
         ,std::string port
+        ,log_callback log_callback_
         ,on_message_received_cb cb = {}
     );
     ~websockets();
