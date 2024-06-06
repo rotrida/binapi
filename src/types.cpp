@@ -52,7 +52,7 @@ __get_json(T &v, const char *member, const flatjson::fjson &j) {
 template<typename T>
 typename std::enable_if<std::is_same<T, double_type>::value>::type
 __get_json(T &v, const char *member, const flatjson::fjson &j) {
-    v = trida::fixed_point<>(j.at(member).to_string());
+    v = trida::fixed_point<>(stod(j.at(member).to_string()));
 }
 
 
