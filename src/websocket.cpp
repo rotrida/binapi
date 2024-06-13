@@ -93,7 +93,7 @@ struct websocket: std::enable_shared_from_this<websocket> {
         if ( m_ws.is_open() ) {
             m_ws.async_close(
                  boost::beast::websocket::close_code::normal
-                , [holder = std::move(holder), callback](const boost::system::error_code&) { callback(); }
+                , [me_ptr=shared_from_this(), holder = std::move(holder), callback](const boost::system::error_code&) { callback(); }
             );
         }
     }
@@ -106,7 +106,7 @@ private:
         m_resolver.async_resolve(
              m_host
             ,port
-            ,[this, holder=std::move(holder)]
+            ,[this, me_ptr=shared_from_this(), holder=std::move(holder)]
              (boost::system::error_code ec, boost::asio::ip::tcp::resolver::results_type res) mutable {
                 if ( ec ) {
                     if ( !m_stop_requested ) { __BINAPI_CB_ON_ERROR(m_cb, ec, this); }
@@ -131,7 +131,7 @@ private:
         boost::beast::get_lowest_layer(m_ws).async_connect(
             res.begin()
             ,res.end()
-            ,[this, holder=std::move(holder)]
+            ,[this, me_ptr=shared_from_this(), holder=std::move(holder)]
              (boost::system::error_code ec, boost::asio::ip::tcp::resolver::iterator) mutable {
                 if ( ec ) {
                     if ( !m_stop_requested ) { __BINAPI_CB_ON_ERROR(m_cb, ec, this); }
@@ -174,7 +174,7 @@ private:
 
         m_ws.next_layer().async_handshake(
              boost::asio::ssl::stream_base::client
-            ,[this, holder=std::move(holder)]
+            ,[this, me_ptr=shared_from_this(), holder=std::move(holder)]
              (boost::system::error_code ec) mutable {
                 if ( ec ) {
                     if ( !m_stop_requested ) { __BINAPI_CB_ON_ERROR(m_cb, ec, this); }
@@ -225,7 +225,7 @@ private:
         m_ws.async_handshake(
             m_host
             ,m_target
-            ,m_strand.wrap([this, holder = std::move(holder)]
+            ,m_strand.wrap([this, me_ptr=shared_from_this(), holder = std::move(holder)]
                 (boost::system::error_code ec) mutable
                 { 
                     start_read(ec, std::move(holder)); 
@@ -258,7 +258,7 @@ private:
         m_ws.async_read(
              m_buf,
             m_strand.wrap(
-                [this, holder = std::move(holder)]
+                [this, me_ptr=shared_from_this(), holder = std::move(holder)]
                 (boost::system::error_code ec, std::size_t rd) mutable
                 { on_read(ec, rd, std::move(holder)); }
             )
