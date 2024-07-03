@@ -52,7 +52,7 @@ __get_json(T &v, const char *member, const flatjson::fjson &j) {
 template<typename T>
 typename std::enable_if<std::is_same<T, double_type>::value>::type
 __get_json(T &v, const char *member, const flatjson::fjson &j) {
-    v = trida::fixed_point<>(stod(j.at(member).to_string()));
+    v = new_qube::fixed_point<>(stod(j.at(member).to_string()));
 }
 
 
@@ -1050,8 +1050,8 @@ depths_t depths_t::construct(const flatjson::fjson &json) {
         depths_t::depth_t item{};
         const auto it = bids.at(idx);
         assert(it.is_array());
-        item.price = trida::fixed_point<>(it.at(0).to_string()); //.assign(it.at(0).to_string());
-        item.amount = trida::fixed_point<>(it.at(1).to_string()); // .assign(it.at(1).to_string());
+        item.price = new_qube::fixed_point<>(it.at(0).to_string()); //.assign(it.at(0).to_string());
+        item.amount = new_qube::fixed_point<>(it.at(1).to_string()); // .assign(it.at(1).to_string());
 
         res.bids.push_back(std::move(item));
     }
@@ -1061,8 +1061,8 @@ depths_t depths_t::construct(const flatjson::fjson &json) {
         depths_t::depth_t item{};
         const auto it = asks.at(idx);
         assert(it.is_array());
-        item.price = trida::fixed_point<>(it.at(0).to_string()); //.assign(it.at(0).to_string());
-        item.amount = trida::fixed_point<>(it.at(1).to_string()); // .assign(it.at(1).to_string());
+        item.price = new_qube::fixed_point<>(it.at(0).to_string()); //.assign(it.at(0).to_string());
+        item.amount = new_qube::fixed_point<>(it.at(1).to_string()); // .assign(it.at(1).to_string());
 
         res.asks.push_back(std::move(item));
     }
@@ -1114,8 +1114,8 @@ std::ostream &operator<<(std::ostream &os, const depths_t &o) {
         depths_t::depth_t item{};
         const auto it = bids.at(idx);
         assert(it.is_array());
-        item.price = trida::fixed_point<>(it.at(0).to_string()); //.assign(it.at(0).to_string());
-        item.amount = trida::fixed_point<>(it.at(1).to_string()); // .assign(it.at(1).to_string());
+        item.price = new_qube::fixed_point<>(it.at(0).to_string()); //.assign(it.at(0).to_string());
+        item.amount = new_qube::fixed_point<>(it.at(1).to_string()); // .assign(it.at(1).to_string());
 
         res.bids.push_back(std::move(item));
     }
@@ -1125,8 +1125,8 @@ std::ostream &operator<<(std::ostream &os, const depths_t &o) {
         depths_t::depth_t item{};
         const auto it = asks.at(idx);
         assert(it.is_array());
-        item.price = trida::fixed_point<>(it.at(0).to_string()); //.assign(it.at(0).to_string());
-        item.amount = trida::fixed_point<>(it.at(1).to_string()); // .assign(it.at(1).to_string());
+        item.price = new_qube::fixed_point<>(it.at(0).to_string()); //.assign(it.at(0).to_string());
+        item.amount = new_qube::fixed_point<>(it.at(1).to_string()); // .assign(it.at(1).to_string());
 
         res.asks.push_back(std::move(item));
     }
@@ -1305,16 +1305,16 @@ klines_t klines_t::construct(const flatjson::fjson &json) {
         const auto it = json.at(idx);
         assert(it.is_array());
         item.start_time = it.at(0).to<std::size_t>(); // Open time
-        item.open = trida::fixed_point<>(it.at(1).to_string()); // Open
-        item.high = trida::fixed_point<>(it.at(2).to_string()); // High
-        item.low = trida::fixed_point<>(it.at(3).to_string()); // Low
-        item.close = trida::fixed_point<>(it.at(4).to_string()); // Close
-        item.volume = trida::fixed_point<>(it.at(5).to_string()); // Volume
+        item.open = new_qube::fixed_point<>(it.at(1).to_string()); // Open
+        item.high = new_qube::fixed_point<>(it.at(2).to_string()); // High
+        item.low = new_qube::fixed_point<>(it.at(3).to_string()); // Low
+        item.close = new_qube::fixed_point<>(it.at(4).to_string()); // Close
+        item.volume = new_qube::fixed_point<>(it.at(5).to_string()); // Volume
         item.end_time = it.at(6).to<std::size_t>(); // Close time
-        item.quote_volume = trida::fixed_point<>(it.at(7).to_string()); // Quote asset volume
+        item.quote_volume = new_qube::fixed_point<>(it.at(7).to_string()); // Quote asset volume
         item.num_trades = it.at(8).to<std::size_t>(); // Number of trades
-        item.taker_buy_base_vol = trida::fixed_point<>(it.at(9).to_string()); // Taker buy base asset volume
-        item.taker_buy_quote_vol = trida::fixed_point<>(it.at(10).to_string()); // Taker buy quote asset volume
+        item.taker_buy_base_vol = new_qube::fixed_point<>(it.at(9).to_string()); // Taker buy base asset volume
+        item.taker_buy_quote_vol = new_qube::fixed_point<>(it.at(10).to_string()); // Taker buy quote asset volume
 
         res.klines.push_back(std::move(item));
     }
@@ -1991,8 +1991,8 @@ trade_t trade_t::construct(const flatjson::fjson &json) {
     __BINAPI_GET(t);
     __BINAPI_GET(p);
     __BINAPI_GET(q);
-    __BINAPI_GET(b);
-    __BINAPI_GET(a);
+    __BINAPI_GET_DEFAULT(b, size_t(0));
+    __BINAPI_GET_DEFAULT(a, size_t(0));
     __BINAPI_GET(T);
     __BINAPI_GET_DEFAULT(m, false);
     __BINAPI_GET_DEFAULT(M, false);
@@ -2034,8 +2034,8 @@ part_depths_t part_depths_t::construct(const flatjson::fjson &json) {
     for ( auto idx = 0u; idx < a.size(); ++idx ) {
         part_depths_t::depth_t item{};
         const auto it = a.at(idx);
-        item.price = trida::fixed_point<>(it.at(0).to_string());
-        item.amount = trida::fixed_point<>(it.at(1).to_string());
+        item.price = new_qube::fixed_point<>(it.at(0).to_string());
+        item.amount = new_qube::fixed_point<>(it.at(1).to_string());
 
         res.a.push_back(std::move(item));
     }
@@ -2043,8 +2043,8 @@ part_depths_t part_depths_t::construct(const flatjson::fjson &json) {
     for ( auto idx = 0u; idx < b.size(); ++idx ) {
         part_depths_t::depth_t item{};
         const auto it = b.at(idx);
-        item.price = trida::fixed_point<>(it.at(0).to_string());
-        item.amount = trida::fixed_point<>(it.at(1).to_string());
+        item.price = new_qube::fixed_point<>(it.at(0).to_string());
+        item.amount = new_qube::fixed_point<>(it.at(1).to_string());
 
         res.b.push_back(std::move(item));
     }
@@ -2097,8 +2097,8 @@ diff_depths_t diff_depths_t::construct(const flatjson::fjson &json) {
     for ( auto idx = 0u; idx < a.size(); ++idx ) {
         diff_depths_t::depth_t item{};
         const auto it = a.at(idx);
-        item.price = trida::fixed_point<>(it.at(0).to_string());
-        item.amount = trida::fixed_point<>(it.at(1).to_string());
+        item.price = new_qube::fixed_point<>(it.at(0).to_string());
+        item.amount = new_qube::fixed_point<>(it.at(1).to_string());
 
         res.a.push_back(std::move(item));
     }
@@ -2106,8 +2106,8 @@ diff_depths_t diff_depths_t::construct(const flatjson::fjson &json) {
     for ( auto idx = 0u; idx < b.size(); ++idx ) {
         diff_depths_t::depth_t item{};
         const auto it = b.at(idx);
-        item.price = trida::fixed_point<>(it.at(0).to_string());
-        item.amount = trida::fixed_point<>(it.at(1).to_string());
+        item.price = new_qube::fixed_point<>(it.at(0).to_string());
+        item.amount = new_qube::fixed_point<>(it.at(1).to_string());
 
         res.b.push_back(std::move(item));
     }

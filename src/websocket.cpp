@@ -435,8 +435,10 @@ struct websockets::impl {
             ,ws
         );
 
-        boost::asio::dispatch(m_strand, [this, ws]()
+        boost::asio::dispatch(m_strand, [this, ws, schannel]()
         {
+            _log_callback(std::format("Starting channel {} - {:p}", schannel, (void*)ws.get()));
+
             m_websockets.insert(std::make_pair(ws.get(), ws));
         });
         
@@ -508,8 +510,9 @@ struct websockets::impl {
             ,ws
         );
 
-        boost::asio::dispatch(m_strand, [this, ws]()
+        boost::asio::dispatch(m_strand, [this, ws, schannel]()
         {
+            _log_callback(std::format("Starting option channel {} - {:p}", schannel, (void*)ws.get()));
             m_websockets.insert(std::make_pair(ws.get(), ws));
         });
         
@@ -524,6 +527,8 @@ struct websockets::impl {
             if (it == m_websockets.end()) { return; }
 
             f(it->second);
+
+            _log_callback(std::format("Removing channel {:p}", h));
 
             m_websockets.erase(it);
         });
@@ -542,6 +547,8 @@ struct websockets::impl {
         {
             for (auto & it : m_websockets) 
             {
+                _log_callback(std::format("Unsubscribing channel {:p}", it.first));
+
                 f(it.second);
             }
 

@@ -19,7 +19,7 @@
 
 namespace binapi {
 
-using double_type = trida::fixed_point<>; /* boost::multiprecision::number<
+using double_type = new_qube::fixed_point<>; /* boost::multiprecision::number<
      boost::multiprecision::cpp_dec_float<8>
     ,boost::multiprecision::et_off
 >;*/
