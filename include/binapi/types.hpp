@@ -538,6 +538,7 @@ struct order_info_t {
     std::string symbol;
     std::size_t orderId;
     std::string clientOrderId;
+    std::string origClientOrderId;
     double_type price;
     double_type origQty;
     double_type executedQty;

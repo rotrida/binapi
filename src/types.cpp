@@ -1345,6 +1345,7 @@ order_info_t order_info_t::construct(const flatjson::fjson &json) {
     __BINAPI_GET(symbol);
     __BINAPI_GET(orderId);
     __BINAPI_GET(clientOrderId);
+    __BINAPI_GET(origClientOrderId);
     __BINAPI_GET(price);
     __BINAPI_GET(origQty);
     __BINAPI_GET(executedQty);
@@ -1368,6 +1369,7 @@ std::ostream &operator<<(std::ostream &os, const order_info_t &o) {
     << "\"symbol\":\"" << o.symbol << "\","
     << "\"orderId\":" << o.orderId << ","
     << "\"clientOrderId\":\"" << o.clientOrderId << "\","
+    << "\"origClientOrderId\":\"" << o.origClientOrderId << "\","
     << "\"price\":\"" << o.price << "\","
     << "\"origQty\":\"" << o.origQty << "\","
     << "\"executedQty\":\"" << o.executedQty << "\","
