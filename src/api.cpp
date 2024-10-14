@@ -152,7 +152,7 @@ struct api::impl {
         ,m_resolver{m_ioctx},
         _log_callback(log_callback_)
     {
-        std::cout << "Created: \n" << std::flush;
+        _log_callback("Created: ");
     }
 
     struct async_req_item {
@@ -175,7 +175,7 @@ struct api::impl {
     post(bool _signed, const char *target, boost::beast::http::verb action, const std::deque<kv_type> &map, CB cb) {
         static_assert(std::tuple_size<Args>::value == 4, "callback signature is wrong!");
 
-        std::cout << "Posting: " << (_signed ? "Signed" : "Unsigned") << " - " << target << "\n" << std::flush;
+        _log_callback(std::format("Posting: {} - {}", (_signed ? "Signed" : "Unsigned"), target));
 
         auto is_valid_value = [](const val_type &v) -> bool {
             if ( const auto *p = boost::get<const char *>(&v) ) {
@@ -251,7 +251,7 @@ struct api::impl {
             data += signature;
         }
 
-        std::cout << "Post data: " << data << "\n" << std::flush;
+        _log_callback(std::format("Post data: {}", data));
 
         bool get_delete =
             action == boost::beast::http::verb::get ||
@@ -317,13 +317,13 @@ struct api::impl {
     sync_post(const char *target, boost::beast::http::verb action, std::string data) {
         api::result<std::string> res{};
 
-        std::cout << "Sync post: " << target << " --> " << data << "\n" << std::flush;
+        _log_callback(std::format("Sync post: {} --> {}", target, data));
 
         boost::asio::ssl::stream<boost::asio::ip::tcp::socket> ssl_stream(m_ioctx, m_ssl_ctx);
 
         if( !SSL_set_tlsext_host_name(ssl_stream.native_handle(), m_host.c_str()) ) {
             boost::system::error_code ec{static_cast<int>(::ERR_get_error()), boost::asio::error::get_ssl_category()};
-            std::cerr << __MESSAGE("msg=" << ec.message()) << std::endl;
+             _log_callback(std::format("Error: {}", ec.message()));
 
             __MAKE_ERRMSG(res, ec.message());
             return res;
@@ -332,7 +332,7 @@ struct api::impl {
         boost::system::error_code ec;
         auto const results = m_resolver.resolve(m_host, m_port, ec);
         if ( ec ) {
-            std::cerr << __MESSAGE("msg=" << ec.message()) << std::endl;
+            _log_callback(std::format("Error: {}", ec.message()));
 
             __MAKE_ERRMSG(res, ec.message());
             return res;
@@ -340,7 +340,7 @@ struct api::impl {
 
         boost::asio::connect(ssl_stream.next_layer(), results.begin(), results.end(), ec);
         if ( ec ) {
-            std::cerr << __MESSAGE("msg=" << ec.message()) << std::endl;
+            _log_callback(std::format("Error: {}", ec.message()));
 
             __MAKE_ERRMSG(res, ec.message());
             return res;
@@ -348,7 +348,7 @@ struct api::impl {
 
         ssl_stream.handshake(boost::asio::ssl::stream_base::client, ec);
         if ( ec ) {
-            std::cerr << __MESSAGE("msg=" << ec.message()) << std::endl;
+            _log_callback(std::format("Error: {}", ec.message()));
 
             __MAKE_ERRMSG(res, ec.message());
             return res;
@@ -372,7 +372,7 @@ struct api::impl {
 
         boost::beast::http::write(ssl_stream, req, ec);
         if ( ec ) {
-            std::cerr << __MESSAGE("msg=" << ec.message()) << std::endl;
+            _log_callback(std::format("Error: {}", ec.message()));
 
             __MAKE_ERRMSG(res, ec.message());
             return res;
@@ -383,14 +383,14 @@ struct api::impl {
 
         boost::beast::http::read(ssl_stream, buffer, bres, ec);
         if ( ec ) {
-            std::cerr << __MESSAGE("msg=" << ec.message()) << std::endl;
+            _log_callback(std::format("Error: {}", ec.message()));
 
             __MAKE_ERRMSG(res, ec.message());
             return res;
         }
 
         res.v = std::move(bres.body());
-        std::cout << target << " REPLY:\n" << res.v << std::endl << std::endl << std::flush;
+        _log_callback(std::format("{}  REPLY: {}", target, res.v));
 
         ssl_stream.shutdown(ec);
 
@@ -406,20 +406,18 @@ struct api::impl {
 
     void async_post( impl::async_req_item && request) {
 
-        std::cout << "Async post: \n" << std::flush;
-
         auto original_request_ptr = std::make_shared<async_req_item>(std::move(request));
 
         auto action = original_request_ptr->action;
         std::string data = std::move(original_request_ptr->data);
         std::string target = original_request_ptr->target;
-        std::cout << "async_post(): target=" << target << std::endl << std::flush;
+        _log_callback(std::format("async_post(): target={}", target));
 
         auto req = std::make_unique<request_type>();
         req->version(11);
         req->method(action);
         if ( action != boost::beast::http::verb::get ) {
-            std::cout << "Not get. Data:" << data << "\n" << std::flush;
+            _log_callback(std::format("Not get. Data: {}", data));
             req->body() = std::move(data);
             req->set(boost::beast::http::field::content_length, std::to_string(req->body().length()));
             req->set(boost::beast::http::field::content_type, "application/x-www-form-urlencoded");
@@ -431,9 +429,9 @@ struct api::impl {
         req->set(boost::beast::http::field::user_agent, m_client_api_string);
         
 
-        std::cout << "X-MBX-APIKEY:" << m_pk << "\n" << std::flush;
+        //std::cout << "X-MBX-APIKEY:" << m_pk << "\n" << std::flush;
 
-        std::cout << target << " REQUEST. Host" << m_host << "\n" << std::endl << std::flush;
+        _log_callback(std::format( "{} REQUEST. Host {}", target, m_host));
 
         // Look up the domain name
         m_resolver.async_resolve(
@@ -459,7 +457,7 @@ struct api::impl {
 
         if(! SSL_set_tlsext_host_name(ssl_socket->native_handle(), m_host.c_str())) {
             boost::system::error_code ec2{static_cast<int>(::ERR_get_error()), boost::asio::error::get_ssl_category()};
-            std::cerr << __MESSAGE("msg=" << ec2.message()) << std::endl;
+            _log_callback(std::format("Error: {}", ec2.message()));
 
             return;
         }
