@@ -530,6 +530,8 @@ struct websockets::impl {
 
             _log_callback(std::format("Removing channel {:p}", h));
 
+            it->second->stop();
+
             m_websockets.erase(it);
         });
     }
