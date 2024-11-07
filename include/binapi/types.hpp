@@ -280,6 +280,7 @@ struct exchange_info_t {
             }
 
             assert("bad T type" == nullptr);
+            throw std::runtime_error("bad T type");
         }
 
         const filter_t::price_t& get_filter_price() const
@@ -417,6 +418,7 @@ struct options_exchange_info_t
 			}
 
 			assert("bad T type" == nullptr);
+            throw std::runtime_error("bad T type");
 		}
 
 		const filter_t::price_t& get_filter_price() const
