@@ -340,7 +340,6 @@ struct options_exchange_info_t
 	
 	struct option_contract_t
 	{
-		int id;
 		std::string baseAsset;
 		std::string quoteAsset;
 		std::string underlying;
@@ -352,7 +351,6 @@ struct options_exchange_info_t
 
 	struct option_asset_t
 	{
-		int id;
 		std::string name;
 
         friend std::ostream &operator<<(std::ostream &os, const option_asset_t &f);
@@ -487,6 +485,23 @@ struct trades_t {
 
     static trades_t construct(const flatjson::fjson &json);
     friend std::ostream &operator<<(std::ostream &os, const trades_t &s);
+};
+
+struct option_trades_t {
+    struct option_trade_t {
+        std::size_t id;
+        double_type price;
+        double_type qty;
+        std::size_t time;
+
+        static option_trade_t construct(const flatjson::fjson &json);
+        friend std::ostream &operator<<(std::ostream &os, const option_trade_t &s);
+    };
+
+    std::vector<option_trade_t> trades;
+
+    static option_trades_t construct(const flatjson::fjson &json);
+    friend std::ostream &operator<<(std::ostream &os, const option_trades_t &s);
 };
 
 // https://github.com/binance-exchange/binance-official-api-docs/blob/master/rest-api.md#compressedaggregate-trades-list

@@ -774,6 +774,15 @@ api::result<trades_t::trade_t> api::trade(const char *symbol, trade_cb cb) {
     return pimpl->post(false, "/api/v3/trades", boost::beast::http::verb::get, map, std::move(cb));
 }
 
+api::result<option_trades_t::option_trade_t> api::options_trade(const char *symbol, options_trade_cb cb) {
+    const impl::init_list_type map = {
+         {"symbol", symbol}
+        ,{"limit", 1u}
+    };
+
+    return pimpl->post(false, "/eapi/v1/trades", boost::beast::http::verb::get, map, std::move(cb));
+}
+
 api::result<trades_t> api::trades(const char *symbol, std::size_t limit, trades_cb cb) {
     const impl::init_list_type map = {
          {"symbol", symbol}

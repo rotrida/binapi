@@ -803,7 +803,6 @@ std::ostream& operator<<(std::ostream &os, const options_exchange_info_t::rate_l
 std::ostream& operator<<(std::ostream &os, const options_exchange_info_t::option_contract_t &o) {
     os
     << "{"
-    << "\"id\":\"" << o.id << "\","
     << "\"baseAsset\":\"" << o.baseAsset << "\","
     << "\"quoteAsset\":\"" << o.quoteAsset << "\","
     << "\"underlying\":" << o.underlying
@@ -816,7 +815,6 @@ std::ostream& operator<<(std::ostream &os, const options_exchange_info_t::option
 std::ostream& operator<<(std::ostream &os, const options_exchange_info_t::option_asset_t &o) {
     os
     << "{"
-    << "\"id\":\"" << o.id << "\","
     << "\"name\":\"" << o.name
     << "}";
 
@@ -917,7 +915,6 @@ options_exchange_info_t options_exchange_info_t::construct(const flatjson::fjson
     for ( auto idx = 0u; idx < option_contracts.size(); ++idx ) {
         options_exchange_info_t::option_contract_t item{};
         const auto it = option_contracts.at(idx);
-        __BINAPI_GET2(item, id, it);
         __BINAPI_GET2(item, baseAsset, it);
         __BINAPI_GET2(item, quoteAsset, it);
         __BINAPI_GET2(item, underlying, it);
@@ -930,7 +927,6 @@ options_exchange_info_t options_exchange_info_t::construct(const flatjson::fjson
     for ( auto idx = 0u; idx < option_assets.size(); ++idx ) {
         options_exchange_info_t::option_asset_t item{};
         const auto it = option_assets.at(idx);
-        __BINAPI_GET2(item, id, it);
         __BINAPI_GET2(item, name, it);
         res.optionAssets.emplace_back(std::move(item));
     }
@@ -953,9 +949,7 @@ options_exchange_info_t options_exchange_info_t::construct(const flatjson::fjson
     for ( auto idx = 0u; idx < symbols.size(); ++idx ) {
         options_exchange_info_t::option_symbol_t sym{};
         const auto sit = symbols.at(idx);
-        __BINAPI_GET2(sym, contractId, sit);
         __BINAPI_GET2(sym, expiryDate, sit);
-		__BINAPI_GET2(sym, id, sit);
         __BINAPI_GET2(sym, symbol, sit);
         __BINAPI_GET2(sym, side, sit);
         __BINAPI_GET2(sym, strikePrice, sit);
@@ -1186,6 +1180,64 @@ trades_t trades_t::construct(const flatjson::fjson &json) {
 }
 
 std::ostream &operator<<(std::ostream &os, const trades_t &o) {
+    os
+    << "[";
+    for ( auto it = o.trades.begin(); it != o.trades.end(); ++it ) {
+        os << *it;
+        if ( std::next(it) != o.trades.end() ) {
+            os << ",";
+        }
+    }
+
+    os << "]";
+
+    return os;
+}
+
+option_trades_t::option_trade_t option_trades_t::option_trade_t::construct(const flatjson::fjson &json) {
+    assert(json.is_valid());
+
+    option_trades_t::option_trade_t res{};
+    const auto it = json.at(0);
+    __BINAPI_GET2(res, id, it);
+    __BINAPI_GET2(res, price, it);
+    __BINAPI_GET2(res, qty, it);
+    __BINAPI_GET2(res, time, it);
+
+    return res;
+}
+
+std::ostream &operator<<(std::ostream &os, const option_trades_t::option_trade_t &o) {
+    os
+    << "{"
+    << "\"id\":" << o.id << ","
+    << "\"price\":\"" << o.price << "\","
+    << "\"qty\":\"" << o.qty << "\","
+    << "\"time\":" << o.time << ","
+    << "}";
+
+    return os;
+}
+
+option_trades_t option_trades_t::construct(const flatjson::fjson &json) {
+    assert(json.is_valid());
+
+    option_trades_t res{};
+    for ( auto idx = 0u; idx < json.size(); ++idx ) {
+        option_trades_t::option_trade_t item{};
+        const auto it = json.at(idx);
+        __BINAPI_GET2(item, id, it);
+        __BINAPI_GET2(item, price, it);
+        __BINAPI_GET2(item, qty, it);
+        __BINAPI_GET2(item, time, it);
+
+        res.trades.push_back(std::move(item));
+    }
+
+    return res;
+}
+
+std::ostream &operator<<(std::ostream &os, const option_trades_t &o) {
     os
     << "[";
     for ( auto it = o.trades.begin(); it != o.trades.end(); ++it ) {

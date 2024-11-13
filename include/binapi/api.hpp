@@ -110,10 +110,11 @@ struct api {
 
     // https://github.com/binance/binance-spot-api-docs/blob/master/rest-api.md#recent-trades-list
     using trade_cb = std::function<bool(const char *fl, int ec, std::string errmsg, trades_t::trade_t res)>;
-    result<trades_t::trade_t>
-    trade(const std::string &symbol, trade_cb cb = {}) { return trade(symbol.c_str(), std::move(cb)); }
-    result<trades_t::trade_t>
-    trade(const char *symbol, trade_cb cb = {});
+    result<trades_t::trade_t> trade(const std::string &symbol, trade_cb cb = {}) { return trade(symbol.c_str(), std::move(cb)); }
+    result<trades_t::trade_t> trade(const char *symbol, trade_cb cb = {});
+
+    using options_trade_cb = std::function<bool(const char *fl, int ec, std::string errmsg, option_trades_t::option_trade_t res)>;
+    api::result<option_trades_t::option_trade_t> options_trade(const char *symbol, options_trade_cb cb);
 
     using trades_cb = std::function<bool(const char *fl, int ec, std::string errmsg, trades_t res)>;
     result<trades_t>
