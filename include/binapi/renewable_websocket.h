@@ -9,6 +9,10 @@ namespace binapi
 	{
 		class renewable_websocket: public std::enable_shared_from_this<renewable_websocket>
 		{
+		public:
+
+			using log_callback = std::function<void(const std::string_view)>;
+
 		protected:
 
 			boost::asio::io_context& _ioc;
@@ -19,10 +23,18 @@ namespace binapi
 			boost::posix_time::time_duration _web_socket_channel_renew;
 			binapi::ws::websockets::handle _active_channel;
 			binapi::ws::websockets::handle _secondary_channel;
+			log_callback _log_callback;
+
+			std::shared_ptr<boost::asio::deadline_timer> _active_channel_connection_attempt_timer_ptr;
+			std::shared_ptr<boost::asio::deadline_timer> _secondary_channel_connection_attempt_timer_ptr;
+			boost::posix_time::ptime _active_channel_last_attempt_connection;
+			boost::posix_time::ptime _secondary_channel_last_attempt_connection;
+			boost::posix_time::time_duration _reconnection_delay;
+
 			bool _stopped;
 
 			using async_channel_creation_callback = std::function<void(binapi::ws::websockets::handle)>;
-			void create_channel(async_channel_creation_callback callback);
+			void create_channel(async_channel_creation_callback callback, const bool primary);
 			
 			virtual void subscribe_channel(async_channel_creation_callback callback) = 0;
 			virtual void unsubscribe_channel(binapi::ws::websockets::handle handle, binapi::ws::websockets::async_stop_callback callback);
@@ -32,7 +44,7 @@ namespace binapi
 
 		public:
 
-			renewable_websocket(boost::asio::io_context& ioc, binapi::ws::websockets& websocket, boost::posix_time::time_duration web_socket_timeout, boost::posix_time::time_duration web_socket_channel_renew);
+			renewable_websocket(boost::asio::io_context& ioc, binapi::ws::websockets& websocket, boost::posix_time::time_duration web_socket_timeout, boost::posix_time::time_duration web_socket_channel_renew, log_callback log_callback);
 
 			virtual void start();
 			virtual void stop(binapi::ws::websockets::async_stop_callback callback);
