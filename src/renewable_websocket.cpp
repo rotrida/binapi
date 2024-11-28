@@ -43,7 +43,6 @@ void renewable_websocket::create_channel(async_channel_creation_callback callbac
 
     const auto now = boost::posix_time::second_clock::universal_time();
     const auto next_reconnection_attempt = last_attempt_connection + _reconnection_delay;
-    last_attempt_connection = now;
 
     if(last_attempt_connection + _reconnection_delay > now)
     {
@@ -62,6 +61,8 @@ void renewable_websocket::create_channel(async_channel_creation_callback callbac
 
         return;
     }
+
+    last_attempt_connection = now;
 
     _log_callback("Connecting.");
     subscribe_channel(subscribe_result);
