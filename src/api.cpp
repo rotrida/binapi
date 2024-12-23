@@ -743,6 +743,12 @@ api::result<options_exchange_info_t> api::options_exchange_info(const std::vecto
 
 /*************************************************************************************************/
 
+api::result<inverse_future_exchange_info_t> api::inverse_future_exchange_info(inverse_future_exchange_info_cb cb) {
+    return pimpl->post(false, "/fapi/v1/exchangeInfo", boost::beast::http::verb::get, {}, std::move(cb));
+}
+
+/*************************************************************************************************/
+
 api::result<option_depths_t> api::options_depths(const char *symbol, std::size_t limit, option_depths_cb cb) {
     const impl::init_list_type map = {
          {"symbol", symbol}
@@ -820,6 +826,17 @@ api::result<agg_trades_t> api::agg_trades(const char *symbol, std::size_t limit,
     const impl::init_list_type map = {
          {"symbol", symbol}
         ,{"limit", limit}
+    };
+
+    return pimpl->post(false, "/api/v3/aggTrades", boost::beast::http::verb::get, map, std::move(cb));
+}
+
+api::result<agg_trades_t> api::historical_aggregate_trades(const char* symbol, std::size_t limit, uint64_t from_id, agg_trades_cb cb)
+{
+    const impl::init_list_type map = {
+         {"symbol", symbol}
+        ,{"limit", limit}
+        ,{"fromId", from_id}
     };
 
     return pimpl->post(false, "/api/v3/aggTrades", boost::beast::http::verb::get, map, std::move(cb));

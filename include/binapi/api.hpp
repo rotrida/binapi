@@ -90,13 +90,20 @@ struct api {
     using options_exchange_info_cb = std::function<bool(const char *fl, int ec, std::string errmsg, options_exchange_info_t res)>;
     result<options_exchange_info_t>
     options_exchange_info(options_exchange_info_cb cb = {});
+    
     result<options_exchange_info_t>
     options_exchange_info(const char *symbol, options_exchange_info_cb cb = {});
     result<options_exchange_info_t>
+    
     options_exchange_info(const std::string &symbol, options_exchange_info_cb cb = {}) { return options_exchange_info(symbol.c_str(), std::move(cb)); }
+    
     result<options_exchange_info_t>
     options_exchange_info(const std::vector<std::string> &symbols, options_exchange_info_cb cb = {});
 
+    // https://developers.binance.com/docs/derivatives/usds-margined-futures/market-data/rest-api/Exchange-Information
+    using inverse_future_exchange_info_cb = std::function<bool(const char *fl, int ec, std::string errmsg, inverse_future_exchange_info_t res)>;
+    result<inverse_future_exchange_info_t> inverse_future_exchange_info(inverse_future_exchange_info_cb cb = {});
+    
     // https://github.com/binance/binance-spot-api-docs/blob/master/rest-api.md#order-book
     using depths_cb = std::function<bool(const char *fl, int ec, std::string errmsg, depths_t res)>;
     result<depths_t>
@@ -168,6 +175,12 @@ struct api {
     agg_trades(const std::string &symbol, std::size_t limit, agg_trades_cb cb = {}) { return agg_trades(symbol.c_str(), limit, std::move(cb)); }
     result<agg_trades_t>
     agg_trades(const char *symbol, std::size_t limit, agg_trades_cb cb = {});
+
+    // https://github.com/binance/binance-spot-api-docs/blob/master/rest-api.md#old-trade-lookup-market_data
+    result<agg_trades_t>
+        historical_aggregate_trades(const std::string& symbol, std::size_t limit, uint64_t from_id, agg_trades_cb cb = {}) { return historical_aggregate_trades(symbol.c_str(), limit, from_id, std::move(cb)); }
+    result<agg_trades_t>
+        historical_aggregate_trades(const char* symbol, std::size_t limit, uint64_t from_id, agg_trades_cb cb = {});
 
     // https://github.com/binance/binance-spot-api-docs/blob/master/rest-api.md#klinecandlestick-data
     using klines_cb = std::function<bool(const char *fl, int ec, std::string errmsg, klines_t res)>;

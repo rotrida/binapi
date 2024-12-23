@@ -1022,6 +1022,239 @@ std::ostream& operator<<(std::ostream &os, const options_exchange_info_t &o) {
 
 /*************************************************************************************************/
 
+std::ostream& operator<<(std::ostream &os, const inverse_future_exchange_info_t::rate_limit_t &o) {
+    os
+    << "{"
+    << "\"rateLimitType\":\"" << o.rateLimitType << "\","
+    << "\"interval\":\"" << o.interval << "\","
+    << "\"intervalNum\":\"" << o.intervalNum << "\","
+    << "\"limit\":" << o.limit
+    << "}";
+
+    return os;
+}
+
+std::ostream& operator<<(std::ostream &os, const inverse_future_exchange_info_t::asset_t &o) {
+    os
+    << "{"
+    << "\"name\":\"" << o.asset << "\","
+    << "\"marginAvailable\":\"" << o.marginAvailable << "\","
+    << "\"autoAssetExchange\":\"" << o.autoAssetExchange
+    << "}";
+
+    return os;
+}
+
+std::ostream &operator<<(std::ostream &os, const inverse_future_exchange_info_t::symbol_t::filter_t::price_t &o) {
+    os
+    << "{"
+    << "\"filterType\":\"PRICE_FILTER\","
+    << "\"minPrice\":\"" << o.minPrice << "\","
+    << "\"maxPrice\":\"" << o.maxPrice << "\","
+    << "\"tickSize\":\"" << o.tickSize << "\""
+    << "}";
+
+    return os;
+}
+
+std::ostream &operator<<(std::ostream &os, const inverse_future_exchange_info_t::symbol_t::filter_t::lot_size_t &o) {
+    os
+    << "{"
+    << "\"filterType\":\"LOT_SIZE\","
+    << "\"minQty\":\"" << o.minQty << "\","
+    << "\"maxQty\":\"" << o.maxQty << "\","
+    << "\"stepSize\":\"" << o.stepSize << "\""
+    << "}";
+
+    return os;
+}
+
+std::ostream &operator<<(std::ostream &os, const inverse_future_exchange_info_t::symbol_t::filter_t &o) {
+    static const auto visitor = [&os](const auto &o){ os << o; };
+    boost::apply_visitor(visitor, o.filter);
+
+    return os;
+}
+
+std::ostream &operator<<(std::ostream &os, const inverse_future_exchange_info_t::symbol_t &o) {
+
+    os
+    << "\"symbol\":\"" << o.symbol << "\","
+    << "\"pair\":\"" << o.pair << "\","
+    << "\"contractType\":\"" << o.contractType << "\","
+    << "\"deliveryDate\":\"" << o.deliveryDate << "\","
+    << "\"onboardDate\":\"" << o.onboardDate << "\","
+    << "\"status\":\"" << o.status << "\","
+    << "\"maintMarginPercent\":\"" << o.maintMarginPercent << "\","
+    << "\"requiredMarginPercent\":\"" << o.requiredMarginPercent << "\","
+    << "\"baseAsset\":\"" << o.baseAsset << "\","
+    << "\"quoteAsset\":\"" << o.quoteAsset << "\","
+    << "\"marginAsset\":\"" << o.marginAsset << "\","
+    << "\"pricePrecision\":\"" << o.pricePrecision << "\","
+    << "\"quantityPrecision\":\"" << o.quantityPrecision << "\","
+    << "\"baseAssetPrecision\":\"" << o.baseAssetPrecision << "\","
+    << "\"quotePrecision\":\"" << o.quotePrecision << "\","
+    << "\"underlyingType\":\"" << o.underlyingType << "\","
+    << "\"underlyingSubType\":\"" << o.underlyingSubType << "\","
+    << "\"settlePlan\":\"" << o.settlePlan << "\","
+    << "\"triggerProtect\":\"" << o.triggerProtect << "\","
+    << "\"liquidationFee\":\"" << o.liquidationFee << "\","
+    << "\"marketTakeBound\":\"" << o.marketTakeBound << "\","
+
+    << "\"filters\":[";
+    for ( auto it = o.filters.begin(); it != o.filters.end(); ++it ) {
+        os << *it;
+        if ( std::next(it) != o.filters.end() ) {
+            os << ",";
+        }
+    }
+    os
+    << "]"
+
+    << "\"orderType\":[";
+    for ( auto it = o.orderType.begin(); it != o.orderType.end(); ++it ) {
+        os << *it;
+        if ( std::next(it) != o.orderType.end() ) {
+            os << ",";
+        }
+    }
+    os
+    << "]"
+
+    << "\"timeInForce\":[";
+    for ( auto it = o.timeInForce.begin(); it != o.timeInForce.end(); ++it ) {
+        os << *it;
+        if ( std::next(it) != o.timeInForce.end() ) {
+            os << ",";
+        }
+    }
+    os
+    << "]"
+
+
+    << "}";
+
+    return os;
+}
+
+bool inverse_future_exchange_info_t::is_valid_symbol(const char *sym) const {
+    return inverseFutureSymbols.find(sym) != inverseFutureSymbols.end();
+}
+const inverse_future_exchange_info_t::symbol_t& inverse_future_exchange_info_t::get_by_symbol(const char *sym) const {
+    auto it = inverseFutureSymbols.find(sym);
+    if ( it != inverseFutureSymbols.end() ) {
+        return it->second;
+    }
+
+    assert(!"unreachable");
+}
+
+inverse_future_exchange_info_t inverse_future_exchange_info_t::construct(const flatjson::fjson &json) {
+    assert(json.is_valid());
+
+    inverse_future_exchange_info_t res{};
+    __BINAPI_GET(timezone);
+    __BINAPI_GET(serverTime);
+
+    const auto assets = json.at("assets");
+    assert(assets.is_array());
+    for ( auto idx = 0u; idx < assets.size(); ++idx ) {
+        inverse_future_exchange_info_t::asset_t item{};
+        const auto it = assets.at(idx);
+        __BINAPI_GET2(item, asset, it);
+        __BINAPI_GET2(item, marginAvailable, it);
+        __BINAPI_GET2(item, autoAssetExchange, it);
+        res.assets.emplace_back(std::move(item));
+    }
+
+    const auto limits = json.at("rateLimits");
+    assert(limits.is_array());
+    for ( auto idx = 0u; idx < limits.size(); ++idx ) {
+        inverse_future_exchange_info_t::rate_limit_t item{};
+        const auto it = limits.at(idx);
+        __BINAPI_GET2(item, rateLimitType, it);
+        __BINAPI_GET2(item, interval, it);
+        __BINAPI_GET2(item, intervalNum, it);
+        __BINAPI_GET2(item, limit, it);
+
+        res.rateLimits.emplace_back(std::move(item));
+    }
+
+    const auto symbols = json.at("symbols");
+    assert(symbols.is_array());
+    for ( auto idx = 0u; idx < symbols.size(); ++idx ) {
+        inverse_future_exchange_info_t::symbol_t sym{};
+        const auto sit = symbols.at(idx);
+
+        __BINAPI_GET2(sym, symbol, sit);
+        __BINAPI_GET2(sym, pair, sit);
+        __BINAPI_GET2(sym, contractType, sit);
+        __BINAPI_GET2(sym, deliveryDate, sit);
+        __BINAPI_GET2(sym, onboardDate, sit);
+        __BINAPI_GET2(sym, status, sit);
+        __BINAPI_GET2(sym, maintMarginPercent, sit);
+        __BINAPI_GET2(sym, requiredMarginPercent, sit);
+        __BINAPI_GET2(sym, baseAsset, sit);
+        __BINAPI_GET2(sym, quoteAsset, sit);
+        __BINAPI_GET2(sym, marginAsset, sit);
+        __BINAPI_GET2(sym, pricePrecision, sit);
+        __BINAPI_GET2(sym, quantityPrecision, sit);
+        __BINAPI_GET2(sym, baseAssetPrecision, sit);
+        __BINAPI_GET2(sym, quotePrecision, sit);
+        __BINAPI_GET2(sym, underlyingType, sit);
+        __BINAPI_GET2(sym, underlyingSubType, sit);
+        __BINAPI_GET2(sym, settlePlan, sit);
+        __BINAPI_GET2(sym, triggerProtect, sit);
+        __BINAPI_GET2(sym, liquidationFee, sit);
+        __BINAPI_GET2(sym, marketTakeBound, sit);
+
+        res.inverseFutureSymbols.emplace(sym.symbol, std::move(sym));
+    }
+
+    return res;
+}
+
+std::ostream& operator<<(std::ostream &os, const inverse_future_exchange_info_t &o) {
+    os
+    << "{"
+    << "\"timezone\":\"" << o.timezone << "\","
+    << "\"serverTime\":" << o.serverTime << ","
+    << "],"
+    << "\"assets\":[";
+    for ( auto it = o.assets.begin(); it != o.assets.end(); ++it ) {
+        os << "\"" << *it << "\"";
+        if ( std::next(it) != o.assets.end() ) {
+            os << ",";
+        }
+    }
+    os
+    << "],"
+    << "\"rateLimits\":[";
+    for ( auto it = o.rateLimits.begin(); it != o.rateLimits.end(); ++it ) {
+        os << *it;
+        if ( std::next(it) != o.rateLimits.end() ) {
+            os << ",";
+        }
+    }
+    os
+    << "],"
+    << "\"inverseFutureSymbols\":[";
+    for ( auto it = o.inverseFutureSymbols.begin(); it != o.inverseFutureSymbols.end(); ++it ) {
+        os << it->second;
+        if ( std::next(it) != o.inverseFutureSymbols.end() ) {
+            os << ",";
+        }
+    }
+    os
+    << "]";
+
+    os << "}";
+
+    return os;
+}
+
+/*************************************************************************************************/
+
 std::ostream &operator<<(std::ostream &os, const depths_t::depth_t &o) {
     os
     << "["
@@ -1303,7 +1536,7 @@ agg_trades_t agg_trades_t::construct(const flatjson::fjson &json) {
         __get_json(item.last_id, "l", it);
         __get_json(item.time, "T", it);
         __get_json(item.isBuyerMaker, "m", it);
-        __get_json(item.isBestMatch, "M", it);
+        __get_json_def(item.isBestMatch, "M", it, false);
 
         res.trades.push_back(std::move(item));
     }
@@ -2010,7 +2243,7 @@ agg_trade_t agg_trade_t::construct(const flatjson::fjson &json) {
     __BINAPI_GET(l);
     __BINAPI_GET(T);
     __BINAPI_GET(m);
-    __BINAPI_GET(M);
+    __BINAPI_GET_DEFAULT(M, false);
 
     return res;
 }

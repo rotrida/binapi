@@ -32,7 +32,7 @@ void renewable_websocket::create_channel(async_channel_creation_callback callbac
 
     auto subscribe_result = [this, me_ptr=shared_from_this(), callback](binapi::ws::websockets::handle handle) 
     {
-        _strand_ptr->wrap([this, me_ptr, callback](binapi::ws::websockets::handle handle)
+        boost::asio::dispatch(*_strand_ptr, [this, me_ptr, handle, callback]()
         {
             _channel_renew_timer.expires_from_now(_web_socket_channel_renew);
             _channel_renew_timer.async_wait(boost::asio::bind_executor(*_strand_ptr, std::bind(&renewable_websocket::deal_channel_renew_timer_event, this, std::placeholders::_1)));
