@@ -1457,30 +1457,10 @@ std::ostream &operator<<(std::ostream &os, const inverse_future_exchange_info_t:
     return os;
 }
 
-std::ostream &operator<<(std::ostream &os, const inverse_future_exchange_info_t::symbol_t::filter_t::min_notional_t &o) {
-    os
-    << "{"
-    << "\"filterType\":\"MIN_NOTIONAL\","
-    << "\"notional\":\"" << o.notional << "\""
-    << "}";
-
-    return os;
-}
-
 std::ostream &operator<<(std::ostream &os, const inverse_future_exchange_info_t::symbol_t::filter_t::max_num_orders_t &o) {
     os
     << "{"
     << "\"filterType\":\"MIN_NOTIONAL\","
-    << "\"limit\":\"" << o.limit << "\""
-    << "}";
-
-    return os;
-}
-
-std::ostream &operator<<(std::ostream &os, const inverse_future_exchange_info_t::symbol_t::filter_t::max_num_algo_orders_t &o) {
-    os
-    << "{"
-    << "\"filterType\":\"MAX_NUM_ALGO_ORDERS\","
     << "\"limit\":\"" << o.limit << "\""
     << "}";
 
@@ -1625,6 +1605,84 @@ inverse_future_exchange_info_t inverse_future_exchange_info_t::construct(const f
         __BINAPI_GET2(sym,maintMarginPercent, sit);
         __BINAPI_GET2(sym,requiredMarginPercent, sit);
         __BINAPI_GET2(sym,underlyingType, sit);
+
+        const auto filters = sit.at("filters");
+
+        assert(filters.is_array());
+
+        for ( auto idx = 0u; idx < filters.size(); ++idx ) 
+        {
+            const auto filter = symbols.at(idx);
+
+            const auto filter_type = filter.at("filterType");
+            assert(filter_type.is_string());
+
+            auto filter_type_str = filter_type.to_string();
+
+            if(filter_type_str == "PRICE_FILTER")
+            {
+                symbol_t::filter_t::price_t price;
+                __BINAPI_GET2(price, maxPrice, filter);
+                __BINAPI_GET2(price, minPrice, filter);
+                __BINAPI_GET2(price, tickSize, filter);
+
+                symbol_t::filter_t filt;
+                filt.filterType = filter_type_str;
+                filt.filter = std::move(price);
+
+                sym.filters.emplace_back(std::move(filt));
+            }
+            else if(filter_type_str == "LOT_SIZE")
+            {
+                symbol_t::filter_t::lot_size_t lot;
+                __BINAPI_GET2(lot, maxQty, filter);
+                __BINAPI_GET2(lot, minQty, filter);
+                __BINAPI_GET2(lot, stepSize, filter);
+
+                symbol_t::filter_t filt;
+                filt.filterType = filter_type_str;
+                filt.filter = std::move(lot);
+
+                sym.filters.emplace_back(std::move(filt));
+            }
+            else if(filter_type_str == "MARKET_LOT_SIZE")
+            {
+                symbol_t::filter_t::market_lot_size_t max_lot_size;
+                __BINAPI_GET2(max_lot_size, maxQty, filter);
+                __BINAPI_GET2(max_lot_size, minQty, filter);
+                __BINAPI_GET2(max_lot_size, stepSize, filter);
+
+                symbol_t::filter_t filt;
+                filt.filterType = filter_type_str;
+                filt.filter = std::move(max_lot_size);
+
+                sym.filters.emplace_back(std::move(filt));
+            }
+            else if(filter_type_str == "MAX_NUM_ORDERS")
+            {
+                symbol_t::filter_t::max_num_orders_t max_num_orders;
+                __BINAPI_GET2(max_num_orders, limit, filter);
+
+                symbol_t::filter_t filt;
+                filt.filterType = filter_type_str;
+                filt.filter = std::move(max_num_orders);
+
+                sym.filters.emplace_back(std::move(filt));
+            }
+            else if(filter_type_str == "PERCENT_PRICE")
+            {
+                symbol_t::filter_t::percent_price_t percent_price;
+                __BINAPI_GET2(percent_price, multiplierUp, filter);
+                __BINAPI_GET2(percent_price, multiplierDown, filter);
+                __BINAPI_GET2(percent_price, multiplierDecimal, filter);
+
+                symbol_t::filter_t filt;
+                filt.filterType = filter_type_str;
+                filt.filter = std::move(percent_price);
+
+                sym.filters.emplace_back(std::move(filt));
+            }
+        }
 
         res.inverseFutureSymbols.emplace(sym.symbol, std::move(sym));
     }

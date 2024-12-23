@@ -659,16 +659,6 @@ struct inverse_future_exchange_info_t
 
                 friend std::ostream &operator<<(std::ostream &os, const max_num_orders_t &f);
             };
-            struct max_num_algo_orders_t {
-                size_t limit;
-
-                friend std::ostream &operator<<(std::ostream &os, const max_num_algo_orders_t &f);
-            };
-            struct min_notional_t {
-                double_type notional;
-
-                friend std::ostream &operator<<(std::ostream &os, const max_num_algo_orders_t &f);
-            };
             struct percent_price_t {
                 double_type multiplierUp;
                 double_type multiplierDown;
@@ -683,9 +673,7 @@ struct inverse_future_exchange_info_t
 				 price_t
 				,lot_size_t
                 ,market_lot_size_t
-                ,min_notional_t
                 ,max_num_orders_t
-                ,max_num_algo_orders_t
                 ,percent_price_t
 			> filter;
 
