@@ -103,6 +103,10 @@ struct api {
     // https://developers.binance.com/docs/derivatives/usds-margined-futures/market-data/rest-api/Exchange-Information
     using inverse_future_exchange_info_cb = std::function<bool(const char *fl, int ec, std::string errmsg, inverse_future_exchange_info_t res)>;
     result<inverse_future_exchange_info_t> inverse_future_exchange_info(inverse_future_exchange_info_cb cb = {});
+
+    // https://developers.binance.com/docs/derivatives/coin-margined-futures/market-data/Exchange-Information
+    using linear_future_exchange_info_cb = std::function<bool(const char *fl, int ec, std::string errmsg, linear_future_exchange_info_t res)>;
+    result<linear_future_exchange_info_t> linear_future_exchange_info(linear_future_exchange_info_cb cb = {});
     
     // https://github.com/binance/binance-spot-api-docs/blob/master/rest-api.md#order-book
     using depths_cb = std::function<bool(const char *fl, int ec, std::string errmsg, depths_t res)>;

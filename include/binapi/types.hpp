@@ -442,7 +442,7 @@ struct options_exchange_info_t
     friend std::ostream& operator<<(std::ostream &os, const options_exchange_info_t &s);
 };
 
-struct inverse_future_exchange_info_t 
+struct linear_future_exchange_info_t 
 {
 	std::string timezone;
 	std::size_t serverTime;
@@ -542,6 +542,111 @@ struct inverse_future_exchange_info_t
 		friend std::ostream &operator<<(std::ostream &os, const symbol_t &s);
 	};
 
+	std::unordered_map<std::string, symbol_t> linearFutureSymbols;
+
+    bool is_valid_symbol(const std::string &sym) const
+        { return is_valid_symbol(sym.c_str()); }
+    bool is_valid_symbol(const char *sym) const;
+
+    const symbol_t& get_by_symbol(const std::string &sym) const
+        { return get_by_symbol(sym.c_str()); }
+    const symbol_t& get_by_symbol(const char *sym) const;
+
+    static linear_future_exchange_info_t construct(const flatjson::fjson &json);
+    friend std::ostream& operator<<(std::ostream &os, const linear_future_exchange_info_t &s);
+};
+
+struct inverse_future_exchange_info_t 
+{
+	std::string timezone;
+	std::size_t serverTime;
+	
+	struct rate_limit_t {
+        std::string rateLimitType;
+        std::string interval;
+		size_t intervalNum;
+        std::size_t limit;
+
+        friend std::ostream &operator<<(std::ostream &os, const rate_limit_t &f);
+    };
+    std::vector<rate_limit_t> rateLimits;
+	
+	struct symbol_t
+	{
+        double_type liquidationFee;
+        double_type marketTakeBound;
+        std::string symbol;
+        std::string pair;
+        std::string contractType;
+        size_t deliveryDate;
+        size_t onboardDate;
+        std::string contractStatus;
+        double_type contractSize;
+        std::string quoteAsset;
+        std::string baseAsset;
+        std::string marginAsset;
+        size_t pricePrecision;
+        size_t quantityPrecision;
+        size_t baseAssetPrecision;
+        size_t quotePrecision;
+        size_t equalQtyPrecision;
+        double_type triggerProtect;
+        double_type maintMarginPercent;
+        double_type requiredMarginPercent;
+        std::string underlyingType;
+        std::vector<std::string> underlyingSubType;
+        std::vector<std::string> orderType;
+        std::vector<std::string> timeInForce;
+
+		struct filter_t {
+            struct price_t {
+                double_type minPrice;
+                double_type maxPrice;
+                double_type tickSize;
+
+                friend std::ostream &operator<<(std::ostream &os, const price_t &f);
+            };
+			struct lot_size_t {
+                double_type minQty;
+                double_type maxQty;
+                double_type stepSize;
+
+                friend std::ostream &operator<<(std::ostream &os, const lot_size_t &f);
+            };
+			
+			std::string filterType;
+			
+			boost::variant<
+				 price_t
+				,lot_size_t
+			> filter;
+
+			friend std::ostream &operator<<(std::ostream &os, const filter_t &f);
+		};
+		std::vector<filter_t> filters;
+        
+		template<typename T>
+		const T& get_filter() const {
+			for ( const auto &it: filters ) {
+				const T *p = boost::get<T>(&it.filter);
+				if ( p ) {
+					return *p;
+				}
+			}
+
+			assert("bad T type" == nullptr);
+            throw std::runtime_error("bad T type");
+		}
+
+		const filter_t::price_t& get_filter_price() const
+		{ return get_filter<filter_t::price_t>(); }
+
+		const filter_t::lot_size_t& get_filter_lot_size() const
+		{ return get_filter<filter_t::lot_size_t>(); }
+		
+		friend std::ostream &operator<<(std::ostream &os, const symbol_t &s);
+	};
+
 	std::unordered_map<std::string, symbol_t> inverseFutureSymbols;
 
     bool is_valid_symbol(const std::string &sym) const
@@ -553,7 +658,7 @@ struct inverse_future_exchange_info_t
     const symbol_t& get_by_symbol(const char *sym) const;
 
     static inverse_future_exchange_info_t construct(const flatjson::fjson &json);
-    friend std::ostream& operator<<(std::ostream &os, const inverse_future_exchange_info_t &s);
+    friend std::ostream& operator<<(std::ostream &os, const linear_future_exchange_info_t &s);
 };
 
 // https://github.com/binance-exchange/binance-official-api-docs/blob/master/rest-api.md#order-book

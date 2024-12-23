@@ -1022,7 +1022,7 @@ std::ostream& operator<<(std::ostream &os, const options_exchange_info_t &o) {
 
 /*************************************************************************************************/
 
-std::ostream& operator<<(std::ostream &os, const inverse_future_exchange_info_t::rate_limit_t &o) {
+std::ostream& operator<<(std::ostream &os, const linear_future_exchange_info_t::rate_limit_t &o) {
     os
     << "{"
     << "\"rateLimitType\":\"" << o.rateLimitType << "\","
@@ -1034,7 +1034,7 @@ std::ostream& operator<<(std::ostream &os, const inverse_future_exchange_info_t:
     return os;
 }
 
-std::ostream& operator<<(std::ostream &os, const inverse_future_exchange_info_t::asset_t &o) {
+std::ostream& operator<<(std::ostream &os, const linear_future_exchange_info_t::asset_t &o) {
     os
     << "{"
     << "\"name\":\"" << o.asset << "\","
@@ -1045,7 +1045,7 @@ std::ostream& operator<<(std::ostream &os, const inverse_future_exchange_info_t:
     return os;
 }
 
-std::ostream &operator<<(std::ostream &os, const inverse_future_exchange_info_t::symbol_t::filter_t::price_t &o) {
+std::ostream &operator<<(std::ostream &os, const linear_future_exchange_info_t::symbol_t::filter_t::price_t &o) {
     os
     << "{"
     << "\"filterType\":\"PRICE_FILTER\","
@@ -1057,7 +1057,7 @@ std::ostream &operator<<(std::ostream &os, const inverse_future_exchange_info_t:
     return os;
 }
 
-std::ostream &operator<<(std::ostream &os, const inverse_future_exchange_info_t::symbol_t::filter_t::lot_size_t &o) {
+std::ostream &operator<<(std::ostream &os, const linear_future_exchange_info_t::symbol_t::filter_t::lot_size_t &o) {
     os
     << "{"
     << "\"filterType\":\"LOT_SIZE\","
@@ -1069,14 +1069,14 @@ std::ostream &operator<<(std::ostream &os, const inverse_future_exchange_info_t:
     return os;
 }
 
-std::ostream &operator<<(std::ostream &os, const inverse_future_exchange_info_t::symbol_t::filter_t &o) {
+std::ostream &operator<<(std::ostream &os, const linear_future_exchange_info_t::symbol_t::filter_t &o) {
     static const auto visitor = [&os](const auto &o){ os << o; };
     boost::apply_visitor(visitor, o.filter);
 
     return os;
 }
 
-std::ostream &operator<<(std::ostream &os, const inverse_future_exchange_info_t::symbol_t &o) {
+std::ostream &operator<<(std::ostream &os, const linear_future_exchange_info_t::symbol_t &o) {
 
     os
     << "\"symbol\":\"" << o.symbol << "\","
@@ -1137,29 +1137,29 @@ std::ostream &operator<<(std::ostream &os, const inverse_future_exchange_info_t:
     return os;
 }
 
-bool inverse_future_exchange_info_t::is_valid_symbol(const char *sym) const {
-    return inverseFutureSymbols.find(sym) != inverseFutureSymbols.end();
+bool linear_future_exchange_info_t::is_valid_symbol(const char *sym) const {
+    return linearFutureSymbols.find(sym) != linearFutureSymbols.end();
 }
-const inverse_future_exchange_info_t::symbol_t& inverse_future_exchange_info_t::get_by_symbol(const char *sym) const {
-    auto it = inverseFutureSymbols.find(sym);
-    if ( it != inverseFutureSymbols.end() ) {
+const linear_future_exchange_info_t::symbol_t& linear_future_exchange_info_t::get_by_symbol(const char *sym) const {
+    auto it = linearFutureSymbols.find(sym);
+    if ( it != linearFutureSymbols.end() ) {
         return it->second;
     }
 
     assert(!"unreachable");
 }
 
-inverse_future_exchange_info_t inverse_future_exchange_info_t::construct(const flatjson::fjson &json) {
+linear_future_exchange_info_t linear_future_exchange_info_t::construct(const flatjson::fjson &json) {
     assert(json.is_valid());
 
-    inverse_future_exchange_info_t res{};
+    linear_future_exchange_info_t res{};
     __BINAPI_GET(timezone);
     __BINAPI_GET(serverTime);
 
     const auto assets = json.at("assets");
     assert(assets.is_array());
     for ( auto idx = 0u; idx < assets.size(); ++idx ) {
-        inverse_future_exchange_info_t::asset_t item{};
+        linear_future_exchange_info_t::asset_t item{};
         const auto it = assets.at(idx);
         __BINAPI_GET2(item, asset, it);
         __BINAPI_GET2(item, marginAvailable, it);
@@ -1170,7 +1170,7 @@ inverse_future_exchange_info_t inverse_future_exchange_info_t::construct(const f
     const auto limits = json.at("rateLimits");
     assert(limits.is_array());
     for ( auto idx = 0u; idx < limits.size(); ++idx ) {
-        inverse_future_exchange_info_t::rate_limit_t item{};
+        linear_future_exchange_info_t::rate_limit_t item{};
         const auto it = limits.at(idx);
         __BINAPI_GET2(item, rateLimitType, it);
         __BINAPI_GET2(item, interval, it);
@@ -1183,7 +1183,7 @@ inverse_future_exchange_info_t inverse_future_exchange_info_t::construct(const f
     const auto symbols = json.at("symbols");
     assert(symbols.is_array());
     for ( auto idx = 0u; idx < symbols.size(); ++idx ) {
-        inverse_future_exchange_info_t::symbol_t sym{};
+        linear_future_exchange_info_t::symbol_t sym{};
         const auto sit = symbols.at(idx);
 
         __BINAPI_GET2(sym, symbol, sit);
@@ -1208,13 +1208,13 @@ inverse_future_exchange_info_t inverse_future_exchange_info_t::construct(const f
         __BINAPI_GET2(sym, liquidationFee, sit);
         __BINAPI_GET2(sym, marketTakeBound, sit);
 
-        res.inverseFutureSymbols.emplace(sym.symbol, std::move(sym));
+        res.linearFutureSymbols.emplace(sym.symbol, std::move(sym));
     }
 
     return res;
 }
 
-std::ostream& operator<<(std::ostream &os, const inverse_future_exchange_info_t &o) {
+std::ostream& operator<<(std::ostream &os, const linear_future_exchange_info_t &o) {
     os
     << "{"
     << "\"timezone\":\"" << o.timezone << "\","
@@ -1238,7 +1238,209 @@ std::ostream& operator<<(std::ostream &os, const inverse_future_exchange_info_t 
     }
     os
     << "],"
-    << "\"inverseFutureSymbols\":[";
+    << "\"linearFutureSymbols\":[";
+    for ( auto it = o.linearFutureSymbols.begin(); it != o.linearFutureSymbols.end(); ++it ) {
+        os << it->second;
+        if ( std::next(it) != o.linearFutureSymbols.end() ) {
+            os << ",";
+        }
+    }
+    os
+    << "]";
+
+    os << "}";
+
+    return os;
+}
+
+/*************************************************************************************************/
+
+std::ostream& operator<<(std::ostream &os, const inverse_future_exchange_info_t::rate_limit_t &o) {
+    os
+    << "{"
+    << "\"rateLimitType\":\"" << o.rateLimitType << "\","
+    << "\"interval\":\"" << o.interval << "\","
+    << "\"intervalNum\":\"" << o.intervalNum << "\","
+    << "\"limit\":" << o.limit
+    << "}";
+
+    return os;
+}
+
+std::ostream &operator<<(std::ostream &os, const inverse_future_exchange_info_t::symbol_t::filter_t::price_t &o) {
+    os
+    << "{"
+    << "\"filterType\":\"PRICE_FILTER\","
+    << "\"minPrice\":\"" << o.minPrice << "\","
+    << "\"maxPrice\":\"" << o.maxPrice << "\","
+    << "\"tickSize\":\"" << o.tickSize << "\""
+    << "}";
+
+    return os;
+}
+
+std::ostream &operator<<(std::ostream &os, const inverse_future_exchange_info_t::symbol_t::filter_t::lot_size_t &o) {
+    os
+    << "{"
+    << "\"filterType\":\"LOT_SIZE\","
+    << "\"minQty\":\"" << o.minQty << "\","
+    << "\"maxQty\":\"" << o.maxQty << "\","
+    << "\"stepSize\":\"" << o.stepSize << "\""
+    << "}";
+
+    return os;
+}
+
+std::ostream &operator<<(std::ostream &os, const inverse_future_exchange_info_t::symbol_t::filter_t &o) {
+    static const auto visitor = [&os](const auto &o){ os << o; };
+    boost::apply_visitor(visitor, o.filter);
+
+    return os;
+}
+
+std::ostream &operator<<(std::ostream &os, const inverse_future_exchange_info_t::symbol_t &o) {
+
+    os
+    << "\"liquidationFee\":\"" << o.liquidationFee << "\","
+    << "\"marketTakeBound\":\"" << o.marketTakeBound << "\","
+    << "\"symbol\":\"" << o.symbol << "\","
+    << "\"pair\":\"" << o.pair << "\","
+    << "\"contractType\":\"" << o.contractType << "\","
+    << "\"deliveryDate\":\"" << o.deliveryDate << "\","
+    << "\"onboardDate\":\"" << o.onboardDate << "\","
+    << "\"contractStatus\":\"" << o.contractStatus << "\","
+    << "\"contractSize\":\"" << o.contractSize << "\","
+    << "\"quoteAsset\":\"" << o.quoteAsset << "\","
+    << "\"baseAsset\":\"" << o.baseAsset << "\","
+    << "\"marginAsset\":\"" << o.marginAsset << "\","
+    << "\"pricePrecision\":\"" << o.pricePrecision << "\","
+    << "\"quantityPrecision\":\"" << o.quantityPrecision << "\","
+    << "\"baseAssetPrecision\":\"" << o.baseAssetPrecision << "\","
+    << "\"quotePrecision\":\"" << o.quotePrecision << "\","
+    << "\"equalQtyPrecision\":\"" << o.equalQtyPrecision << "\","
+    << "\"triggerProtect\":\"" << o.triggerProtect << "\","
+    << "\"maintMarginPercent\":\"" << o.maintMarginPercent << "\","
+    << "\"requiredMarginPercent\":\"" << o.requiredMarginPercent << "\","
+    << "\"underlyingType\":\"" << o.underlyingType << "\","
+
+    << "\"filters\":[";
+    for ( auto it = o.filters.begin(); it != o.filters.end(); ++it ) {
+        os << *it;
+        if ( std::next(it) != o.filters.end() ) {
+            os << ",";
+        }
+    }
+    os
+    << "]"
+
+    << "\"orderType\":[";
+    for ( auto it = o.orderType.begin(); it != o.orderType.end(); ++it ) {
+        os << *it;
+        if ( std::next(it) != o.orderType.end() ) {
+            os << ",";
+        }
+    }
+    os
+    << "]"
+
+    << "\"timeInForce\":[";
+    for ( auto it = o.timeInForce.begin(); it != o.timeInForce.end(); ++it ) {
+        os << *it;
+        if ( std::next(it) != o.timeInForce.end() ) {
+            os << ",";
+        }
+    }
+    os
+    << "]"
+
+    << "}";
+
+    return os;
+}
+
+bool inverse_future_exchange_info_t::is_valid_symbol(const char *sym) const {
+    return inverseFutureSymbols.find(sym) != inverseFutureSymbols.end();
+}
+const inverse_future_exchange_info_t::symbol_t& inverse_future_exchange_info_t::get_by_symbol(const char *sym) const {
+    auto it = inverseFutureSymbols.find(sym);
+    if ( it != inverseFutureSymbols.end() ) {
+        return it->second;
+    }
+
+    assert(!"unreachable");
+}
+
+inverse_future_exchange_info_t inverse_future_exchange_info_t::construct(const flatjson::fjson &json) {
+    assert(json.is_valid());
+
+    inverse_future_exchange_info_t res{};
+    __BINAPI_GET(timezone);
+    __BINAPI_GET(serverTime);
+
+    const auto limits = json.at("rateLimits");
+    assert(limits.is_array());
+    for ( auto idx = 0u; idx < limits.size(); ++idx ) {
+        inverse_future_exchange_info_t::rate_limit_t item{};
+        const auto it = limits.at(idx);
+        __BINAPI_GET2(item, rateLimitType, it);
+        __BINAPI_GET2(item, interval, it);
+        __BINAPI_GET2(item, intervalNum, it);
+        __BINAPI_GET2(item, limit, it);
+
+        res.rateLimits.emplace_back(std::move(item));
+    }
+
+    const auto symbols = json.at("symbols");
+    assert(symbols.is_array());
+    for ( auto idx = 0u; idx < symbols.size(); ++idx ) {
+        inverse_future_exchange_info_t::symbol_t sym{};
+        const auto sit = symbols.at(idx);
+
+        __BINAPI_GET2(sym,liquidationFee, sit);
+        __BINAPI_GET2(sym,marketTakeBound, sit);
+        __BINAPI_GET2(sym,symbol, sit);
+        __BINAPI_GET2(sym,pair, sit);
+        __BINAPI_GET2(sym,contractType, sit);
+        __BINAPI_GET2(sym,deliveryDate, sit);
+        __BINAPI_GET2(sym,onboardDate, sit);
+        __BINAPI_GET2(sym,contractStatus, sit);
+        __BINAPI_GET2(sym,contractSize, sit);
+        __BINAPI_GET2(sym,quoteAsset, sit);
+        __BINAPI_GET2(sym,baseAsset, sit);
+        __BINAPI_GET2(sym,marginAsset, sit);
+        __BINAPI_GET2(sym,pricePrecision, sit);
+        __BINAPI_GET2(sym,quantityPrecision, sit);
+        __BINAPI_GET2(sym,baseAssetPrecision, sit);
+        __BINAPI_GET2(sym,quotePrecision, sit);
+        __BINAPI_GET2(sym,equalQtyPrecision, sit);
+        __BINAPI_GET2(sym,triggerProtect, sit);
+        __BINAPI_GET2(sym,maintMarginPercent, sit);
+        __BINAPI_GET2(sym,requiredMarginPercent, sit);
+        __BINAPI_GET2(sym,underlyingType, sit);
+
+        res.inverseFutureSymbols.emplace(sym.symbol, std::move(sym));
+    }
+
+    return res;
+}
+
+std::ostream& operator<<(std::ostream &os, const inverse_future_exchange_info_t &o) {
+    os
+    << "{"
+    << "\"timezone\":\"" << o.timezone << "\","
+    << "\"serverTime\":" << o.serverTime << ","
+    << "],"
+
+    << "\"rateLimits\":[";
+    for ( auto it = o.rateLimits.begin(); it != o.rateLimits.end(); ++it ) {
+        os << *it;
+        if ( std::next(it) != o.rateLimits.end() ) {
+            os << ",";
+        }
+    }
+    os
+    << "],"
+    << "\"linearFutureSymbols\":[";
     for ( auto it = o.inverseFutureSymbols.begin(); it != o.inverseFutureSymbols.end(); ++it ) {
         os << it->second;
         if ( std::next(it) != o.inverseFutureSymbols.end() ) {

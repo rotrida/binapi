@@ -743,8 +743,14 @@ api::result<options_exchange_info_t> api::options_exchange_info(const std::vecto
 
 /*************************************************************************************************/
 
-api::result<inverse_future_exchange_info_t> api::inverse_future_exchange_info(inverse_future_exchange_info_cb cb) {
+api::result<linear_future_exchange_info_t> api::linear_future_exchange_info(linear_future_exchange_info_cb cb) {
     return pimpl->post(false, "/fapi/v1/exchangeInfo", boost::beast::http::verb::get, {}, std::move(cb));
+}
+
+/*************************************************************************************************/
+
+api::result<inverse_future_exchange_info_t> api::inverse_future_exchange_info(inverse_future_exchange_info_cb cb) {
+    return pimpl->post(false, "/dapi/v1/exchangeInfo", boost::beast::http::verb::get, {}, std::move(cb));
 }
 
 /*************************************************************************************************/
