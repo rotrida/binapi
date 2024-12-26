@@ -2944,6 +2944,76 @@ std::ostream& operator<<(std::ostream &os, const diff_depths_t &o) {
 
 /*************************************************************************************************/
 
+/*static*/ new_linear_future_symbol_info_t new_linear_future_symbol_info_t::construct(const flatjson::fjson& json)
+{
+    assert(json.is_valid());
+
+    new_linear_future_symbol_info_t res{};
+
+    __BINAPI_GET(E);
+    __BINAPI_GET(s);
+    __BINAPI_GET(ps);
+    __BINAPI_GET(ct);
+    __BINAPI_GET(dt);
+    __BINAPI_GET(ot);
+    __BINAPI_GET(cs);
+
+    return res;
+}
+
+/*friend*/ std::ostream& operator<<(std::ostream& os, const new_linear_future_symbol_info_t & o)
+{
+    os
+    << "{"
+    << "\"E\":" << o.E <<","
+    << "\"s\":" << o.s << ","
+    << "\"ps\":" << o.ps << ","
+    << "\"ct\":" << o.ct << ","
+    << "\"dt\":" << o.dt << ","
+    << "\"ot\":" << o.ot << ","
+    << "\"cs\":" << o.cs << ","
+    << "}";
+
+    return os;
+}
+
+/*************************************************************************************************/
+
+/*static*/ new_inverse_future_symbol_info_t new_inverse_future_symbol_info_t::construct(const flatjson::fjson& json)
+{
+    assert(json.is_valid());
+
+    new_inverse_future_symbol_info_t res{};
+
+    __BINAPI_GET(E);
+    __BINAPI_GET(s);
+    __BINAPI_GET(ps);
+    __BINAPI_GET(ct);
+    __BINAPI_GET(dt);
+    __BINAPI_GET(ot);
+    __BINAPI_GET(cs);
+
+    return res;
+}
+
+/*friend*/ std::ostream& operator<<(std::ostream& os, const new_inverse_future_symbol_info_t & o)
+{
+    os
+    << "{"
+    << "\"E\":" << o.E <<","
+    << "\"s\":" << o.s << ","
+    << "\"ps\":" << o.ps << ","
+    << "\"ct\":" << o.ct << ","
+    << "\"dt\":" << o.dt << ","
+    << "\"ot\":" << o.ot << ","
+    << "\"cs\":" << o.cs << ","
+    << "}";
+
+    return os;
+}
+
+/*************************************************************************************************/
+
 kline_t kline_t::construct(const flatjson::fjson &json) {
     assert(json.is_valid());
 

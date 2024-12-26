@@ -572,7 +572,22 @@ struct linear_future_exchange_info_t
 
 		const filter_t::lot_size_t& get_filter_lot_size() const
 		{ return get_filter<filter_t::lot_size_t>(); }
+
+        const filter_t::market_lot_size_t& get_filter_market_lot_size() const
+		{ return get_filter<filter_t::market_lot_size_t>(); }
+
+        const filter_t::min_notional_t& get_filter_min_notional() const
+		{ return get_filter<filter_t::min_notional_t>(); }
+
+        const filter_t::max_num_orders_t& get_filter_max_num_orders() const
+		{ return get_filter<filter_t::max_num_orders_t>(); }
+
+        const filter_t::max_num_algo_orders_t& get_filter_max_num_algo_orders() const
+		{ return get_filter<filter_t::max_num_algo_orders_t>(); }
 		
+        const filter_t::percent_price_t& get_filter_percentage_price() const
+		{ return get_filter<filter_t::percent_price_t>(); }
+
 		friend std::ostream &operator<<(std::ostream &os, const symbol_t &s);
 	};
 
@@ -1350,6 +1365,38 @@ struct new_symbol_info_t {
 
     static new_symbol_info_t construct(const flatjson::fjson& json);
     friend std::ostream& operator<<(std::ostream& os, const new_symbol_info_t& o);
+};
+
+/*************************************************************************************************/
+
+struct new_linear_future_symbol_info_t {
+    
+    std::size_t E;      // Event Time
+    std::string s;      // Symbol
+    std::string ps;     // Pair
+    std::string ct;     // Contract type
+    size_t dt;          // Delivery date time 
+    size_t ot;          // onboard date time 
+    std::string cs;     // Contract status 
+
+    static new_linear_future_symbol_info_t construct(const flatjson::fjson& json);
+    friend std::ostream& operator<<(std::ostream& os, const new_linear_future_symbol_info_t& o);
+};
+
+/*************************************************************************************************/
+
+struct new_inverse_future_symbol_info_t {
+    
+    std::size_t E;      // Event Time
+    std::string s;      // Symbol
+    std::string ps;     // Pair
+    std::string ct;     // Contract type
+    size_t dt;          // Delivery date time 
+    size_t ot;          // onboard date time 
+    std::string cs;     // Contract status 
+
+    static new_inverse_future_symbol_info_t construct(const flatjson::fjson& json);
+    friend std::ostream& operator<<(std::ostream& os, const new_inverse_future_symbol_info_t& o);
 };
 
 /*************************************************************************************************/
