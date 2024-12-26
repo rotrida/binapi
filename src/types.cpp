@@ -892,11 +892,11 @@ std::ostream &operator<<(std::ostream &os, const options_exchange_info_t::option
 }
 
 bool options_exchange_info_t::is_valid_symbol(const char *sym) const {
-    return optionSymbols.find(sym) != optionSymbols.end();
+    return symbols.find(sym) != symbols.end();
 }
 const options_exchange_info_t::option_symbol_t& options_exchange_info_t::get_by_symbol(const char *sym) const {
-    auto it = optionSymbols.find(sym);
-    if ( it != optionSymbols.end() ) {
+    auto it = symbols.find(sym);
+    if ( it != symbols.end() ) {
         return it->second;
     }
 
@@ -967,7 +967,7 @@ options_exchange_info_t options_exchange_info_t::construct(const flatjson::fjson
         __BINAPI_GET2(sym, quantityScale, sit);
         __BINAPI_GET2(sym, quoteAsset, sit);
 
-        res.optionSymbols.emplace(sym.symbol, std::move(sym));
+        res.symbols.emplace(sym.symbol, std::move(sym));
     }
 
     return res;
@@ -1006,9 +1006,9 @@ std::ostream& operator<<(std::ostream &os, const options_exchange_info_t &o) {
     os
     << "],"
     << "\"optionSymbols\":[";
-    for ( auto it = o.optionSymbols.begin(); it != o.optionSymbols.end(); ++it ) {
+    for ( auto it = o.symbols.begin(); it != o.symbols.end(); ++it ) {
         os << it->second;
-        if ( std::next(it) != o.optionSymbols.end() ) {
+        if ( std::next(it) != o.symbols.end() ) {
             os << ",";
         }
     }
@@ -1192,11 +1192,11 @@ std::ostream &operator<<(std::ostream &os, const linear_future_exchange_info_t::
 }
 
 bool linear_future_exchange_info_t::is_valid_symbol(const char *sym) const {
-    return linearFutureSymbols.find(sym) != linearFutureSymbols.end();
+    return symbols.find(sym) != symbols.end();
 }
 const linear_future_exchange_info_t::symbol_t& linear_future_exchange_info_t::get_by_symbol(const char *sym) const {
-    auto it = linearFutureSymbols.find(sym);
-    if ( it != linearFutureSymbols.end() ) {
+    auto it = symbols.find(sym);
+    if ( it != symbols.end() ) {
         return it->second;
     }
 
@@ -1362,7 +1362,7 @@ linear_future_exchange_info_t linear_future_exchange_info_t::construct(const fla
             }
         }
 
-        res.linearFutureSymbols.emplace(sym.symbol, std::move(sym));
+        res.symbols.emplace(sym.symbol, std::move(sym));
     }
 
     return res;
@@ -1392,10 +1392,10 @@ std::ostream& operator<<(std::ostream &os, const linear_future_exchange_info_t &
     }
     os
     << "],"
-    << "\"linearFutureSymbols\":[";
-    for ( auto it = o.linearFutureSymbols.begin(); it != o.linearFutureSymbols.end(); ++it ) {
+    << "\"symbols\":[";
+    for ( auto it = o.symbols.begin(); it != o.symbols.end(); ++it ) {
         os << it->second;
-        if ( std::next(it) != o.linearFutureSymbols.end() ) {
+        if ( std::next(it) != o.symbols.end() ) {
             os << ",";
         }
     }
@@ -1547,11 +1547,11 @@ std::ostream &operator<<(std::ostream &os, const inverse_future_exchange_info_t:
 }
 
 bool inverse_future_exchange_info_t::is_valid_symbol(const char *sym) const {
-    return inverseFutureSymbols.find(sym) != inverseFutureSymbols.end();
+    return symbols.find(sym) != symbols.end();
 }
 const inverse_future_exchange_info_t::symbol_t& inverse_future_exchange_info_t::get_by_symbol(const char *sym) const {
-    auto it = inverseFutureSymbols.find(sym);
-    if ( it != inverseFutureSymbols.end() ) {
+    auto it = symbols.find(sym);
+    if ( it != symbols.end() ) {
         return it->second;
     }
 
@@ -1684,7 +1684,7 @@ inverse_future_exchange_info_t inverse_future_exchange_info_t::construct(const f
             }
         }
 
-        res.inverseFutureSymbols.emplace(sym.symbol, std::move(sym));
+        res.symbols.emplace(sym.symbol, std::move(sym));
     }
 
     return res;
@@ -1706,10 +1706,10 @@ std::ostream& operator<<(std::ostream &os, const inverse_future_exchange_info_t 
     }
     os
     << "],"
-    << "\"linearFutureSymbols\":[";
-    for ( auto it = o.inverseFutureSymbols.begin(); it != o.inverseFutureSymbols.end(); ++it ) {
+    << "\"symbols\":[";
+    for ( auto it = o.symbols.begin(); it != o.symbols.end(); ++it ) {
         os << it->second;
-        if ( std::next(it) != o.inverseFutureSymbols.end() ) {
+        if ( std::next(it) != o.symbols.end() ) {
             os << ",";
         }
     }

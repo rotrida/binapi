@@ -428,7 +428,7 @@ struct options_exchange_info_t
 		friend std::ostream &operator<<(std::ostream &os, const option_symbol_t &s);
 	};
 
-	std::unordered_map<std::string, option_symbol_t> optionSymbols;
+	std::unordered_map<std::string, option_symbol_t> symbols;
 
     bool is_valid_symbol(const std::string &sym) const
         { return is_valid_symbol(sym.c_str()); }
@@ -591,7 +591,7 @@ struct linear_future_exchange_info_t
 		friend std::ostream &operator<<(std::ostream &os, const symbol_t &s);
 	};
 
-	std::unordered_map<std::string, symbol_t> linearFutureSymbols;
+	std::unordered_map<std::string, symbol_t> symbols;
 
     bool is_valid_symbol(const std::string &sym) const
         { return is_valid_symbol(sym.c_str()); }
@@ -718,7 +718,7 @@ struct inverse_future_exchange_info_t
 		friend std::ostream &operator<<(std::ostream &os, const symbol_t &s);
 	};
 
-	std::unordered_map<std::string, symbol_t> inverseFutureSymbols;
+	std::unordered_map<std::string, symbol_t> symbols;
 
     bool is_valid_symbol(const std::string &sym) const
         { return is_valid_symbol(sym.c_str()); }
