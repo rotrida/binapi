@@ -697,6 +697,12 @@ websockets::handle websockets::option_tickers(const char *currency, int expire, 
 websockets::handle websockets::new_symbol_info(on_new_symbol_info_cb cb, boost::posix_time::time_duration timeout)
 { return pimpl->start_channel(nullptr, "option_pair", std::move(cb), timeout); }
 
+websockets::handle websockets::new_linear_future_symbol_info(on_new_linear_future_symbol_info_cb cb, boost::posix_time::time_duration timeout)
+{ return pimpl->start_channel(nullptr, "!contractInfo", std::move(cb), timeout); }
+
+websockets::handle websockets::new_inverse_future_symbol_info(on_new_inverse_future_symbol_info_cb cb, boost::posix_time::time_duration timeout)
+{ return pimpl->start_channel(nullptr, "!contractInfo", std::move(cb), timeout); }
+
 /*************************************************************************************************/
 
 websockets::handle websockets::userdata(
