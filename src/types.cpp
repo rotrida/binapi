@@ -1149,8 +1149,15 @@ std::ostream &operator<<(std::ostream &os, const linear_future_exchange_info_t::
     << "\"baseAssetPrecision\":\"" << o.baseAssetPrecision << "\","
     << "\"quotePrecision\":\"" << o.quotePrecision << "\","
     << "\"underlyingType\":\"" << o.underlyingType << "\","
-    << "\"underlyingSubType\":\"" << o.underlyingSubType << "\","
-    << "\"settlePlan\":\"" << o.settlePlan << "\","
+    << "\"underlyingSubType\":[";
+    for ( auto it = o.underlyingSubType.begin(); it != o.underlyingSubType.end(); ++it ) {
+        os << *it;
+        if ( std::next(it) != o.underlyingSubType.end() ) {
+            os << ",";
+        }
+    }
+    os
+    << "]"
     << "\"triggerProtect\":\"" << o.triggerProtect << "\","
     << "\"liquidationFee\":\"" << o.liquidationFee << "\","
     << "\"marketTakeBound\":\"" << o.marketTakeBound << "\","
@@ -1256,8 +1263,20 @@ linear_future_exchange_info_t linear_future_exchange_info_t::construct(const fla
         __BINAPI_GET2(sym, baseAssetPrecision, sit);
         __BINAPI_GET2(sym, quotePrecision, sit);
         __BINAPI_GET2(sym, underlyingType, sit);
-        __BINAPI_GET2(sym, underlyingSubType, sit);
-        __BINAPI_GET2(sym, settlePlan, sit);
+        
+        auto underlyingSubType = sit.at("underlyingSubType");
+        assert(underlyingSubType.is_array());
+
+        if(underlyingSubType.is_array())
+        {
+            for ( auto idx = 0u; idx < underlyingSubType.size(); ++idx ) 
+            {
+                auto type = underlyingSubType.at(idx);
+
+                sym.underlyingSubType.push_back(type.to_string());
+            }
+        }
+        
         __BINAPI_GET2(sym, triggerProtect, sit);
         __BINAPI_GET2(sym, liquidationFee, sit);
         __BINAPI_GET2(sym, marketTakeBound, sit);
@@ -1268,7 +1287,7 @@ linear_future_exchange_info_t linear_future_exchange_info_t::construct(const fla
 
         for ( auto idx = 0u; idx < filters.size(); ++idx ) 
         {
-            const auto filter = symbols.at(idx);
+            const auto filter = filters.at(idx);
 
             const auto filter_type = filter.at("filterType");
             assert(filter_type.is_string());
@@ -1612,7 +1631,7 @@ inverse_future_exchange_info_t inverse_future_exchange_info_t::construct(const f
 
         for ( auto idx = 0u; idx < filters.size(); ++idx ) 
         {
-            const auto filter = symbols.at(idx);
+            const auto filter = filters.at(idx);
 
             const auto filter_type = filter.at("filterType");
             assert(filter_type.is_string());

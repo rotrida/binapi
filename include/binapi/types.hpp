@@ -485,8 +485,7 @@ struct linear_future_exchange_info_t
         size_t baseAssetPrecision;
         size_t quotePrecision;
         std::string underlyingType;
-        std::string underlyingSubType;
-        size_t settlePlan;
+        std::vector<std::string> underlyingSubType;
         double_type triggerProtect;
         double_type liquidationFee;
         double_type marketTakeBound;
