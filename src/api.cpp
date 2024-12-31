@@ -755,6 +755,17 @@ api::result<inverse_future_exchange_info_t> api::inverse_future_exchange_info(in
 
 /*************************************************************************************************/
 
+api::result<depths_t> api::depths(const char *symbol, std::size_t limit, depths_cb cb) {
+    const impl::init_list_type map = {
+         {"symbol", symbol}
+        ,{"limit", limit}
+    };
+
+    return pimpl->post(false, "/api/v3/depth", boost::beast::http::verb::get, map, std::move(cb));
+}
+
+/*************************************************************************************************/
+
 api::result<option_depths_t> api::options_depths(const char *symbol, std::size_t limit, option_depths_cb cb) {
     const impl::init_list_type map = {
          {"symbol", symbol}
@@ -766,13 +777,24 @@ api::result<option_depths_t> api::options_depths(const char *symbol, std::size_t
 
 /*************************************************************************************************/
 
-api::result<depths_t> api::depths(const char *symbol, std::size_t limit, depths_cb cb) {
+api::result<linear_future_depths_t> api::linear_future_depths(const char *symbol, std::size_t limit, linear_future_depths_cb cb) {
     const impl::init_list_type map = {
          {"symbol", symbol}
         ,{"limit", limit}
     };
 
-    return pimpl->post(false, "/api/v3/depth", boost::beast::http::verb::get, map, std::move(cb));
+    return pimpl->post(false, "/fapi/v1/depth", boost::beast::http::verb::get, map, std::move(cb));
+}
+
+/*************************************************************************************************/
+
+api::result<inverse_future_depths_t> api::inverse_future_depths(const char *symbol, std::size_t limit, inverse_future_depths_cb cb) {
+    const impl::init_list_type map = {
+         {"symbol", symbol}
+        ,{"limit", limit}
+    };
+
+    return pimpl->post(false, "/dapi/v1/depth", boost::beast::http::verb::get, map, std::move(cb));
 }
 
 /*************************************************************************************************/

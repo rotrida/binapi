@@ -1850,6 +1850,82 @@ std::ostream &operator<<(std::ostream &os, const depths_t &o) {
 
 /*************************************************************************************************/
 
+/*static*/ linear_future_depths_t linear_future_depths_t::construct(const flatjson::fjson& json)
+{
+    assert(json.is_valid());
+
+    linear_future_depths_t res{};
+    __BINAPI_GET(lastUpdateId);
+    __BINAPI_GET(E);
+    __BINAPI_GET(T);
+
+    const auto bids = json.at("bids");
+    assert(bids.is_array());
+    for ( auto idx = 0u; idx < bids.size(); ++idx ) {
+        depths_t::depth_t item{};
+        const auto it = bids.at(idx);
+        assert(it.is_array());
+        item.price = new_qube::fixed_point<>(it.at(0).to_string()); //.assign(it.at(0).to_string());
+        item.amount = new_qube::fixed_point<>(it.at(1).to_string()); // .assign(it.at(1).to_string());
+
+        res.bids.push_back(std::move(item));
+    }
+    const auto asks = json.at("asks");
+    assert(asks.is_array());
+    for ( auto idx = 0u; idx < asks.size(); ++idx ) {
+        depths_t::depth_t item{};
+        const auto it = asks.at(idx);
+        assert(it.is_array());
+        item.price = new_qube::fixed_point<>(it.at(0).to_string()); //.assign(it.at(0).to_string());
+        item.amount = new_qube::fixed_point<>(it.at(1).to_string()); // .assign(it.at(1).to_string());
+
+        res.asks.push_back(std::move(item));
+    }
+
+    return res;
+}
+
+/*************************************************************************************************/
+
+/*static*/ inverse_future_depths_t inverse_future_depths_t::construct(const flatjson::fjson& json)
+{
+    assert(json.is_valid());
+
+    inverse_future_depths_t res{};
+    __BINAPI_GET(lastUpdateId);
+    __BINAPI_GET(symbol);
+    __BINAPI_GET(pair);
+    __BINAPI_GET(E);
+    __BINAPI_GET(T);
+
+    const auto bids = json.at("bids");
+    assert(bids.is_array());
+    for ( auto idx = 0u; idx < bids.size(); ++idx ) {
+        depths_t::depth_t item{};
+        const auto it = bids.at(idx);
+        assert(it.is_array());
+        item.price = new_qube::fixed_point<>(it.at(0).to_string()); //.assign(it.at(0).to_string());
+        item.amount = new_qube::fixed_point<>(it.at(1).to_string()); // .assign(it.at(1).to_string());
+
+        res.bids.push_back(std::move(item));
+    }
+    const auto asks = json.at("asks");
+    assert(asks.is_array());
+    for ( auto idx = 0u; idx < asks.size(); ++idx ) {
+        depths_t::depth_t item{};
+        const auto it = asks.at(idx);
+        assert(it.is_array());
+        item.price = new_qube::fixed_point<>(it.at(0).to_string()); //.assign(it.at(0).to_string());
+        item.amount = new_qube::fixed_point<>(it.at(1).to_string()); // .assign(it.at(1).to_string());
+
+        res.asks.push_back(std::move(item));
+    }
+
+    return res;
+}
+
+/*************************************************************************************************/
+
 trades_t::trade_t trades_t::trade_t::construct(const flatjson::fjson &json) {
     assert(json.is_valid());
 

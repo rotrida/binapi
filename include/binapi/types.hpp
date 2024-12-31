@@ -756,6 +756,26 @@ struct option_depths_t : public depths_t
     static option_depths_t construct(const flatjson::fjson &json);
 };
 
+struct linear_future_depths_t : public depths_t
+{
+    std::size_t lastUpdateId;
+    int64_t E;
+    int64_t T;
+
+    static linear_future_depths_t construct(const flatjson::fjson &json);
+};
+
+struct inverse_future_depths_t : public depths_t
+{
+    std::size_t lastUpdateId;
+    std::string symbol;
+    std::string pair;
+    int64_t E;
+    int64_t T;
+
+    static inverse_future_depths_t construct(const flatjson::fjson &json);
+};
+
 // https://github.com/binance-exchange/binance-official-api-docs/blob/master/rest-api.md#recent-trades-list
 struct trades_t {
     struct trade_t {

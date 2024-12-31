@@ -119,6 +119,14 @@ struct api {
     result<option_depths_t> options_depths(const std::string &symbol, std::size_t limit, option_depths_cb cb = {}) { return options_depths(symbol.c_str(), limit, std::move(cb)); }
     result<option_depths_t> options_depths(const char *symbol, std::size_t limit, option_depths_cb cb={});
 
+    using linear_future_depths_cb = std::function<bool(const char *fl, int ec, std::string errmsg, linear_future_depths_t res)>;
+    result<linear_future_depths_t> linear_future_depths(const std::string &symbol, std::size_t limit, linear_future_depths_cb cb = {}) { return linear_future_depths(symbol.c_str(), limit, std::move(cb)); }
+    result<linear_future_depths_t> linear_future_depths(const char *symbol, std::size_t limit, linear_future_depths_cb cb={});
+
+    using inverse_future_depths_cb = std::function<bool(const char *fl, int ec, std::string errmsg, inverse_future_depths_t res)>;
+    result<inverse_future_depths_t> inverse_future_depths(const std::string &symbol, std::size_t limit, inverse_future_depths_cb cb = {}) { return inverse_future_depths(symbol.c_str(), limit, std::move(cb)); }
+    result<inverse_future_depths_t> inverse_future_depths(const char *symbol, std::size_t limit, inverse_future_depths_cb cb={});
+
     // https://github.com/binance/binance-spot-api-docs/blob/master/rest-api.md#recent-trades-list
     using trade_cb = std::function<bool(const char *fl, int ec, std::string errmsg, trades_t::trade_t res)>;
     result<trades_t::trade_t> trade(const std::string &symbol, trade_cb cb = {}) { return trade(symbol.c_str(), std::move(cb)); }
