@@ -676,6 +676,18 @@ websockets::handle websockets::mini_tickers(on_mini_tickers_received_cb cb, boos
 websockets::handle websockets::market(const char *pair, on_market_received_cb cb, boost::posix_time::time_duration timeout)
 { return pimpl->start_channel(pair, "ticker", std::move(cb), timeout); }
 
+/*************************************************************************************************/
+
+websockets::handle websockets::linear_future_market(const char *pair, on_linear_future_market_received_cb cb, boost::posix_time::time_duration timeout)
+{ return pimpl->start_channel(pair, "ticker", std::move(cb), timeout); }
+
+/*************************************************************************************************/
+
+websockets::handle websockets::inverse_future_market(const char *pair, on_inverse_future_market_received_cb cb, boost::posix_time::time_duration timeout)
+{ return pimpl->start_channel(pair, "ticker", std::move(cb), timeout); }
+
+/*************************************************************************************************/
+
 websockets::handle websockets::markets(on_markets_received_cb cb, boost::posix_time::time_duration timeout)
 { return pimpl->start_channel("!ticker", "arr", std::move(cb), timeout); }
 

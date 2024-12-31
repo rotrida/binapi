@@ -1292,6 +1292,59 @@ struct markets_tickers_t {
 
 /*************************************************************************************************/
 
+// https://developers.binance.com/docs/derivatives/usds-margined-futures/websocket-market-streams/Individual-Symbol-Ticker-Streams
+struct linear_future_market_ticker_t {
+    std::size_t E; // Event time
+    std::string s; // Symbol
+    double_type p; // Price change
+    double_type P; // Price change percent
+    double_type w; // Weighted average price
+    double_type c; // Last price
+    double_type Q; // Last quantity
+    double_type o; // Open price
+    double_type h; // High price
+    double_type l; // Low price
+    double_type v; // Total traded base asset volume
+    double_type q; // Total traded quote asset volume
+    std::size_t O; // Statistics open time
+    std::size_t C; // Statistics close time
+    std::size_t F; // First trade ID
+    std::size_t L; // Last trade Id
+    std::size_t n; // Total number of trades
+
+    static linear_future_market_ticker_t construct(const flatjson::fjson &json);
+    friend std::ostream& operator<<(std::ostream &os, const linear_future_market_ticker_t &o);
+};
+
+/*************************************************************************************************/
+
+// https://developers.binance.com/docs/derivatives/usds-margined-futures/websocket-market-streams/Individual-Symbol-Ticker-Streams
+struct inverse_future_market_ticker_t {
+    std::size_t E; // Event time
+    std::string s; // Symbol
+    std::string ps; // Pair
+    double_type p; // Price change
+    double_type P; // Price change percent
+    double_type w; // Weighted average price
+    double_type c; // Last price
+    double_type Q; // Last quantity
+    double_type o; // Open price
+    double_type h; // High price
+    double_type l; // Low price
+    double_type v; // Total traded base asset volume
+    double_type q; // Total traded quote asset volume
+    std::size_t O; // Statistics open time
+    std::size_t C; // Statistics close time
+    std::size_t F; // First trade ID
+    std::size_t L; // Last trade Id
+    std::size_t n; // Total number of trades
+
+    static inverse_future_market_ticker_t construct(const flatjson::fjson &json);
+    friend std::ostream& operator<<(std::ostream &os, const inverse_future_market_ticker_t &o);
+};
+
+/*************************************************************************************************/
+
 // https://github.com/binance/binance-spot-api-docs/blob/master/web-socket-streams.md#individual-symbol-book-ticker-streams
 struct book_ticker_t {
     std::size_t u;

@@ -828,16 +828,7 @@ api::result<agg_trades_t::agg_trade_t> api::agg_trade(const char *symbol, agg_tr
     return pimpl->post(false, "/api/v3/aggTrades", boost::beast::http::verb::get, map, std::move(cb));
 }
 
-api::result<agg_trades_t> api::agg_trades(const char *symbol, std::size_t limit, agg_trades_cb cb) {
-    const impl::init_list_type map = {
-         {"symbol", symbol}
-        ,{"limit", limit}
-    };
-
-    return pimpl->post(false, "/api/v3/aggTrades", boost::beast::http::verb::get, map, std::move(cb));
-}
-
-api::result<agg_trades_t> api::historical_aggregate_trades(const char* symbol, std::size_t limit, uint64_t from_id, agg_trades_cb cb)
+api::result<agg_trades_t> api::linear_future_historical_aggregate_trades(const char* symbol, std::size_t limit, uint64_t from_id, agg_trades_cb cb)
 {
     const impl::init_list_type map = {
          {"symbol", symbol}
@@ -845,7 +836,7 @@ api::result<agg_trades_t> api::historical_aggregate_trades(const char* symbol, s
         ,{"fromId", from_id}
     };
 
-    return pimpl->post(false, "/api/v3/aggTrades", boost::beast::http::verb::get, map, std::move(cb));
+    return pimpl->post(false, "/fapi/v1/aggTrades", boost::beast::http::verb::get, map, std::move(cb));
 }
 
 /*************************************************************************************************/

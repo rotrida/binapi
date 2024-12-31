@@ -3223,6 +3223,108 @@ std::ostream& operator<<(std::ostream &os, const market_ticker_t &o) {
 
 /*************************************************************************************************/
 
+linear_future_market_ticker_t linear_future_market_ticker_t::construct(const flatjson::fjson &json) {
+    linear_future_market_ticker_t res{};
+    __BINAPI_GET(E);
+    __BINAPI_GET(s);
+    __BINAPI_GET(p);
+    __BINAPI_GET(P);
+    __BINAPI_GET(w);
+    __BINAPI_GET(c);
+    __BINAPI_GET(Q);
+    __BINAPI_GET(o);
+    __BINAPI_GET(h);
+    __BINAPI_GET(l);
+    __BINAPI_GET(v);
+    __BINAPI_GET(q);
+    __BINAPI_GET(O);
+    __BINAPI_GET(C);
+    __BINAPI_GET(F);
+    __BINAPI_GET(L);
+    __BINAPI_GET(n);
+
+    return res;
+}
+
+std::ostream& operator<<(std::ostream &os, const linear_future_market_ticker_t &o) {
+    os
+    << "{"
+    << "\"E\":" << o.E << ","
+    << "\"s\":\"" << o.s << "\","
+    << "\"p\":\"" << o.p << "\","
+    << "\"P\":\"" << o.P << "\","
+    << "\"w\":\"" << o.w << "\","
+    << "\"c\":\"" << o.c << "\","
+    << "\"Q\":\"" << o.Q << "\","
+    << "\"o\":\"" << o.o << "\","
+    << "\"h\":\"" << o.h << "\","
+    << "\"l\":\"" << o.l << "\","
+    << "\"v\":\"" << o.v << "\","
+    << "\"q\":\"" << o.q << "\","
+    << "\"O\":" << o.O << ","
+    << "\"C\":" << o.C << ","
+    << "\"F\":" << o.F << ","
+    << "\"L\":" << o.L << ","
+    << "\"n\":" << o.n
+    << "}";
+
+    return os;
+}
+
+/*************************************************************************************************/
+
+inverse_future_market_ticker_t inverse_future_market_ticker_t::construct(const flatjson::fjson &json) {
+    inverse_future_market_ticker_t res{};
+    __BINAPI_GET(E);
+    __BINAPI_GET(s);
+    __BINAPI_GET(ps);
+    __BINAPI_GET(p);
+    __BINAPI_GET(P);
+    __BINAPI_GET(w);
+    __BINAPI_GET(c);
+    __BINAPI_GET(Q);
+    __BINAPI_GET(o);
+    __BINAPI_GET(h);
+    __BINAPI_GET(l);
+    __BINAPI_GET(v);
+    __BINAPI_GET(q);
+    __BINAPI_GET(O);
+    __BINAPI_GET(C);
+    __BINAPI_GET(F);
+    __BINAPI_GET(L);
+    __BINAPI_GET(n);
+
+    return res;
+}
+
+std::ostream& operator<<(std::ostream &os, const inverse_future_market_ticker_t &o) {
+    os
+    << "{"
+    << "\"E\":" << o.E << ","
+    << "\"s\":\"" << o.s << "\","
+    << "\"ps\":\"" << o.ps << "\","
+    << "\"p\":\"" << o.p << "\","
+    << "\"P\":\"" << o.P << "\","
+    << "\"w\":\"" << o.w << "\","
+    << "\"c\":\"" << o.c << "\","
+    << "\"Q\":\"" << o.Q << "\","
+    << "\"o\":\"" << o.o << "\","
+    << "\"h\":\"" << o.h << "\","
+    << "\"l\":\"" << o.l << "\","
+    << "\"v\":\"" << o.v << "\","
+    << "\"q\":\"" << o.q << "\","
+    << "\"O\":" << o.O << ","
+    << "\"C\":" << o.C << ","
+    << "\"F\":" << o.F << ","
+    << "\"L\":" << o.L << ","
+    << "\"n\":" << o.n
+    << "}";
+
+    return os;
+}
+
+/*************************************************************************************************/
+
 markets_tickers_t markets_tickers_t::construct(const flatjson::fjson &json) {
     assert(json.is_array());
 

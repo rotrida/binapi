@@ -44,6 +44,8 @@ struct kline_t;
 struct mini_ticker_t;
 struct mini_tickers_t;
 struct market_ticker_t;
+struct linear_future_market_ticker_t;
+struct inverse_future_market_ticker_t;
 struct markets_tickers_t;
 struct book_ticker_t;
 struct new_symbol_info_t;
@@ -110,6 +112,14 @@ struct websockets {
     // https://github.com/binance/binance-spot-api-docs/blob/master/web-socket-streams.md#individual-symbol-ticker-streams
     using on_market_received_cb = std::function<bool(const char *fl, int ec, std::string errmsg, market_ticker_t msg, handle hnd)>;
     handle market(const char *pair, on_market_received_cb cb, boost::posix_time::time_duration timeout = boost::posix_time::time_duration());
+
+    // https://developers.binance.com/docs/derivatives/usds-margined-futures/websocket-market-streams/Individual-Symbol-Ticker-Streams
+    using on_linear_future_market_received_cb = std::function<bool(const char *fl, int ec, std::string errmsg, linear_future_market_ticker_t msg, handle hnd)>;
+    handle linear_future_market(const char *pair, on_linear_future_market_received_cb cb, boost::posix_time::time_duration timeout = boost::posix_time::time_duration());
+
+    // https://developers.binance.com/docs/derivatives/coin-margined-futures/websocket-market-streams/Individual-Symbol-Ticker-Streams
+    using on_inverse_future_market_received_cb = std::function<bool(const char *fl, int ec, std::string errmsg, inverse_future_market_ticker_t msg, handle hnd)>;
+    handle inverse_future_market(const char *pair, on_inverse_future_market_received_cb cb, boost::posix_time::time_duration timeout = boost::posix_time::time_duration());
 
     // https://github.com/binance/binance-spot-api-docs/blob/master/web-socket-streams.md#all-market-tickers-stream
     using on_markets_received_cb = std::function<bool(const char *fl, int ec, std::string errmsg, markets_tickers_t msg, handle hnd)>;

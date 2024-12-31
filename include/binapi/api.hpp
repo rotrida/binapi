@@ -182,9 +182,9 @@ struct api {
 
     // https://github.com/binance/binance-spot-api-docs/blob/master/rest-api.md#old-trade-lookup-market_data
     result<agg_trades_t>
-        historical_aggregate_trades(const std::string& symbol, std::size_t limit, uint64_t from_id, agg_trades_cb cb = {}) { return historical_aggregate_trades(symbol.c_str(), limit, from_id, std::move(cb)); }
+        linear_future_historical_aggregate_trades(const std::string& symbol, std::size_t limit, uint64_t from_id, agg_trades_cb cb = {}) { return linear_future_historical_aggregate_trades(symbol.c_str(), limit, from_id, std::move(cb)); }
     result<agg_trades_t>
-        historical_aggregate_trades(const char* symbol, std::size_t limit, uint64_t from_id, agg_trades_cb cb = {});
+        linear_future_historical_aggregate_trades(const char* symbol, std::size_t limit, uint64_t from_id, agg_trades_cb cb = {});
 
     // https://github.com/binance/binance-spot-api-docs/blob/master/rest-api.md#klinecandlestick-data
     using klines_cb = std::function<bool(const char *fl, int ec, std::string errmsg, klines_t res)>;
