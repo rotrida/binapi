@@ -736,6 +736,177 @@ std::ostream &operator<<(std::ostream &os, const linear_future_account_info_t &o
 
 /*************************************************************************************************/
 
+inverse_future_account_info_t::asset_t inverse_future_account_info_t::asset_t::construct(const flatjson::fjson &json) {
+
+    inverse_future_account_info_t::asset_t res{};
+
+    __BINAPI_GET(asset);
+    __BINAPI_GET(walletBalance);
+    __BINAPI_GET(unrealizedProfit);
+    __BINAPI_GET(marginBalance);
+    __BINAPI_GET(maintMargin);
+    __BINAPI_GET(initialMargin);
+    __BINAPI_GET(positionInitialMargin);
+    __BINAPI_GET(openOrderInitialMargin);
+    __BINAPI_GET(crossWalletBalance);
+    __BINAPI_GET(crossUnPnl);
+    __BINAPI_GET(availableBalance);
+    __BINAPI_GET(maxWithdrawAmount);
+    __BINAPI_GET(updateTime);
+
+    return res;
+}
+
+std::ostream &operator<<(std::ostream &os, const inverse_future_account_info_t::asset_t &o) {
+    os
+    << "{"
+    << "\"asset\":\"" << o.asset << "\","
+    << "\"walletBalance\":\"" << o.walletBalance << "\","
+    << "\"unrealizedProfit\":\"" << o.unrealizedProfit << "\","
+    << "\"marginBalance\":\"" << o.marginBalance << "\","
+    << "\"maintMargin\":\"" << o.maintMargin << "\","
+    << "\"initialMargin\":\"" << o.initialMargin << "\","
+    << "\"positionInitialMargin\":\"" << o.positionInitialMargin << "\","
+    << "\"openOrderInitialMargin\":\"" << o.openOrderInitialMargin << "\","
+    << "\"crossWalletBalance\":\"" << o.crossWalletBalance << "\","
+    << "\"crossUnPnl\":\"" << o.crossUnPnl << "\","
+    << "\"availableBalance\":\"" << o.availableBalance << "\","
+    << "\"maxWithdrawAmount\":\"" << o.maxWithdrawAmount << "\","
+    << "\"updateTime\":\"" << o.updateTime << "\""
+    << "}";
+
+    return os;
+}
+
+inverse_future_account_info_t::position_t inverse_future_account_info_t::position_t::construct(const flatjson::fjson &json) {
+
+    inverse_future_account_info_t::position_t res{};
+
+    __BINAPI_GET(symbol);
+    __BINAPI_GET(positionAmt);
+    __BINAPI_GET(initialMargin);
+    __BINAPI_GET(maintMargin);
+    __BINAPI_GET(unrealizedProfit);
+    __BINAPI_GET(positionInitialMargin);
+    __BINAPI_GET(openOrderInitialMargin);
+    __BINAPI_GET(leverage);
+    __BINAPI_GET(isolated);
+    __BINAPI_GET(positionSide);
+    __BINAPI_GET(entryPrice);
+    __BINAPI_GET(breakEvenPrice);
+    __BINAPI_GET(maxQty);
+    __BINAPI_GET(updateTime);
+
+    return res;
+}
+
+std::ostream &operator<<(std::ostream &os, const inverse_future_account_info_t::position_t &o) {
+    os
+    << "{"
+    << "\"symbol\":\"" << o.symbol << "\","
+    << "\"positionAmt\":\"" << o.positionAmt << "\","
+    << "\"initialMargin\":\"" << o.initialMargin << "\","
+    << "\"maintMargin\":\"" << o.maintMargin << "\","
+    << "\"unrealizedProfit\":\"" << o.unrealizedProfit << "\","
+    << "\"positionInitialMargin\":\"" << o.positionInitialMargin << "\","
+    << "\"openOrderInitialMargin\":\"" << o.openOrderInitialMargin << "\","
+    << "\"leverage\":\"" << o.leverage << "\","
+    << "\"isolated\":\"" << o.isolated << "\","
+    << "\"positionSide\":\"" << o.positionSide << "\","
+    << "\"entryPrice\":\"" << o.entryPrice << "\","
+    << "\"breakEvenPrice\":\"" << o.breakEvenPrice << "\","
+    << "\"maxQty\":\"" << o.maxQty << "\","
+    << "\"updateTime\":\"" << o.updateTime << "\""
+    << "}";
+
+    return os;
+}
+
+inverse_future_account_info_t inverse_future_account_info_t::construct(const flatjson::fjson &json) {
+    assert(json.is_valid());
+
+    inverse_future_account_info_t res{};
+
+    __BINAPI_GET(canDeposit);
+    __BINAPI_GET(canTrade);
+    __BINAPI_GET(canWithdraw);
+    __BINAPI_GET(feeTier);
+    __BINAPI_GET(updateTime);
+    
+    const auto asset_arr = json.at("asset");
+    assert(asset_arr.is_array());
+    for ( auto idx = 0u; idx < asset_arr.size(); ++idx ) {
+
+        const auto it = asset_arr.at(idx);
+
+        asset_t asset = asset_t::construct(it);
+        std::string symbol = asset.asset;
+
+        res.assets.emplace(std::move(symbol), std::move(asset));
+    }
+
+    const auto position_arr = json.at("positions");
+    assert(position_arr.is_array());
+    for ( auto idx = 0u; idx < position_arr.size(); ++idx ) {
+
+        const auto it = position_arr.at(idx);
+
+        position_t position = position_t::construct(it);
+        std::string symbol = position.symbol;
+
+        res.positions.emplace(std::move(symbol), std::move(position));
+    }
+
+    return res;
+}
+
+const inverse_future_account_info_t::asset_t& inverse_future_account_info_t::get_asset(const char *asset) const {
+    auto it = assets.find(asset);
+    if ( it != assets.end() ) {
+        return it->second;
+    }
+
+    assert(!"unreachable");
+}
+
+const inverse_future_account_info_t::position_t& inverse_future_account_info_t::get_position(const char *symbol) const {
+    auto it = positions.find(symbol);
+    if ( it != positions.end() ) {
+        return it->second;
+    }
+
+    assert(!"unreachable");
+}
+
+std::ostream &operator<<(std::ostream &os, const inverse_future_account_info_t &o) {
+    os
+    << "{"
+    << "\"canDeposit\":" << o.canDeposit << ","
+    << "\"canTrade\":" << o.canTrade << ","
+    << "\"canWithdraw\":" << o.canWithdraw << ","
+    << "\"feeTier\":" << o.feeTier << ","
+    << "\"updateTime\":" << o.updateTime << ","
+    << "\"assets\":[";
+    for ( auto it = o.assets.begin(); it != o.assets.end(); ++it ) {
+        os << it->second;
+        if ( std::next(it) != o.assets.end() ) {
+            os << ",";
+        }
+    }
+    os << "\"positions\":[";
+    for ( auto it = o.positions.begin(); it != o.positions.end(); ++it ) {
+        os << it->second;
+        if ( std::next(it) != o.positions.end() ) {
+            os << ",";
+        }
+    }
+    os << "]}";
+
+    return os;
+}
+
+/*************************************************************************************************/
+
 std::ostream& operator<<(std::ostream &os, const exchange_info_t::rate_limit_t &o) {
     os
     << "{"
