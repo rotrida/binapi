@@ -1162,6 +1162,66 @@ api::result<my_trades_info_t> api::my_trades(
 }
 
 /*************************************************************************************************/
+api::result<my_option_trades_info_t> api::my_option_trades(
+     const char *symbol
+    ,std::size_t start_time
+    ,std::size_t end_time
+    ,std::size_t from_id
+    ,std::size_t limit
+    ,my_option_trades_cb cb
+) {
+    const impl::init_list_type map = {
+         {"symbol", symbol}
+        ,{"startTime", start_time}
+        ,{"endTime", end_time}
+        ,{"fromId", from_id}
+        ,{"limit", limit}
+    };
+
+    return pimpl->post(true, "/eapi/v1/userTrades", boost::beast::http::verb::get, map, std::move(cb));
+}
+
+/*************************************************************************************************/
+api::result<my_linear_future_trades_info_t> api::my_linear_future_trades(
+     const char *symbol
+    ,std::size_t start_time
+    ,std::size_t end_time
+    ,std::size_t from_id
+    ,std::size_t limit
+    ,my_linear_future_trades_cb cb
+) {
+    const impl::init_list_type map = {
+         {"symbol", symbol}
+        ,{"startTime", start_time}
+        ,{"endTime", end_time}
+        ,{"fromId", from_id}
+        ,{"limit", limit}
+    };
+
+    return pimpl->post(true, "/fapi/v1/userTrades", boost::beast::http::verb::get, map, std::move(cb));
+}
+
+/*************************************************************************************************/
+api::result<my_inverse_future_trades_info_t> api::my_inverse_future_trades(
+     const char *symbol
+    ,std::size_t start_time
+    ,std::size_t end_time
+    ,std::size_t from_id
+    ,std::size_t limit
+    ,my_inverse_future_trades_cb cb
+) {
+    const impl::init_list_type map = {
+         {"symbol", symbol}
+        ,{"startTime", start_time}
+        ,{"endTime", end_time}
+        ,{"fromId", from_id}
+        ,{"limit", limit}
+    };
+
+    return pimpl->post(true, "/dapi/v1/userTrades", boost::beast::http::verb::get, map, std::move(cb));
+}
+
+/*************************************************************************************************/
 
 api::result<start_user_data_stream_t> api::start_user_data_stream_spot(start_user_data_stream_cb cb) {
     return pimpl->post(false, "/api/v3/userDataStream", boost::beast::http::verb::post, {}, std::move(cb));

@@ -437,6 +437,72 @@ struct api {
         ,my_trades_cb cb = {}
     );
 
+    // https://developers.binance.com/docs/derivatives/option/trade/Account-Trade-List
+    using my_option_trades_cb = std::function<bool(const char *fl, int ec, std::string errmsg, my_option_trades_info_t res)>;
+    result<my_option_trades_info_t>
+    my_option_trades(
+         const std::string &symbol
+        ,std::size_t start_time
+        ,std::size_t end_time
+        ,std::size_t from_id
+        ,std::size_t limit
+        ,my_option_trades_cb cb = {}
+    )
+    { return my_option_trades(symbol.c_str(), start_time, end_time, from_id, limit, std::move(cb)); }
+    result<my_option_trades_info_t>
+    my_option_trades(
+         const char *symbol
+        ,std::size_t start_time
+        ,std::size_t end_time
+        ,std::size_t from_id
+        ,std::size_t limit
+        ,my_option_trades_cb cb = {}
+    );
+
+    // https://developers.binance.com/docs/derivatives/usds-margined-futures/trade/rest-api/Account-Trade-List
+    using my_linear_future_trades_cb = std::function<bool(const char *fl, int ec, std::string errmsg, my_linear_future_trades_info_t res)>;
+    result<my_linear_future_trades_info_t>
+    my_linear_future_trades(
+         const std::string &symbol
+        ,std::size_t start_time
+        ,std::size_t end_time
+        ,std::size_t from_id
+        ,std::size_t limit
+        ,my_linear_future_trades_cb cb = {}
+    )
+    { return my_linear_future_trades(symbol.c_str(), start_time, end_time, from_id, limit, std::move(cb)); }
+    result<my_linear_future_trades_info_t>
+    my_linear_future_trades(
+         const char *symbol
+        ,std::size_t start_time
+        ,std::size_t end_time
+        ,std::size_t from_id
+        ,std::size_t limit
+        ,my_linear_future_trades_cb cb = {}
+    );
+
+    // https://developers.binance.com/docs/derivatives/coin-margined-futures/trade/Account-Trade-List
+    using my_inverse_future_trades_cb = std::function<bool(const char *fl, int ec, std::string errmsg, my_inverse_future_trades_info_t res)>;
+    result<my_inverse_future_trades_info_t>
+    my_inverse_future_trades(
+         const std::string &symbol
+        ,std::size_t start_time
+        ,std::size_t end_time
+        ,std::size_t from_id
+        ,std::size_t limit
+        ,my_inverse_future_trades_cb cb = {}
+    )
+    { return my_inverse_future_trades(symbol.c_str(), start_time, end_time, from_id, limit, std::move(cb)); }
+    result<my_inverse_future_trades_info_t>
+    my_inverse_future_trades(
+         const char *symbol
+        ,std::size_t start_time
+        ,std::size_t end_time
+        ,std::size_t from_id
+        ,std::size_t limit
+        ,my_inverse_future_trades_cb cb = {}
+    );
+
     // https://github.com/binance/binance-spot-api-docs/blob/master/rest-api.md#start-user-data-stream-user_stream
     using start_user_data_stream_cb = std::function<bool(const char *fl, int ec, std::string errmsg, start_user_data_stream_t res)>;
     result<start_user_data_stream_t>
