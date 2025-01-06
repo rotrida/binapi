@@ -2726,6 +2726,242 @@ std::ostream &operator<<(std::ostream &os, const my_trades_info_t &o) {
 
 /*************************************************************************************************/
 
+my_option_trades_info_t::my_option_trade_info_t my_option_trades_info_t::my_option_trade_info_t::construct(const flatjson::fjson &json) {
+    my_option_trade_info_t res{};
+
+    __BINAPI_GET(id);
+    __BINAPI_GET(tradeId);
+    __BINAPI_GET(orderId);
+    __BINAPI_GET(symbol);
+    __BINAPI_GET(price);
+    __BINAPI_GET(quantity);
+    __BINAPI_GET(fee);
+    __BINAPI_GET(realizedProfit);
+    __BINAPI_GET(side);
+    __BINAPI_GET(type);
+    __BINAPI_GET(volatility);
+    __BINAPI_GET(liquidity);
+    __BINAPI_GET(quoteAsset);
+    __BINAPI_GET(time);
+    __BINAPI_GET(priceScale);
+    __BINAPI_GET(quantityScale);
+    __BINAPI_GET(optionSide);
+
+    return res;
+}
+
+std::ostream &operator<<(std::ostream &os, const my_option_trades_info_t::my_option_trade_info_t &o) {
+    os
+    << "{"
+    << "\"id\":\"" << o.id << "\","
+    << "\"tradeId\":\"" << o.tradeId << "\","
+    << "\"orderId\":\"" << o.orderId << "\","
+    << "\"symbol\":\"" << o.symbol << "\","
+    << "\"price\":\"" << o.price << "\","
+    << "\"quantity\":\"" << o.quantity << "\","
+    << "\"fee\":\"" << o.fee << "\","
+    << "\"realizedProfit\":\"" << o.realizedProfit << "\","
+    << "\"side\":\"" << o.side << "\","
+    << "\"type\":\"" << o.type << "\","
+    << "\"volatility\":\"" << o.volatility << "\","
+    << "\"liquidity\":\"" << o.liquidity << "\","
+    << "\"quoteAsset\":\"" << o.quoteAsset << "\","
+    << "\"time\":\"" << o.time << "\","
+    << "\"priceScale\":\"" << o.priceScale << "\","
+    << "\"quantityScale\":\"" << o.quantityScale << "\","
+    << "\"optionSide\":\"" << o.optionSide << "\","
+    << "}";
+
+    return os;
+}
+
+/*************************************************************************************************/
+
+my_option_trades_info_t my_option_trades_info_t::construct(const flatjson::fjson &json) {
+    assert(json.is_valid());
+
+    my_option_trades_info_t res{};
+    for ( auto idx = 0u; idx < json.size(); ++idx ) {
+        my_option_trade_info_t item = my_option_trades_info_t::my_option_trade_info_t::construct(json.at(idx));
+        res.trades.push_back(std::move(item));
+    }
+
+    return res;
+}
+
+std::ostream &operator<<(std::ostream &os, const my_option_trades_info_t &o) {
+    os
+    << "[";
+    for ( auto it = o.trades.begin(); it != o.trades.end(); ++it ) {
+        os << *it;
+        if ( std::next(it) != o.trades.end() ) {
+            os << ",";
+        }
+    }
+
+    os
+    << "]";
+
+    return os;
+}
+
+
+/*************************************************************************************************/
+
+my_linear_future_trades_info_t::my_linear_future_trade_info_t my_linear_future_trades_info_t::my_linear_future_trade_info_t::construct(const flatjson::fjson &json) {
+    my_linear_future_trade_info_t res{};
+
+    __BINAPI_GET(buyer);
+    __BINAPI_GET(commission);
+    __BINAPI_GET(commissionAsset);
+    __BINAPI_GET(id);
+    __BINAPI_GET(maker);
+    __BINAPI_GET(orderId);
+    __BINAPI_GET(price);
+    __BINAPI_GET(qty);
+    __BINAPI_GET(quoteQty);
+    __BINAPI_GET(realizedPnl);
+    __BINAPI_GET(side);
+    __BINAPI_GET(positionSide);
+    __BINAPI_GET(symbol);
+    __BINAPI_GET(time);
+
+    return res;
+}
+
+std::ostream &operator<<(std::ostream &os, const my_linear_future_trades_info_t::my_linear_future_trade_info_t &o) {
+    os
+    << "{"
+    << "\"buyer\":\"" << o.buyer << "\","
+    << "\"commission\":\"" << o.commission << "\","
+    << "\"commissionAsset\":\"" << o.commissionAsset << "\","
+    << "\"id\":\"" << o.id << "\","
+    << "\"maker\":\"" << o.maker << "\","
+    << "\"orderId\":\"" << o.orderId << "\","
+    << "\"price\":\"" << o.price << "\","
+    << "\"qty\":\"" << o.qty << "\","
+    << "\"quoteQty\":\"" << o.quoteQty << "\","
+    << "\"realizedPnl\":\"" << o.realizedPnl << "\","
+    << "\"side\":\"" << o.side << "\","
+    << "\"positionSide\":\"" << o.positionSide << "\","
+    << "\"symbol\":\"" << o.symbol << "\","
+    << "\"time\":\"" << o.time
+    << "}";
+
+    return os;
+}
+
+/*************************************************************************************************/
+
+my_linear_future_trades_info_t my_linear_future_trades_info_t::construct(const flatjson::fjson &json) {
+    assert(json.is_valid());
+
+    my_linear_future_trades_info_t res{};
+    for ( auto idx = 0u; idx < json.size(); ++idx ) {
+        my_linear_future_trade_info_t item = my_linear_future_trades_info_t::my_linear_future_trade_info_t::construct(json.at(idx));
+        res.trades.push_back(std::move(item));
+    }
+
+    return res;
+}
+
+std::ostream &operator<<(std::ostream &os, const my_linear_future_trades_info_t &o) {
+    os
+    << "[";
+    for ( auto it = o.trades.begin(); it != o.trades.end(); ++it ) {
+        os << *it;
+        if ( std::next(it) != o.trades.end() ) {
+            os << ",";
+        }
+    }
+
+    os
+    << "]";
+
+    return os;
+}
+
+/*************************************************************************************************/
+
+my_inverse_future_trades_info_t::my_inverse_future_trade_info_t my_inverse_future_trades_info_t::my_inverse_future_trade_info_t::construct(const flatjson::fjson &json) {
+    my_inverse_future_trade_info_t res{};
+
+    __BINAPI_GET(symbol);
+    __BINAPI_GET(id);
+    __BINAPI_GET(orderId);
+    __BINAPI_GET(pair);
+    __BINAPI_GET(side);
+    __BINAPI_GET(price);
+    __BINAPI_GET(qty);
+    __BINAPI_GET(realizedPnl);
+    __BINAPI_GET(marginAsset);
+    __BINAPI_GET(baseQty);
+    __BINAPI_GET(commission);
+    __BINAPI_GET(commissionAsset);
+    __BINAPI_GET(time);
+    __BINAPI_GET(positionSide);
+    __BINAPI_GET(buyer);
+    __BINAPI_GET(maker);
+
+    return res;
+}
+
+std::ostream &operator<<(std::ostream &os, const my_inverse_future_trades_info_t::my_inverse_future_trade_info_t &o) {
+    os
+    << "{"
+    << "\"symbol\":\"" << o.symbol << "\","
+    << "\"id\":\"" << o.id << "\","
+    << "\"orderId\":\"" << o.orderId << "\","
+    << "\"pair\":\"" << o.pair << "\","
+    << "\"side\":\"" << o.side << "\","
+    << "\"price\":\"" << o.price << "\","
+    << "\"qty\":\"" << o.qty << "\","
+    << "\"realizedPnl\":\"" << o.realizedPnl << "\","
+    << "\"marginAsset\":\"" << o.marginAsset << "\","
+    << "\"baseQty\":\"" << o.baseQty << "\","
+    << "\"commission\":\"" << o.commission << "\","
+    << "\"commissionAsset\":\"" << o.commissionAsset << "\","
+    << "\"time\":\"" << o.time << "\","
+    << "\"positionSide\":\"" << o.positionSide << "\","
+    << "\"buyer\":\"" << o.buyer << "\","
+    << "\"maker\":\"" << o.maker
+    << "}";
+
+    return os;
+}
+
+/*************************************************************************************************/
+
+my_inverse_future_trades_info_t my_inverse_future_trades_info_t::construct(const flatjson::fjson &json) {
+    assert(json.is_valid());
+
+    my_inverse_future_trades_info_t res{};
+    for ( auto idx = 0u; idx < json.size(); ++idx ) {
+        my_inverse_future_trade_info_t item = my_inverse_future_trades_info_t::my_inverse_future_trade_info_t::construct(json.at(idx));
+        res.trades.push_back(std::move(item));
+    }
+
+    return res;
+}
+
+std::ostream &operator<<(std::ostream &os, const my_inverse_future_trades_info_t &o) {
+    os
+    << "[";
+    for ( auto it = o.trades.begin(); it != o.trades.end(); ++it ) {
+        os << *it;
+        if ( std::next(it) != o.trades.end() ) {
+            os << ",";
+        }
+    }
+
+    os
+    << "]";
+
+    return os;
+}
+
+/*************************************************************************************************/
+
 start_user_data_stream_t start_user_data_stream_t::construct(const flatjson::fjson &json) {
     assert(json.is_valid());
 

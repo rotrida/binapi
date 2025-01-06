@@ -1104,6 +1104,104 @@ struct my_trades_info_t {
     friend std::ostream &operator<<(std::ostream &os, const my_trades_info_t &o);
 };
 
+
+/*************************************************************************************************/
+
+// https://developers.binance.com/docs/derivatives/option/trade/Account-Trade-List
+struct my_option_trades_info_t {
+    struct my_option_trade_info_t {
+        std::size_t id;
+        std::size_t tradeId;
+        std::size_t orderId;
+        std::string symbol;
+        double_type price;
+        double_type quantity;
+        double_type fee;
+        double_type realizedProfit;
+        std::string side;
+        std::string type;
+        double_type volatility;
+        std::string liquidity;
+        std::string quoteAsset;
+        std::size_t time;
+        std::size_t priceScale;
+        std::size_t quantityScale;
+        std::string optionSide;
+
+        static my_option_trade_info_t construct(const flatjson::fjson &json);
+        friend std::ostream &operator<<(std::ostream &os, const my_option_trade_info_t &o);
+    };
+
+    std::vector<my_option_trade_info_t> trades;
+
+    static my_option_trades_info_t construct(const flatjson::fjson &json);
+    friend std::ostream &operator<<(std::ostream &os, const my_option_trades_info_t &o);
+};
+
+/*************************************************************************************************/
+
+// https://developers.binance.com/docs/derivatives/usds-margined-futures/trade/rest-api/Account-Trade-List
+struct my_linear_future_trades_info_t {
+    struct my_linear_future_trade_info_t {
+
+        bool buyer;
+        double_type commission;
+        std::string commissionAsset;
+        std::size_t id;
+        bool maker;
+        std::size_t orderId;
+        double_type price;
+        double_type qty;
+        double_type quoteQty;
+        double_type realizedPnl;
+        std::string side;
+        std::string positionSide;
+        std::string symbol;
+        std::size_t time;
+
+        static my_linear_future_trade_info_t construct(const flatjson::fjson &json);
+        friend std::ostream &operator<<(std::ostream &os, const my_linear_future_trade_info_t &o);
+    };
+
+    std::vector<my_linear_future_trade_info_t> trades;
+
+    static my_linear_future_trades_info_t construct(const flatjson::fjson &json);
+    friend std::ostream &operator<<(std::ostream &os, const my_linear_future_trades_info_t &o);
+};
+
+/*************************************************************************************************/
+
+// https://developers.binance.com/docs/derivatives/usds-margined-futures/trade/rest-api/Account-Trade-List
+struct my_inverse_future_trades_info_t {
+    struct my_inverse_future_trade_info_t {
+
+        std::string symbol;
+        std::size_t id;
+        std::size_t orderId;
+        std::string pair;
+        std::string side;
+        double_type price;
+        double_type qty;
+        double_type realizedPnl;
+        std::string marginAsset;
+        double_type baseQty;
+        double_type commission;
+        std::string commissionAsset;
+        std::size_t time;
+        std::string positionSide;
+        bool buyer;
+        bool maker;        
+
+        static my_inverse_future_trade_info_t construct(const flatjson::fjson &json);
+        friend std::ostream &operator<<(std::ostream &os, const my_inverse_future_trade_info_t &o);
+    };
+
+    std::vector<my_inverse_future_trade_info_t> trades;
+
+    static my_inverse_future_trades_info_t construct(const flatjson::fjson &json);
+    friend std::ostream &operator<<(std::ostream &os, const my_inverse_future_trades_info_t &o);
+};
+
 /*************************************************************************************************/
 
 // https://github.com/binance-exchange/binance-official-api-docs/blob/master/rest-api.md#start-user-data-stream-user_stream

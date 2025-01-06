@@ -482,6 +482,46 @@ struct api {
     result<close_user_data_stream_t>
     close_user_data_stream_isolated_margin(const char *symbol,const char *listen_key, close_user_data_stream_cb cb = {});
 
+    result<start_user_data_stream_t>
+    start_user_data_stream_option(start_user_data_stream_cb cb = {});
+    result<ping_user_data_stream_t>
+    ping_user_data_stream_option(const std::string &listen_key, ping_user_data_stream_cb cb = {}) { return ping_user_data_stream_option(listen_key.c_str(), std::move(cb)); }
+    result<ping_user_data_stream_t>
+    ping_user_data_stream_option(const char *listen_key, ping_user_data_stream_cb cb = {});
+
+    // https://github.com/binance/binance-spot-api-docs/blob/master/rest-api.md#close-user-data-stream-user_stream
+    result<close_user_data_stream_t>
+    close_user_data_stream_option(const std::string &listen_key, close_user_data_stream_cb cb = {}) { return close_user_data_stream_option(listen_key.c_str(), std::move(cb)); }
+    result<close_user_data_stream_t>
+    close_user_data_stream_option(const char *listen_key, close_user_data_stream_cb cb = {});
+
+    result<start_user_data_stream_t>
+    start_user_data_stream_linear_future(start_user_data_stream_cb cb = {});
+    result<ping_user_data_stream_t>
+    ping_user_data_stream_linear_future(const std::string &listen_key, ping_user_data_stream_cb cb = {}) { return ping_user_data_stream_linear_future(listen_key.c_str(), std::move(cb)); }
+    result<ping_user_data_stream_t>
+    ping_user_data_stream_linear_future(const char *listen_key, ping_user_data_stream_cb cb = {});
+
+    // https://github.com/binance/binance-spot-api-docs/blob/master/rest-api.md#close-user-data-stream-user_stream
+    result<close_user_data_stream_t>
+    close_user_data_stream_linear_future(const std::string &listen_key, close_user_data_stream_cb cb = {}) { return close_user_data_stream_linear_future(listen_key.c_str(), std::move(cb)); }
+    result<close_user_data_stream_t>
+    close_user_data_stream_linear_future(const char *listen_key, close_user_data_stream_cb cb = {});
+
+    result<start_user_data_stream_t>
+    start_user_data_stream_inverse_future(start_user_data_stream_cb cb = {});
+    result<ping_user_data_stream_t>
+    ping_user_data_stream_inverse_future(const std::string &listen_key, ping_user_data_stream_cb cb = {}) { return ping_user_data_stream_inverse_future(listen_key.c_str(), std::move(cb)); }
+    result<ping_user_data_stream_t>
+    ping_user_data_stream_inverse_future(const char *listen_key, ping_user_data_stream_cb cb = {});
+
+    // https://github.com/binance/binance-spot-api-docs/blob/master/rest-api.md#close-user-data-stream-user_stream
+    result<close_user_data_stream_t>
+    close_user_data_stream_inverse_future(const std::string &listen_key, close_user_data_stream_cb cb = {}) { return close_user_data_stream_inverse_future(listen_key.c_str(), std::move(cb)); }
+    result<close_user_data_stream_t>
+    close_user_data_stream_inverse_future(const char *listen_key, close_user_data_stream_cb cb = {});
+
+
 private:
     struct impl;
     std::unique_ptr<impl> pimpl;

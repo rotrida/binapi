@@ -1246,6 +1246,89 @@ api::result<close_user_data_stream_t> api::close_user_data_stream_isolated_margi
 }
 
 /*************************************************************************************************/
+
+api::result<start_user_data_stream_t> api::start_user_data_stream_option(start_user_data_stream_cb cb) {
+    
+    return pimpl->post(false, "/eapi/v1/listenKey", boost::beast::http::verb::post, {}, std::move(cb));
+}
+
+/*************************************************************************************************/
+
+api::result<ping_user_data_stream_t> api::ping_user_data_stream_option(const char *listen_key, ping_user_data_stream_cb cb) {
+    const impl::init_list_type map = {
+        {"listenKey", listen_key}
+    };
+
+    return pimpl->post(false, "/eapi/v1/listenKey", boost::beast::http::verb::put, map, std::move(cb));
+}
+
+/*************************************************************************************************/
+
+api::result<close_user_data_stream_t> api::close_user_data_stream_option(const char *listen_key, close_user_data_stream_cb cb) {
+    const impl::init_list_type map = {
+        {"listenKey", listen_key}
+    };
+
+    return pimpl->post(false, "/eapi/v1/listenKey", boost::beast::http::verb::delete_, map, std::move(cb));
+}
+
+/*************************************************************************************************/
+
+api::result<start_user_data_stream_t> api::start_user_data_stream_linear_future(start_user_data_stream_cb cb) {
+    
+    return pimpl->post(false, "/fapi/v1/listenKey", boost::beast::http::verb::post, {}, std::move(cb));
+}
+
+/*************************************************************************************************/
+
+api::result<ping_user_data_stream_t> api::ping_user_data_stream_linear_future(const char *listen_key, ping_user_data_stream_cb cb) {
+    const impl::init_list_type map = {
+        {"listenKey", listen_key}
+    };
+
+    return pimpl->post(false, "/fapi/v1/listenKey", boost::beast::http::verb::put, map, std::move(cb));
+}
+
+/*************************************************************************************************/
+
+api::result<close_user_data_stream_t> api::close_user_data_stream_linear_future(const char *listen_key, close_user_data_stream_cb cb) {
+    const impl::init_list_type map = {
+        {"listenKey", listen_key}
+    };
+
+    return pimpl->post(false, "/fapi/v1/listenKey", boost::beast::http::verb::delete_, map, std::move(cb));
+}
+
+/*************************************************************************************************/
+
+api::result<start_user_data_stream_t> api::start_user_data_stream_inverse_future(start_user_data_stream_cb cb) {
+    
+    return pimpl->post(false, "/dapi/v1/listenKey", boost::beast::http::verb::post, {}, std::move(cb));
+}
+
+/*************************************************************************************************/
+
+api::result<ping_user_data_stream_t> api::ping_user_data_stream_inverse_future(const char *listen_key, ping_user_data_stream_cb cb) {
+    const impl::init_list_type map = {
+        {"listenKey", listen_key}
+    };
+
+    return pimpl->post(false, "/dapi/v1/listenKey", boost::beast::http::verb::put, map, std::move(cb));
+}
+
+/*************************************************************************************************/
+
+api::result<close_user_data_stream_t> api::close_user_data_stream_inverse_future(const char *listen_key, close_user_data_stream_cb cb) {
+    const impl::init_list_type map = {
+        {"listenKey", listen_key}
+    };
+
+    return pimpl->post(false, "/dapi/v1/listenKey", boost::beast::http::verb::delete_, map, std::move(cb));
+}
+
+
+
+/*************************************************************************************************/
 /*************************************************************************************************/
 /*************************************************************************************************/
 
