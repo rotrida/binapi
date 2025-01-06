@@ -153,6 +153,150 @@ struct account_info_t {
     friend std::ostream &operator<<(std::ostream &os, const account_info_t &f);
 };
 
+// https://developers.binance.com/docs/derivatives/option/account
+struct option_account_info_t {
+    std::size_t time;
+    std::string riskLevel;
+
+    struct asset_t
+    {
+        std::string asset;
+        double_type marginBalance;
+        double_type equity;
+        double_type available;
+        double_type locked;
+        double_type unrealizedPNL;
+
+        static asset_t construct(const flatjson::fjson &json);
+        friend std::ostream &operator<<(std::ostream &os, const asset_t &f);
+    };
+
+    std::unordered_map<std::string, asset_t> assets;
+
+    struct greek_t
+    {
+        std::string underlying;
+        double_type delta;
+        double_type gamma;
+        double_type theta;
+        double_type vega;
+
+        static greek_t construct(const flatjson::fjson &json);
+        friend std::ostream &operator<<(std::ostream &os, const greek_t &f);
+    };
+
+    std::unordered_map<std::string, greek_t> greeks;
+
+    const asset_t& get_asset(const std::string &asset) const
+        { return get_asset(asset.c_str()); }
+    const asset_t& get_asset(const char *asset) const;
+
+    const greek_t& get_greek(const std::string &underlying) const
+        { return get_greek(underlying.c_str()); }
+    const greek_t& get_greek(const char *underlying) const;
+
+    //const double_type& add_balance(const std::string &symbol, const double_type &amount)
+    //{ return add_balance(symbol.c_str(), amount); }
+    //const double_type& add_balance(const char *symbol, const double_type &amount);
+    //
+    //const double_type& sub_balance(const std::string &symbol, const double_type &amount)
+    //{ return sub_balance(symbol.c_str(), amount); }
+    //const double_type& sub_balance(const char *symbol, const double_type &amount);
+
+    static option_account_info_t construct(const flatjson::fjson &json);
+    friend std::ostream &operator<<(std::ostream &os, const option_account_info_t &f);
+};
+
+// https://developers.binance.com/docs/derivatives/usds-margined-futures/account/rest-api/Account-Information-V2
+struct linear_future_account_info_t {
+        
+	double_type feeTier;  		// account commission tier 
+	bool feeBurn;  	            // "true": Fee Discount On; "false": Fee Discount Off	"canTrade": true,  	// if can trade
+	bool canTrade;  	        // if can trade
+	bool canDeposit;  	        // if can transfer in asset
+	bool canWithdraw; 	        // if can transfer out asset
+	size_t updateTime;          // reserved property, please ignore 
+	bool multiAssetsMargin;
+	int tradeGroupId;
+	double_type totalInitialMargin;             // the sum of USD value of all cross positions/open order initial margin
+	double_type totalMaintMargin;  	            // the sum of USD value of all cross positions maintenance margin
+	double_type totalWalletBalance;             // total wallet balance in USD
+	double_type totalUnrealizedProfit;          // total unrealized profit in USD
+	double_type totalMarginBalance;             // total margin balance in USD
+	double_type totalPositionInitialMargin;     // the sum of USD value of all cross positions initial margin
+	double_type totalOpenOrderInitialMargin;    // initial margin required for open orders with current mark price in USD
+	double_type totalCrossWalletBalance;        // crossed wallet balance in USD
+	double_type totalCrossUnPnl;	            // unrealized profit of crossed positions in USD
+	double_type availableBalance;               // available balance in USD
+	double_type maxWithdrawAmount;              // maximum virtual amount for transfer out in USD
+
+    struct asset_t
+    {
+        std::string asset;			        // asset name
+        double_type walletBalance;          // wallet balance
+        double_type unrealizedProfit;       // unrealized profit
+        double_type marginBalance;          // margin balance
+        double_type maintMargin;	        // maintenance margin required
+        double_type initialMargin;          // total initial margin required with current mark price 
+        double_type positionInitialMargin;  //initial margin required for positions with current mark price
+        double_type openOrderInitialMargin; // initial margin required for open orders with current mark price
+        double_type crossWalletBalance;     // crossed wallet balance
+        double_type crossUnPnl;             // unrealized profit of crossed positions
+        double_type availableBalance;       // available balance
+        double_type maxWithdrawAmount;      // maximum amount for transfer out
+        bool marginAvailable;               // whether the asset can be used as margin in Multi-Assets mode
+        size_t updateTime;                  // last update time
+
+        static asset_t construct(const flatjson::fjson &json);
+        friend std::ostream &operator<<(std::ostream &os, const asset_t &f);
+    };
+
+    std::unordered_map<std::string, asset_t> assets;
+
+    struct position_t
+    {
+        std::string symbol;  	                // symbol name
+        double_type initialMargin;	            // initial margin required with current mark price 
+        double_type maintMargin;		        // maintenance margin required
+        double_type unrealizedProfit;           // unrealized profit
+        double_type positionInitialMargin;      // initial margin required for positions with current mark price
+        double_type openOrderInitialMargin;     // initial margin required for open orders with current mark price
+        double_type leverage;		            // current initial leverage
+        bool isolated;  		                // if the position is isolated
+        double_type entryPrice;  	            // average entry price
+        double_type maxNotional;	            // maximum available notional with current leverage
+        double_type bidNotional;                // bids notional, ignore
+        double_type askNotional;                // ask notional, ignore
+        std::string positionSide;  	            // position side
+        double_type positionAmt;			    // position amount
+        size_t updateTime;                      // last update time
+
+        static position_t construct(const flatjson::fjson &json);
+        friend std::ostream &operator<<(std::ostream &os, const position_t &f);
+    };
+
+    std::unordered_map<std::string, position_t> positions;
+
+    const asset_t& get_asset(const std::string &asset) const
+        { return get_asset(asset.c_str()); }
+    const asset_t& get_asset(const char *asset) const;
+
+    const position_t& get_position(const std::string &symbol) const
+        { return get_position(symbol.c_str()); }
+    const position_t& get_position(const char *symbol) const;
+
+    //const double_type& add_balance(const std::string &symbol, const double_type &amount)
+    //{ return add_balance(symbol.c_str(), amount); }
+    //const double_type& add_balance(const char *symbol, const double_type &amount);
+    //
+    //const double_type& sub_balance(const std::string &symbol, const double_type &amount)
+    //{ return sub_balance(symbol.c_str(), amount); }
+    //const double_type& sub_balance(const char *symbol, const double_type &amount);
+
+    static linear_future_account_info_t construct(const flatjson::fjson &json);
+    friend std::ostream &operator<<(std::ostream &os, const linear_future_account_info_t &f);
+};
+
 // https://github.com/binance-exchange/binance-official-api-docs/blob/master/rest-api.md#exchange-information
 struct exchange_info_t {
     std::string timezone;

@@ -400,6 +400,342 @@ std::ostream &operator<<(std::ostream &os, const account_info_t &o) {
 
 /*************************************************************************************************/
 
+option_account_info_t::asset_t option_account_info_t::asset_t::construct(const flatjson::fjson &json) {
+
+    option_account_info_t::asset_t res{};
+
+    __BINAPI_GET(asset);
+    __BINAPI_GET(marginBalance);
+    __BINAPI_GET(equity);
+    __BINAPI_GET(available);
+    __BINAPI_GET(locked);
+    __BINAPI_GET(unrealizedPNL);
+
+    return res;
+}
+
+std::ostream &operator<<(std::ostream &os, const option_account_info_t::asset_t &o) {
+    os
+    << "{"
+    << "\"asset\":\"" << o.asset << "\","
+    << "\"marginBalance\":\"" << o.marginBalance << "\","
+    << "\"equity\":\"" << o.equity << "\","
+    << "\"available\":\"" << o.available << "\","
+    << "\"locked\":\"" << o.locked << "\","
+    << "\"unrealizedPNL\":\"" << o.unrealizedPNL << "\""
+    << "}";
+
+    return os;
+}
+
+option_account_info_t::greek_t option_account_info_t::greek_t::construct(const flatjson::fjson &json) {
+
+    option_account_info_t::greek_t res{};
+
+    __BINAPI_GET(underlying);
+    __BINAPI_GET(delta);
+    __BINAPI_GET(gamma);
+    __BINAPI_GET(theta);
+    __BINAPI_GET(vega);
+
+    return res;
+}
+
+std::ostream &operator<<(std::ostream &os, const option_account_info_t::greek_t &o) {
+    os
+    << "{"
+    << "\"underlying\":\"" << o.underlying << "\","
+    << "\"delta\":\"" << o.delta << "\","
+    << "\"gamma\":\"" << o.gamma << "\","
+    << "\"theta\":\"" << o.theta << "\","
+    << "\"vega\":\"" << o.vega << "\""
+    << "}";
+
+    return os;
+}
+
+option_account_info_t option_account_info_t::construct(const flatjson::fjson &json) {
+    assert(json.is_valid());
+
+    option_account_info_t res{};
+
+    __BINAPI_GET(time);
+    __BINAPI_GET(riskLevel);
+
+    const auto asset_arr = json.at("asset");
+    assert(asset_arr.is_array());
+    for ( auto idx = 0u; idx < asset_arr.size(); ++idx ) {
+
+        const auto it = asset_arr.at(idx);
+
+        asset_t asset = asset_t::construct(it);
+        std::string symbol = asset.asset;
+
+        res.assets.emplace(std::move(symbol), std::move(asset));
+    }
+
+    const auto greek_arr = json.at("greek");
+    assert(greek_arr.is_array());
+    for ( auto idx = 0u; idx < greek_arr.size(); ++idx ) {
+
+        const auto it = greek_arr.at(idx);
+
+        greek_t greek = greek_t::construct(it);
+        std::string underlying = greek.underlying;
+
+        res.greeks.emplace(std::move(underlying), std::move(greek));
+    }
+
+    return res;
+}
+
+const option_account_info_t::asset_t& option_account_info_t::get_asset(const char *asset) const {
+    auto it = assets.find(asset);
+    if ( it != assets.end() ) {
+        return it->second;
+    }
+
+    assert(!"unreachable");
+}
+
+const option_account_info_t::greek_t& option_account_info_t::get_greek(const char *underlying) const {
+    auto it = greeks.find(underlying);
+    if ( it != greeks.end() ) {
+        return it->second;
+    }
+
+    assert(!"unreachable");
+}
+
+std::ostream &operator<<(std::ostream &os, const option_account_info_t &o) {
+    os
+    << "{"
+    << "\"time\":" << o.time << ","
+    << "\"riskLevel\":" << o.riskLevel << ","
+    << "\"assets\":[";
+    for ( auto it = o.assets.begin(); it != o.assets.end(); ++it ) {
+        os << it->second;
+        if ( std::next(it) != o.assets.end() ) {
+            os << ",";
+        }
+    }
+    os << "\"greeks\":[";
+    for ( auto it = o.greeks.begin(); it != o.greeks.end(); ++it ) {
+        os << it->second;
+        if ( std::next(it) != o.greeks.end() ) {
+            os << ",";
+        }
+    }
+    os << "]}";
+
+    return os;
+}
+
+/*************************************************************************************************/
+
+linear_future_account_info_t::asset_t linear_future_account_info_t::asset_t::construct(const flatjson::fjson &json) {
+
+    linear_future_account_info_t::asset_t res{};
+
+    __BINAPI_GET(asset);
+    __BINAPI_GET(walletBalance);
+    __BINAPI_GET(unrealizedProfit);
+    __BINAPI_GET(marginBalance);
+    __BINAPI_GET(maintMargin);
+    __BINAPI_GET(initialMargin);
+    __BINAPI_GET(positionInitialMargin);
+    __BINAPI_GET(openOrderInitialMargin);
+    __BINAPI_GET(crossWalletBalance);
+    __BINAPI_GET(crossUnPnl);
+    __BINAPI_GET(availableBalance);
+    __BINAPI_GET(maxWithdrawAmount);
+    __BINAPI_GET(marginAvailable);
+    __BINAPI_GET(updateTime);
+
+    return res;
+}
+
+std::ostream &operator<<(std::ostream &os, const linear_future_account_info_t::asset_t &o) {
+    os
+    << "{"
+    << "\"asset\":\"" << o.asset << "\","
+    << "\"walletBalance\":\"" << o.walletBalance << "\","
+    << "\"unrealizedProfit\":\"" << o.unrealizedProfit << "\","
+    << "\"marginBalance\":\"" << o.marginBalance << "\","
+    << "\"maintMargin\":\"" << o.maintMargin << "\","
+    << "\"initialMargin\":\"" << o.initialMargin << "\","
+    << "\"positionInitialMargin\":\"" << o.positionInitialMargin << "\","
+    << "\"openOrderInitialMargin\":\"" << o.openOrderInitialMargin << "\","
+    << "\"crossWalletBalance\":\"" << o.crossWalletBalance << "\","
+    << "\"crossUnPnl\":\"" << o.crossUnPnl << "\","
+    << "\"availableBalance\":\"" << o.availableBalance << "\","
+    << "\"maxWithdrawAmount\":\"" << o.maxWithdrawAmount << "\","
+    << "\"marginAvailable\":\"" << o.marginAvailable << "\","
+    << "\"updateTime\":\"" << o.updateTime << "\""
+    << "}";
+
+    return os;
+}
+
+linear_future_account_info_t::position_t linear_future_account_info_t::position_t::construct(const flatjson::fjson &json) {
+
+    linear_future_account_info_t::position_t res{};
+
+    __BINAPI_GET(symbol);
+    __BINAPI_GET(initialMargin);
+    __BINAPI_GET(maintMargin);
+    __BINAPI_GET(unrealizedProfit);
+    __BINAPI_GET(positionInitialMargin);
+    __BINAPI_GET(openOrderInitialMargin);
+    __BINAPI_GET(leverage);
+    __BINAPI_GET(isolated);
+    __BINAPI_GET(entryPrice);
+    __BINAPI_GET(maxNotional);
+    __BINAPI_GET(bidNotional);
+    __BINAPI_GET(askNotional);
+    __BINAPI_GET(positionSide);
+    __BINAPI_GET(positionAmt);
+    __BINAPI_GET(updateTime);
+
+    return res;
+}
+
+std::ostream &operator<<(std::ostream &os, const linear_future_account_info_t::position_t &o) {
+    os
+    << "{"
+    << "\"symbol\":\"" << o.symbol << "\","
+    << "\"initialMargin\":\"" << o.initialMargin << "\","
+    << "\"maintMargin\":\"" << o.maintMargin << "\","
+    << "\"unrealizedProfit\":\"" << o.unrealizedProfit << "\","
+    << "\"positionInitialMargin\":\"" << o.positionInitialMargin << "\","
+    << "\"openOrderInitialMargin\":\"" << o.openOrderInitialMargin << "\","
+    << "\"leverage\":\"" << o.leverage << "\","
+    << "\"isolated\":\"" << o.isolated << "\","
+    << "\"entryPrice\":\"" << o.entryPrice << "\","
+    << "\"maxNotional\":\"" << o.maxNotional << "\","
+    << "\"bidNotional\":\"" << o.bidNotional << "\","
+    << "\"askNotional\":\"" << o.askNotional << "\","
+    << "\"positionSide\":\"" << o.positionSide << "\","
+    << "\"positionAmt\":\"" << o.positionAmt << "\","
+    << "\"updateTime\":\"" << o.updateTime << "\""
+    << "}";
+
+    return os;
+}
+
+linear_future_account_info_t linear_future_account_info_t::construct(const flatjson::fjson &json) {
+    assert(json.is_valid());
+
+    linear_future_account_info_t res{};
+
+    __BINAPI_GET(feeTier);
+    __BINAPI_GET(feeBurn);
+    __BINAPI_GET_DEFAULT(canTrade, true);
+    __BINAPI_GET(canDeposit);
+    __BINAPI_GET(canWithdraw);
+    __BINAPI_GET(updateTime);
+    __BINAPI_GET(multiAssetsMargin);
+    __BINAPI_GET(tradeGroupId);
+    __BINAPI_GET(totalInitialMargin);
+    __BINAPI_GET(totalMaintMargin);
+    __BINAPI_GET(totalWalletBalance);
+    __BINAPI_GET(totalUnrealizedProfit);
+    __BINAPI_GET(totalMarginBalance);
+    __BINAPI_GET(totalPositionInitialMargin);
+    __BINAPI_GET(totalOpenOrderInitialMargin);
+    __BINAPI_GET(totalCrossWalletBalance);
+    __BINAPI_GET(totalCrossUnPnl);
+    __BINAPI_GET(availableBalance);
+    __BINAPI_GET(maxWithdrawAmount);
+
+    const auto asset_arr = json.at("asset");
+    assert(asset_arr.is_array());
+    for ( auto idx = 0u; idx < asset_arr.size(); ++idx ) {
+
+        const auto it = asset_arr.at(idx);
+
+        asset_t asset = asset_t::construct(it);
+        std::string symbol = asset.asset;
+
+        res.assets.emplace(std::move(symbol), std::move(asset));
+    }
+
+    const auto position_arr = json.at("positions");
+    assert(position_arr.is_array());
+    for ( auto idx = 0u; idx < position_arr.size(); ++idx ) {
+
+        const auto it = position_arr.at(idx);
+
+        position_t position = position_t::construct(it);
+        std::string symbol = position.symbol;
+
+        res.positions.emplace(std::move(symbol), std::move(position));
+    }
+
+    return res;
+}
+
+const linear_future_account_info_t::asset_t& linear_future_account_info_t::get_asset(const char *asset) const {
+    auto it = assets.find(asset);
+    if ( it != assets.end() ) {
+        return it->second;
+    }
+
+    assert(!"unreachable");
+}
+
+const linear_future_account_info_t::position_t& linear_future_account_info_t::get_position(const char *symbol) const {
+    auto it = positions.find(symbol);
+    if ( it != positions.end() ) {
+        return it->second;
+    }
+
+    assert(!"unreachable");
+}
+
+std::ostream &operator<<(std::ostream &os, const linear_future_account_info_t &o) {
+    os
+    << "{"
+    << "\"feeTier\":" << o.feeTier << ","
+    << "\"feeBurn\":" << o.feeBurn << ","
+    << "\"canTrade\":" << o.canTrade << ","
+    << "\"canDeposit\":" << o.canDeposit << ","
+    << "\"canWithdraw\":" << o.canWithdraw << ","
+    << "\"updateTime\":" << o.updateTime << ","
+    << "\"multiAssetsMargin\":" << o.multiAssetsMargin << ","
+    << "\"tradeGroupId\":" << o.tradeGroupId << ","
+    << "\"totalInitialMargin\":" << o.totalInitialMargin << ","
+    << "\"totalMaintMargin\":" << o.totalMaintMargin << ","
+    << "\"totalWalletBalance\":" << o.totalWalletBalance << ","
+    << "\"totalUnrealizedProfit\":" << o.totalUnrealizedProfit << ","
+    << "\"totalMarginBalance\":" << o.totalMarginBalance << ","
+    << "\"totalPositionInitialMargin\":" << o.totalPositionInitialMargin << ","
+    << "\"totalOpenOrderInitialMargin\":" << o.totalOpenOrderInitialMargin << ","
+    << "\"totalCrossWalletBalance\":" << o.totalCrossWalletBalance << ","
+    << "\"totalCrossUnPnl\":" << o.totalCrossUnPnl << ","
+    << "\"availableBalance\":" << o.availableBalance << ","
+    << "\"maxWithdrawAmount\":" << o.maxWithdrawAmount << ","
+    << "\"assets\":[";
+    for ( auto it = o.assets.begin(); it != o.assets.end(); ++it ) {
+        os << it->second;
+        if ( std::next(it) != o.assets.end() ) {
+            os << ",";
+        }
+    }
+    os << "\"positions\":[";
+    for ( auto it = o.positions.begin(); it != o.positions.end(); ++it ) {
+        os << it->second;
+        if ( std::next(it) != o.positions.end() ) {
+            os << ",";
+        }
+    }
+    os << "]}";
+
+    return os;
+}
+
+/*************************************************************************************************/
+
 std::ostream& operator<<(std::ostream &os, const exchange_info_t::rate_limit_t &o) {
     os
     << "{"
