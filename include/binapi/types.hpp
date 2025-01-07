@@ -1283,6 +1283,50 @@ struct new_order_info_full_t {
     friend std::ostream &operator<<(std::ostream &os, const new_order_info_full_t &o);
 };
 
+// https://developers.binance.com/docs/derivatives/option/trade
+struct new_option_order_info_ack_t {
+    std::size_t orderId;
+    std::string symbol;
+    double_type price;
+    double_type quantity;
+    std::string side;
+    std::string type;
+    std::size_t createDate;
+    bool reduceOnly;
+    bool postOnly;
+    bool mmp;
+
+    static new_option_order_info_ack_t construct(const flatjson::fjson &json);
+    friend std::ostream &operator<<(std::ostream &os, const new_option_order_info_ack_t &o);
+};
+
+struct new_option_order_info_result_t {
+    std::size_t orderId;
+    std::string symbol;
+    double_type price;
+    double_type quantity;
+    double_type executedQty;
+    double_type fee;
+    std::string side;
+    std::string type;
+    std::string timeInForce;
+    bool reduceOnly;
+    bool postOnly;
+    std::size_t createTime;
+    std::size_t updateTime;
+    std::string status;
+    double_type avgPrice;
+    std::string clientOrderId;
+    size_t priceScale;
+    size_t quantityScale;
+    std::string optionSide;
+    std::string quoteAsset;
+    bool mmp;
+
+    static new_option_order_info_result_t construct(const flatjson::fjson &json);
+    friend std::ostream &operator<<(std::ostream &os, const new_option_order_info_result_t &o);
+};
+
 // https://github.com/binance-exchange/binance-official-api-docs/blob/master/rest-api.md#test-new-order-trade
 struct new_test_order_info_t {
     bool ok;
@@ -1375,6 +1419,68 @@ struct new_order_resp_type
 
     static new_order_resp_type construct(const flatjson::fjson &json);
     friend std::ostream &operator<<(std::ostream &os, const new_order_resp_type &o);
+};
+
+struct new_option_order_resp_type
+    :boost::variant<
+         new_option_order_info_ack_t
+        ,new_option_order_info_result_t
+    >
+{
+    // ctor inheritance
+    using boost::variant<
+         new_option_order_info_ack_t
+        ,new_option_order_info_result_t
+    >::variant;
+
+    std::pair<e_trade_resp_type, const void *>
+    get_responce_type() const {
+        if ( const auto *p = boost::get<new_option_order_info_ack_t>(this) ) {
+            return {e_trade_resp_type::ACK, p};
+        } else if ( const auto *p = boost::get<new_option_order_info_result_t>(this) ) {
+            return {e_trade_resp_type::RESULT, p};
+        } 
+
+        return {e_trade_resp_type::UNKNOWN, nullptr};
+    }
+
+    bool is_valid_responce_type()  const { const auto r =  get_responce_type(); return r.first != e_trade_resp_type::UNKNOWN; }
+    bool is_ack_responce_type()    const { const auto r =  get_responce_type(); return r.first == e_trade_resp_type::ACK; }
+    bool is_result_responce_type() const { const auto r =  get_responce_type(); return r.first == e_trade_resp_type::RESULT; }
+
+    const new_order_info_ack_t& get_responce_ack() const {
+        const auto r =  get_responce_type();
+        assert(r.first == e_trade_resp_type::ACK);
+
+        return *static_cast<const new_order_info_ack_t *>(r.second);
+    }
+    const new_order_info_result_t& get_responce_result() const {
+        const auto r =  get_responce_type();
+        assert(r.first == e_trade_resp_type::RESULT);
+
+        return *static_cast<const new_order_info_result_t *>(r.second);
+    }
+    
+    std::size_t get_order_id() const {
+        const auto r =  get_responce_type();
+        assert(
+            r.first == e_trade_resp_type::ACK ||
+            r.first == e_trade_resp_type::RESULT
+        );
+
+        switch ( r.first ) {
+            case e_trade_resp_type::ACK: return static_cast<const new_order_info_ack_t *>(r.second)->orderId;
+            case e_trade_resp_type::RESULT: return static_cast<const new_order_info_result_t *>(r.second)->orderId;
+            default: break;
+        }
+
+        assert(!"unreachable");
+
+        return 0u;
+    }
+
+    static new_option_order_resp_type construct(const flatjson::fjson &json);
+    friend std::ostream &operator<<(std::ostream &os, const new_option_order_resp_type &o);
 };
 
 // https://github.com/binance-exchange/binance-official-api-docs/blob/master/rest-api.md#cancel-order-trade

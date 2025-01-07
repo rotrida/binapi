@@ -3345,6 +3345,103 @@ std::ostream &operator<<(std::ostream &os, const new_order_info_full_t &o) {
 
 /*************************************************************************************************/
 
+new_option_order_info_ack_t new_option_order_info_ack_t::construct(const flatjson::fjson &json) {
+    assert(json.is_valid());
+
+    new_option_order_info_ack_t res{};
+    
+    __BINAPI_GET(orderId);
+    __BINAPI_GET(symbol);
+    __BINAPI_GET(price);
+    __BINAPI_GET(quantity);
+    __BINAPI_GET(side);
+    __BINAPI_GET(type);
+    __BINAPI_GET(createDate);
+    __BINAPI_GET(reduceOnly);
+    __BINAPI_GET(postOnly);
+    __BINAPI_GET(mmp);
+
+    return res;
+}
+std::ostream &operator<<(std::ostream &os, const new_option_order_info_ack_t &o) {
+    
+    os
+    << "{"
+    << "\"orderId\":\"" << o.orderId << "\","
+    << "\"symbol\":" << o.symbol << ","
+    << "\"price\":\"" << o.price << "\","
+    << "\"quantity\":\"" << o.quantity << "\","
+    << "\"side\":\"" << o.side << "\","
+    << "\"type\":\"" << o.type << "\","
+    << "\"createDate\":\"" << o.createDate << "\","
+    << "\"reduceOnly\":\"" << o.reduceOnly << "\","
+    << "\"postOnly\":\"" << o.postOnly << "\","
+    << "\"mmp\":" << o.mmp
+    << "}";
+
+    return os;
+}
+
+new_option_order_info_result_t new_option_order_info_result_t::construct(const flatjson::fjson &json) {
+    assert(json.is_valid());
+
+    new_option_order_info_result_t res{};
+    __BINAPI_GET(orderId);
+    __BINAPI_GET(symbol);
+    __BINAPI_GET(price);
+    __BINAPI_GET(quantity);
+    __BINAPI_GET(executedQty);
+    __BINAPI_GET(fee);
+    __BINAPI_GET(side);
+    __BINAPI_GET(type);
+    __BINAPI_GET(timeInForce);
+    __BINAPI_GET(reduceOnly);
+    __BINAPI_GET(postOnly);
+    __BINAPI_GET(createTime);
+    __BINAPI_GET(updateTime);
+    __BINAPI_GET(status);
+    __BINAPI_GET(avgPrice);
+    __BINAPI_GET(clientOrderId);
+    __BINAPI_GET(priceScale);
+    __BINAPI_GET(quantityScale);
+    __BINAPI_GET(optionSide);
+    __BINAPI_GET(quoteAsset);
+    __BINAPI_GET(mmp);
+
+    return res;
+}
+
+std::ostream &operator<<(std::ostream &os, const new_option_order_info_result_t &o) {
+    os
+    << "{"
+    << "\"orderId\":\"" << o.orderId << "\","
+    << "\"symbol\":" << o.symbol << ","
+    << "\"price\":\"" << o.price << "\","
+    << "\"quantity\":" << o.quantity << ","
+    << "\"executedQty\":\"" << o.executedQty << "\","
+    << "\"fee\":\"" << o.fee << "\","
+    << "\"side\":\"" << o.side << "\","
+    << "\"type\":\"" << o.type << "\","
+    << "\"timeInForce\":\"" << o.timeInForce << "\","
+    << "\"reduceOnly\":\"" << o.reduceOnly << "\","
+    << "\"postOnly\":\"" << o.postOnly << "\","
+    << "\"createTime\":\"" << o.createTime << "\","
+    << "\"updateTime\":\"" << o.updateTime << "\","
+    << "\"status\":\"" << o.status << "\","
+    << "\"avgPrice\":\"" << o.avgPrice << "\","
+    << "\"clientOrderId\":\"" << o.clientOrderId << "\","
+    << "\"priceScale\":\"" << o.priceScale << "\","
+    << "\"quantityScale\":\"" << o.quantityScale << "\","
+    << "\"optionSide\":\"" << o.optionSide << "\","
+    << "\"quoteAsset\":\"" << o.quoteAsset << "\","
+    << "\"mmp\":\"" << o.mmp << "\""
+    << "}";
+
+    return os;
+}
+
+/*************************************************************************************************/
+
 new_order_resp_type new_order_resp_type::construct(const flatjson::fjson &json) {
     assert(json.is_valid());
 
@@ -3377,6 +3474,36 @@ std::ostream &operator<<(std::ostream &os, const new_order_resp_type &o) {
     } else if ( const auto *p = boost::get<new_order_info_full_t>(&o) ) {
         return os << *p;
     }
+
+    assert(!"unreachable");
+
+    return os;
+}
+
+/*************************************************************************************************/
+
+new_option_order_resp_type new_option_order_resp_type::construct(const flatjson::fjson &json) {
+    assert(json.is_valid());
+
+    if ( json.contains("quoteAsset") ) {
+        // RESULT
+        new_option_order_info_result_t res = new_option_order_info_result_t::construct(json);
+        return res;
+    } else if ( json.contains("symbol") ) {
+        // ASK
+        new_option_order_info_ack_t res = new_option_order_info_ack_t::construct(json);
+        return res;
+    }
+
+    assert(!"unreachable");
+}
+
+std::ostream &operator<<(std::ostream &os, const new_option_order_resp_type &o) {
+    if ( const auto *p = boost::get<new_option_order_info_ack_t>(&o) ) {
+        return os << *p;
+    } else if ( const auto *p = boost::get<new_option_order_info_result_t>(&o) ) {
+        return os << *p;
+    } 
 
     assert(!"unreachable");
 

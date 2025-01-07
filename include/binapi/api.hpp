@@ -452,6 +452,25 @@ struct api {
         ,new_order_cb cb = {}
     );
 
+    // https://developers.binance.com/docs/derivatives/option/trade
+    // NOTE: if 'ec' not zero - the 'res' arg is in undefined state.
+    using new_option_order_cb = std::function<bool(const char *fl, int ec, std::string errmsg, new_option_order_resp_type res)>;
+    result<new_option_order_resp_type>
+    new_option_order(
+         const std::string_view symbol
+        ,const std::string &client_order_id
+        ,const e_side side
+        ,const e_type type
+        ,const std::string &quantity
+        ,const std::optional<std::string> price
+        ,const std::optional<e_time> time
+        ,const std::optional<bool> reduceOnly
+        ,const std::optional<bool> postOnly
+        ,const std::optional<e_trade_resp_type> resp
+        ,const std::optional<bool> isMmmp
+        ,new_option_order_cb cb = {}
+    );
+
     // https://github.com/binance/binance-spot-api-docs/blob/master/rest-api.md#test-new-order-trade
     result<new_order_resp_type>
     new_test_order(

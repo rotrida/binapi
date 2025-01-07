@@ -1130,6 +1130,69 @@ api::new_order(
 
 /*************************************************************************************************/
 
+api::result<new_option_order_resp_type> 
+api::new_option_order(
+    const std::string_view symbol
+    ,const std::string &client_order_id
+    ,const e_side side
+    ,const e_type type
+    ,const std::string &quantity
+    ,const std::optional<std::string> price
+    ,const std::optional<e_time> time
+    ,const std::optional<bool> reduceOnly
+    ,const std::optional<bool> postOnly
+    ,const std::optional<e_trade_resp_type> resp
+    ,const std::optional<bool> isMmmp
+    ,new_option_order_cb cb)
+{
+    const char *side_str = e_side_to_string(side);
+    assert(side_str);
+
+    const char *type_str = e_type_to_string(type);
+    assert(type_str);
+
+    std::deque<impl::kv_type> deq = {
+         {"symbol", symbol.data()}
+        ,{"side", side_str}
+        ,{"type", type_str}
+        ,{"quantity", quantity.c_str()}
+        ,{"clientOrderId", client_order_id.c_str()}};
+
+    if(price)
+    {
+        deq.emplace_back(impl::kv_type({"price", price->c_str()}));
+    }
+
+    if(time)
+    {
+        deq.emplace_back(impl::kv_type({"timeInForce", e_time_to_string(*time)}));
+    }
+
+    if(reduceOnly)
+    {
+        deq.emplace_back(impl::kv_type({"reduceOnly", *reduceOnly}));
+    }
+
+    if(postOnly)
+    {
+        deq.emplace_back(impl::kv_type({"postOnly", *postOnly}));
+    }
+
+    if(resp)
+    {
+        deq.emplace_back(impl::kv_type({"newOrderRespType", e_trade_resp_type_to_string(*resp)}));
+    }
+
+    if(isMmmp)
+    {
+        deq.emplace_back(impl::kv_type({"isMmmp", *isMmmp}));
+    }
+
+    return pimpl->post(true, "/eapi/v1/order", boost::beast::http::verb::post, deq, std::move(cb));
+}
+
+/*************************************************************************************************/
+
 api::result<new_order_resp_type>
 api::new_test_order(
      const char *symbol
