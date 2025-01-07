@@ -941,6 +941,36 @@ api::result<margin_orders_info_t> api::open_margin_orders(const char *symbol, op
 
 /*************************************************************************************************/
 
+api::result<option_orders_info_t> api::open_option_orders(const char *symbol, open_option_orders_cb cb) {
+    const impl::init_list_type map = {
+        {"symbol", symbol}
+    };
+
+    return pimpl->post(true, "/eapi/v1/openOrders", boost::beast::http::verb::get, map, std::move(cb));
+}
+
+/*************************************************************************************************/
+
+api::result<linear_future_orders_info_t> api::open_linear_future_orders(const char *symbol, open_linear_future_orders_cb cb) {
+    const impl::init_list_type map = {
+        {"symbol", symbol}
+    };
+
+    return pimpl->post(true, "/fapi/v1/openOrders", boost::beast::http::verb::get, map, std::move(cb));
+}
+
+/*************************************************************************************************/
+
+api::result<inverse_future_orders_info_t> api::open_inverse_future_orders(const char *symbol, open_inverse_future_orders_cb cb) {
+    const impl::init_list_type map = {
+        {"symbol", symbol}
+    };
+
+    return pimpl->post(true, "/dapi/v1/openOrders", boost::beast::http::verb::get, map, std::move(cb));
+}
+
+/*************************************************************************************************/
+
 api::result<orders_info_t> api::all_orders(
      const char *symbol
     ,std::size_t orderid

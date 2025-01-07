@@ -242,6 +242,24 @@ struct api {
     result<margin_orders_info_t>
     open_margin_orders(const char *symbol, open_margin_orders_cb cb = {});
 
+    using open_option_orders_cb = std::function<bool(const char *fl, int ec, std::string errmsg, option_orders_info_t res)>;
+    result<option_orders_info_t>
+    open_option_orders(const std::string &symbol, open_orders_cb cb = {}) { return open_option_orders(symbol.c_str(), std::move(cb)); }
+    result<option_orders_info_t>
+    open_option_orders(const char *symbol, open_option_orders_cb cb = {});
+
+    using open_linear_future_orders_cb = std::function<bool(const char *fl, int ec, std::string errmsg, linear_future_orders_info_t res)>;
+    result<linear_future_orders_info_t>
+    open_linear_future_orders(const std::string &symbol, open_linear_future_orders_cb cb = {}) { return open_linear_future_orders(symbol.c_str(), std::move(cb)); }
+    result<linear_future_orders_info_t>
+    open_linear_future_orders(const char *symbol, open_linear_future_orders_cb cb = {});
+
+    using open_inverse_future_orders_cb = std::function<bool(const char *fl, int ec, std::string errmsg, inverse_future_orders_info_t res)>;
+    result<inverse_future_orders_info_t>
+    open_inverse_future_orders(const std::string &symbol, open_inverse_future_orders_cb cb = {}) { return open_inverse_future_orders(symbol.c_str(), std::move(cb)); }
+    result<inverse_future_orders_info_t>
+    open_inverse_future_orders(const char *symbol, open_inverse_future_orders_cb cb = {});
+
     // https://github.com/binance/binance-spot-api-docs/blob/master/rest-api.md#all-orders-user_data
     using all_orders_cb = std::function<bool(const char *fl, int ec, std::string errmsg, orders_info_t res)>;
     result<orders_info_t>

@@ -1094,6 +1094,98 @@ struct margin_order_info_t : public order_info_t{
     friend std::ostream &operator<<(std::ostream &os, const margin_order_info_t &o);
 };
 
+struct option_order_info_t
+{
+    size_t orderId;         // System order number
+    std::string symbol;     // Option trading pair
+    double_type price;                  // Order Price
+    double_type quantity;               // Order Quantity
+    double_type executedQty;            // Number of completed trades
+    double_type fee;                    // Fee 
+    std::string side;                   // Buy/sell direction
+    std::string type;                   // Order type
+    std::string timeInForce;            // Time in force method
+    bool reduceOnly;                    // Order is reduce only Y/N
+    bool postOnly;
+    size_t createTime;                  // Order Time
+    size_t updateTime;                  // Update Time
+    std::string status;                 // Order status
+    double_type avgPrice;               // Average price of completed trade
+    std::string clientOrderId;          // Client order ID         
+    size_t priceScale;
+    size_t quantityScale;
+    std::string optionSide;
+    std::string quoteAsset;
+    bool mmp;
+
+    static option_order_info_t construct(const flatjson::fjson &json);
+    friend std::ostream &operator<<(std::ostream &os, const option_order_info_t &o);
+};
+
+struct linear_future_order_info_t
+{
+  	double_type avgPrice;
+  	std::string clientOrderId;
+  	double_type cumQuote; 	double_type executedQty; 	
+    size_t orderId;
+  	double_type origQty;
+  	std::string origType;
+  	double_type price; 	
+    bool reduceOnly;
+  	std::string side;
+  	std::string positionSide;
+  	std::string status;
+  	double_type stopPrice;		// please ignore when order type is TRAILING_STOP_MARKET
+  	bool closePosition;         // if Close-All
+  	std::string symbol;
+  	size_t time;				// order time
+  	std::string timeInForce;
+  	std::string type;
+  	double_type activatePrice;	    // activation price, only return with TRAILING_STOP_MARKET order
+  	double_type priceRate;			// callback rate, only return with TRAILING_STOP_MARKET order
+  	size_t updateTime;		        // update time
+  	std::string workingType;
+  	bool priceProtect;                      // if conditional order trigger is protected	
+	std::string priceMatch;                 //price match mode
+    std::string selfTradePreventionMode;    //self trading preventation mode
+    size_t goodTillDate;                    //order pre-set auot cancel time for TIF GTD order
+
+    static linear_future_order_info_t construct(const flatjson::fjson &json);
+    friend std::ostream &operator<<(std::ostream &os, const linear_future_order_info_t &o);
+};
+
+struct inverse_future_order_info_t
+{
+  	double_type avgPrice;
+  	std::string clientOrderId;
+  	double_type cumBase;
+  	double_type executedQty;
+  	size_t orderId;
+  	double_type origQty;
+  	std::string origType;
+  	double_type price;
+  	bool reduceOnly;
+  	std::string side;
+  	std::string positionSide;
+  	std::string status;
+  	double_type stopPrice;			// please ignore when order type is TRAILING_STOP_MARKET
+  	bool closePosition;   			// if Close-All
+  	std::string symbol;
+  	size_t time;				    // order time
+  	std::string timeInForce;
+  	std::string type;
+  	double_type activatePrice;			// activation price, only return with TRAILING_STOP_MARKET order
+  	double_type priceRate;				// callback rate, only return with TRAILING_STOP_MARKET order
+  	size_t updateTime;		            // update time
+  	std::string workingType;
+  	bool priceProtect;                      // if conditional order trigger is protected
+  	std::string priceMatch;                 //price match mode
+  	std::string selfTradePreventionMode;    //self trading preventation mode
+  
+    static inverse_future_order_info_t construct(const flatjson::fjson &json);
+    friend std::ostream &operator<<(std::ostream &os, const inverse_future_order_info_t &o);
+};
+
 // https://github.com/binance-exchange/binance-official-api-docs/blob/master/rest-api.md#current-open-orders-user_data
 // https://github.com/binance-exchange/binance-official-api-docs/blob/master/rest-api.md#all-orders-user_data
 struct orders_info_t {
@@ -1108,6 +1200,27 @@ struct margin_orders_info_t {
 
     static margin_orders_info_t construct(const flatjson::fjson &json);
     friend std::ostream &operator<<(std::ostream &os, const orders_info_t &o);
+};
+
+struct option_orders_info_t {
+    std::unordered_map<std::string, std::vector<option_order_info_t>> orders;
+
+    static option_orders_info_t construct(const flatjson::fjson &json);
+    friend std::ostream &operator<<(std::ostream &os, const option_orders_info_t &o);
+};
+
+struct linear_future_orders_info_t {
+    std::unordered_map<std::string, std::vector<linear_future_order_info_t>> orders;
+
+    static linear_future_orders_info_t construct(const flatjson::fjson &json);
+    friend std::ostream &operator<<(std::ostream &os, const linear_future_orders_info_t &o);
+};
+
+struct inverse_future_orders_info_t {
+    std::unordered_map<std::string, std::vector<inverse_future_order_info_t>> orders;
+
+    static inverse_future_orders_info_t construct(const flatjson::fjson &json);
+    friend std::ostream &operator<<(std::ostream &os, const inverse_future_orders_info_t &o);
 };
 
 // https://github.com/binance-exchange/binance-official-api-docs/blob/master/rest-api.md#new-order--trade
