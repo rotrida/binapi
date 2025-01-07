@@ -471,6 +471,59 @@ struct api {
         ,new_option_order_cb cb = {}
     );
 
+    // https://developers.binance.com/docs/derivatives/usds-margined-futures/trade/rest-api
+    // NOTE: if 'ec' not zero - the 'res' arg is in undefined state.
+    using new_linear_future_order_cb = std::function<bool(const char *fl, int ec, std::string errmsg, new_linear_future_order_resp_type res)>;
+    result<new_linear_future_order_resp_type>
+    new_linear_future_order(
+         const std::string_view symbol
+        ,const e_side side
+        ,const std::optional<e_position_side_type> positionSide
+        ,const e_type type
+        ,const std::optional<e_time> time
+        ,const std::string &quantity
+        ,const std::optional<bool> reduceOnly
+        ,const std::optional<std::string> price
+        ,const std::string &client_order_id
+        ,const std::optional<std::string> stopPrice
+        ,const std::optional<bool> closePosition
+        ,const std::optional<std::string> activationPrice
+        ,const std::optional<std::string> callbackRate
+        ,const std::optional<e_working_type> workingType
+        ,const std::optional<bool> priceProtect
+        ,const std::optional<e_trade_resp_type> resp
+        ,const std::optional<e_price_match> priceMatch
+        ,const std::optional<e_self_trade_prevention_mode> selfTradePreventionMode
+        ,const std::optional<size_t> goodTillDate
+        ,new_linear_future_order_cb cb = {}
+    );
+
+    // https://developers.binance.com/docs/derivatives/coin-margined-futures/trade
+    // NOTE: if 'ec' not zero - the 'res' arg is in undefined state.
+    using new_inverse_future_order_cb = std::function<bool(const char *fl, int ec, std::string errmsg, new_inverse_future_order_resp_type res)>;
+    result<new_inverse_future_order_resp_type>
+    new_inverse_future_order(
+         const std::string_view symbol
+        ,const e_side side
+        ,const std::optional<e_position_side_type> positionSide
+        ,const e_type type
+        ,const std::optional<e_time> time
+        ,const std::string &quantity
+        ,const std::optional<bool> reduceOnly
+        ,const std::optional<std::string> price
+        ,const std::string &client_order_id
+        ,const std::optional<std::string> stopPrice
+        ,const std::optional<bool> closePosition
+        ,const std::optional<std::string> activationPrice
+        ,const std::optional<std::string> callbackRate
+        ,const std::optional<e_working_type> workingType
+        ,const std::optional<bool> priceProtect
+        ,const std::optional<e_trade_resp_type> resp
+        ,const std::optional<e_price_match> priceMatch
+        ,const std::optional<e_self_trade_prevention_mode> selfTradePreventionMode
+        ,new_inverse_future_order_cb cb = {}
+    );
+
     // https://github.com/binance/binance-spot-api-docs/blob/master/rest-api.md#test-new-order-trade
     result<new_order_resp_type>
     new_test_order(

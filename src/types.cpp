@@ -3482,10 +3482,86 @@ std::ostream &operator<<(std::ostream &os, const new_order_resp_type &o) {
 
 /*************************************************************************************************/
 
-linear_future_order_result_t linear_future_order_result_t::construct(const flatjson::fjson &json)
+new_linear_future_order_info_ack_t construct(const flatjson::fjson &json)
 {
     assert(json.is_valid());
-    linear_future_order_result_t res{};
+    new_linear_future_order_info_ack_t res{};
+
+    __BINAPI_GET(orderId);
+    __BINAPI_GET(symbol);
+    __BINAPI_GET(price);
+    __BINAPI_GET(quantity);
+    __BINAPI_GET(side);
+    __BINAPI_GET(type);
+    __BINAPI_GET(createDate);
+    __BINAPI_GET(reduceOnly);
+    __BINAPI_GET(postOnly);
+    __BINAPI_GET(mmp);
+
+    return res;
+}
+
+std::ostream &operator<<(std::ostream &os, const new_linear_future_order_info_ack_t &o)
+{
+    os
+    << "{"
+    << "\"orderId\":\"" << o.orderId << "\","
+    << "\"symbol\":\"" << o.symbol << "\","
+    << "\"price\":\"" << o.price << "\","
+    << "\"quantity\":\"" << o.quantity << "\","
+    << "\"side\":\"" << o.side << "\","
+    << "\"type\":\"" << o.type << "\","
+    << "\"createDate\":\"" << o.createDate << "\","
+    << "\"reduceOnly\":\"" << o.reduceOnly << "\","
+    << "\"postOnly\":\"" << o.postOnly << "\","
+    << "\"mmp\":\"" << o.mmp << "\""
+    << "}";
+
+    return os;
+}
+
+new_inverse_future_order_info_ack_t new_inverse_future_order_info_ack_t::construct(const flatjson::fjson &json)
+{
+    assert(json.is_valid());
+    new_inverse_future_order_info_ack_t res{};
+
+    __BINAPI_GET(orderId);
+    __BINAPI_GET(symbol);
+    __BINAPI_GET(price);
+    __BINAPI_GET(quantity);
+    __BINAPI_GET(side);
+    __BINAPI_GET(type);
+    __BINAPI_GET(createDate);
+    __BINAPI_GET(reduceOnly);
+    __BINAPI_GET(postOnly);
+    __BINAPI_GET(mmp);
+
+    return res;
+}
+
+std::ostream &operator<<(std::ostream &os, const new_inverse_future_order_info_ack_t &o)
+{
+    os
+    << "{"
+    << "\"orderId\":\"" << o.orderId << "\","
+    << "\"symbol\":\"" << o.symbol << "\","
+    << "\"price\":\"" << o.price << "\","
+    << "\"quantity\":\"" << o.quantity << "\","
+    << "\"side\":\"" << o.side << "\","
+    << "\"type\":\"" << o.type << "\","
+    << "\"createDate\":\"" << o.createDate << "\","
+    << "\"reduceOnly\":\"" << o.reduceOnly << "\","
+    << "\"postOnly\":\"" << o.postOnly << "\","
+    << "\"mmp\":\"" << o.mmp << "\""
+    << "}";
+
+    return os;
+}
+
+new_linear_future_order_info_result_t new_linear_future_order_info_result_t::construct(const flatjson::fjson &json)
+{
+    assert(json.is_valid());
+    new_linear_future_order_info_result_t res{};
 
     __BINAPI_GET(clientOrderId);
     __BINAPI_GET(cumQty);
@@ -3517,7 +3593,7 @@ linear_future_order_result_t linear_future_order_result_t::construct(const flatj
     return res;
 }
 
-std::ostream &operator<<(std::ostream &os, const linear_future_order_result_t &o)
+std::ostream &operator<<(std::ostream &os, const new_linear_future_order_info_result_t &o)
 {
     os
     << "{"
@@ -3554,10 +3630,10 @@ std::ostream &operator<<(std::ostream &os, const linear_future_order_result_t &o
 
 /*************************************************************************************************/
 
-inverse_future_order_result_t inverse_future_order_result_t::construct(const flatjson::fjson &json)
+new_inverse_future_order_info_result_t new_inverse_future_order_info_result_t::construct(const flatjson::fjson &json)
 {
     assert(json.is_valid());
-    inverse_future_order_result_t res{};
+    new_inverse_future_order_info_result_t res{};
 
     __BINAPI_GET(clientOrderId);
     __BINAPI_GET(cumQty);
@@ -3589,7 +3665,7 @@ inverse_future_order_result_t inverse_future_order_result_t::construct(const fla
     return res;
 }
 
-std::ostream &operator<<(std::ostream &os, const inverse_future_order_result_t &o)
+std::ostream &operator<<(std::ostream &os, const new_inverse_future_order_info_result_t &o)
 {
     os
     << "{"

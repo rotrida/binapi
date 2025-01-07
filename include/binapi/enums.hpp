@@ -99,6 +99,55 @@ enum class e_side_effect_type : size_t {
 e_side_effect_type e_side_effect_type_from_string(const char* str);
 const char* e_side_effect_type_to_string(e_side_effect_type side_effect);
 
+/*************************************************************************************************/
+
+enum class e_position_side_type : size_t {
+    BOTH
+    , LONG
+    , SHORT
+};
+
+e_position_side_type e_position_side_type_from_string(const char* str);
+const char* e_position_side_type_to_string(e_position_side_type side_effect);
+
+/*************************************************************************************************/
+
+enum class e_working_type : size_t {
+    MARK_PRICE
+    , CONTRACT_PRICE
+};
+
+e_working_type e_working_type_from_string(const char* str);
+const char* e_working_type_to_string(e_working_type side_effect);
+
+/*************************************************************************************************/
+
+enum class e_price_match : size_t {
+    OPPONENT
+    , OPPONENT_5
+    , OPPONENT_10
+    , OPPONENT_20
+    , QUEUE
+    , QUEUE_5
+    , QUEUE_10
+    , QUEUE_20
+};
+
+e_price_match e_price_match_from_string(const char* str);
+const char* e_price_match_to_string(e_price_match price_match);
+
+/*************************************************************************************************/
+
+enum class e_self_trade_prevention_mode : size_t {
+    NONE
+    , EXPIRE_TAKER
+    , EXPIRE_MAKER
+    , EXPIRE_BOTH
+};
+
+e_self_trade_prevention_mode e_self_trade_prevention_mode_from_string(const char* str);
+const char* e_self_trade_prevention_mode_to_string(e_self_trade_prevention_mode self_trade_prevention_mode);
+
 } // ns binapi
 
 #endif // __binapi__enums_hpp
