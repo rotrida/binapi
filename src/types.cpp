@@ -3482,6 +3482,150 @@ std::ostream &operator<<(std::ostream &os, const new_order_resp_type &o) {
 
 /*************************************************************************************************/
 
+linear_future_order_result_t linear_future_order_result_t::construct(const flatjson::fjson &json)
+{
+    assert(json.is_valid());
+    linear_future_order_result_t res{};
+
+    __BINAPI_GET(clientOrderId);
+    __BINAPI_GET(cumQty);
+    __BINAPI_GET(cumQuote);
+    __BINAPI_GET(executedQty);
+    __BINAPI_GET(orderId);
+    __BINAPI_GET(avgPrice);
+    __BINAPI_GET(origQty);
+    __BINAPI_GET(price);
+    __BINAPI_GET(reduceOnly);
+    __BINAPI_GET(side);
+    __BINAPI_GET(positionSide);
+    __BINAPI_GET(status);
+    __BINAPI_GET(stopPrice);
+    __BINAPI_GET(closePosition);
+    __BINAPI_GET(symbol);
+    __BINAPI_GET(timeInForce);
+    __BINAPI_GET(type);
+    __BINAPI_GET(origType);
+    __BINAPI_GET(activatePrice);
+    __BINAPI_GET(priceRate);
+    __BINAPI_GET(updateTime);
+    __BINAPI_GET(workingType);
+    __BINAPI_GET(priceProtect);
+    __BINAPI_GET(priceMatch);
+    __BINAPI_GET(selfTradePreventionMode);
+    __BINAPI_GET(goodTillDate);
+
+    return res;
+}
+
+std::ostream &operator<<(std::ostream &os, const linear_future_order_result_t &o)
+{
+    os
+    << "{"
+    << "\"clientOrderId\":\"" << o.clientOrderId << "\","
+    << "\"cumQty\":" << o.cumQty << ","
+    << "\"cumQuote\":\"" << o.cumQuote << "\","
+    << "\"executedQty\":" << o.executedQty << ","
+    << "\"orderId\":\"" << o.orderId << "\","
+    << "\"avgPrice\":\"" << o.avgPrice << "\","
+    << "\"origQty\":\"" << o.origQty << "\","
+    << "\"price\":\"" << o.price << "\","
+    << "\"reduceOnly\":\"" << o.reduceOnly << "\","
+    << "\"side\":\"" << o.side << "\","
+    << "\"positionSide\":\"" << o.positionSide << "\","
+    << "\"status\":\"" << o.status << "\","
+    << "\"stopPrice\":\"" << o.stopPrice << "\","
+    << "\"closePosition\":\"" << o.closePosition << "\","
+    << "\"symbol\":\"" << o.symbol << "\","
+    << "\"timeInForce\":\"" << o.timeInForce << "\","
+    << "\"type\":\"" << o.type << "\","
+    << "\"origType\":\"" << o.origType << "\","
+    << "\"activatePrice\":\"" << o.activatePrice << "\","
+    << "\"priceRate\":\"" << o.priceRate << "\","
+    << "\"updateTime\":\"" << o.updateTime << "\","
+    << "\"workingType\":\"" << o.workingType << "\","
+    << "\"priceProtect\":\"" << o.priceProtect << "\","
+    << "\"priceMatch\":\"" << o.priceMatch << "\","
+    << "\"selfTradePreventionMode\":\"" << o.selfTradePreventionMode << "\","
+    << "\"goodTillDate\":\"" << o.goodTillDate << "\""
+    << "}";
+
+    return os;
+}
+
+/*************************************************************************************************/
+
+inverse_future_order_result_t inverse_future_order_result_t::construct(const flatjson::fjson &json)
+{
+    assert(json.is_valid());
+    inverse_future_order_result_t res{};
+
+    __BINAPI_GET(clientOrderId);
+    __BINAPI_GET(cumQty);
+    __BINAPI_GET(cumBase);
+    __BINAPI_GET(executedQty);
+    __BINAPI_GET(orderId);
+    __BINAPI_GET(avgPrice);
+    __BINAPI_GET(origQty);
+    __BINAPI_GET(price);
+    __BINAPI_GET(reduceOnly);
+    __BINAPI_GET(side);
+    __BINAPI_GET(positionSide);
+    __BINAPI_GET(status);
+    __BINAPI_GET(stopPrice);
+    __BINAPI_GET(closePosition);
+    __BINAPI_GET(symbol);
+    __BINAPI_GET(pair);
+    __BINAPI_GET(timeInForce);
+    __BINAPI_GET(type);
+    __BINAPI_GET(origType);
+    __BINAPI_GET(activatePrice);
+    __BINAPI_GET(priceRate);
+    __BINAPI_GET(updateTime);
+    __BINAPI_GET(workingType);
+    __BINAPI_GET(priceProtect);
+    __BINAPI_GET(priceMatch);
+    __BINAPI_GET(selfTradePreventionMode);
+
+    return res;
+}
+
+std::ostream &operator<<(std::ostream &os, const inverse_future_order_result_t &o)
+{
+    os
+    << "{"
+    << "\"clientOrderId\":\"" << o.clientOrderId << "\","
+    << "\"cumQty\":" << o.cumQty << ","
+    << "\"cumBase\":\"" << o.cumBase << "\","
+    << "\"executedQty\":" << o.executedQty << ","
+    << "\"orderId\":\"" << o.orderId << "\","
+    << "\"avgPrice\":\"" << o.avgPrice << "\","
+    << "\"origQty\":\"" << o.origQty << "\","
+    << "\"price\":\"" << o.price << "\","
+    << "\"reduceOnly\":\"" << o.reduceOnly << "\","
+    << "\"side\":\"" << o.side << "\","
+    << "\"positionSide\":\"" << o.positionSide << "\","
+    << "\"status\":\"" << o.status << "\","
+    << "\"stopPrice\":\"" << o.stopPrice << "\","
+    << "\"closePosition\":\"" << o.closePosition << "\","
+    << "\"symbol\":\"" << o.symbol << "\","
+    << "\"pair\":\"" << o.pair << "\","
+    << "\"timeInForce\":\"" << o.timeInForce << "\","
+    << "\"type\":\"" << o.type << "\","
+    << "\"origType\":\"" << o.origType << "\","
+    << "\"activatePrice\":\"" << o.activatePrice << "\","
+    << "\"priceRate\":\"" << o.priceRate << "\","
+    << "\"updateTime\":\"" << o.updateTime << "\","
+    << "\"workingType\":\"" << o.workingType << "\","
+    << "\"priceProtect\":\"" << o.priceProtect << "\","
+    << "\"priceMatch\":\"" << o.priceMatch << "\","
+    << "\"selfTradePreventionMode\":\"" << o.selfTradePreventionMode << "\""
+    << "}";
+
+    return os;
+}
+
+/*************************************************************************************************/
+
 new_option_order_resp_type new_option_order_resp_type::construct(const flatjson::fjson &json) {
     assert(json.is_valid());
 

@@ -1327,6 +1327,72 @@ struct new_option_order_info_result_t {
     friend std::ostream &operator<<(std::ostream &os, const new_option_order_info_result_t &o);
 };
 
+struct linear_future_order_result_t
+{
+    std::string clientOrderId;
+ 	double_type cumQty;
+ 	double_type cumQuote;
+ 	double_type executedQty;
+ 	size_t orderId;
+ 	double_type avgPrice;
+ 	double_type origQty;
+ 	double_type price;
+  	bool reduceOnly;
+  	std::string side;
+  	std::string positionSide;
+  	std::string status;
+  	double_type stopPrice;
+  	bool closePosition;
+  	std::string symbol;
+  	std::string timeInForce;
+  	std::string type;
+  	std::string origType;
+  	double_type activatePrice;
+  	double_type priceRate;
+ 	size_t updateTime;
+ 	std::string workingType;
+ 	bool priceProtect;
+ 	std::string priceMatch;
+ 	std::string selfTradePreventionMode;
+ 	size_t goodTillDate;
+
+    static linear_future_order_result_t construct(const flatjson::fjson &json);
+    friend std::ostream &operator<<(std::ostream &os, const linear_future_order_result_t &o);
+};
+
+struct inverse_future_order_result_t
+{
+    std::string clientOrderId;
+ 	double_type cumQty;
+ 	double_type cumBase;
+ 	double_type executedQty;
+ 	size_t orderId;
+ 	double_type avgPrice;
+ 	double_type origQty;
+ 	double_type price;
+  	bool reduceOnly;
+  	std::string side;
+  	std::string positionSide;
+  	std::string status;
+  	double_type stopPrice;
+  	bool closePosition;
+  	std::string symbol;
+    std::string pair;
+  	std::string timeInForce;
+  	std::string type;
+  	std::string origType;
+  	double_type activatePrice;
+  	double_type priceRate;
+ 	size_t updateTime;
+ 	std::string workingType;
+ 	bool priceProtect;
+ 	std::string priceMatch;
+ 	std::string selfTradePreventionMode;
+
+    static inverse_future_order_result_t construct(const flatjson::fjson &json);
+    friend std::ostream &operator<<(std::ostream &os, const inverse_future_order_result_t &o);
+};
+
 // https://github.com/binance-exchange/binance-official-api-docs/blob/master/rest-api.md#test-new-order-trade
 struct new_test_order_info_t {
     bool ok;
