@@ -319,6 +319,93 @@ struct api {
         ,all_margin_orders_cb cb = {}
     );
 
+    using all_option_orders_cb = std::function<bool(const char *fl, int ec, std::string errmsg, option_orders_info_t res)>;
+    result<option_orders_info_t>
+    all_option_orders(
+         const std::string &symbol
+        ,std::size_t orderid = 0
+        ,std::size_t start_time = 0
+        ,std::size_t end_time = 0
+        ,std::size_t limit = 0
+        ,all_option_orders_cb cb = {}
+    ) {
+        return all_option_orders(
+             symbol.empty() ? nullptr : symbol.c_str()
+            ,orderid
+            ,start_time
+            ,end_time
+            ,limit
+            ,std::move(cb)
+        );
+    }
+    result<option_orders_info_t>
+    all_option_orders(
+         const char *symbol
+        ,std::size_t orderid = 0
+        ,std::size_t start_time = 0
+        ,std::size_t end_time = 0
+        ,std::size_t limit = 0
+        ,all_option_orders_cb cb = {}
+    );
+
+    using all_linear_future_orders_cb = std::function<bool(const char *fl, int ec, std::string errmsg, linear_future_orders_info_t res)>;
+    result<linear_future_orders_info_t>
+    all_linear_future_orders(
+         const std::string &symbol
+        ,std::size_t orderid = 0
+        ,std::size_t start_time = 0
+        ,std::size_t end_time = 0
+        ,std::size_t limit = 0
+        ,all_linear_future_orders_cb cb = {}
+    ) {
+        return all_linear_future_orders(
+             symbol.empty() ? nullptr : symbol.c_str()
+            ,orderid
+            ,start_time
+            ,end_time
+            ,limit
+            ,std::move(cb)
+        );
+    }
+    result<linear_future_orders_info_t>
+    all_linear_future_orders(
+         const char *symbol
+        ,std::size_t orderid = 0
+        ,std::size_t start_time = 0
+        ,std::size_t end_time = 0
+        ,std::size_t limit = 0
+        ,all_linear_future_orders_cb cb = {}
+    );
+
+    using all_inverse_future_orders_cb = std::function<bool(const char *fl, int ec, std::string errmsg, inverse_future_orders_info_t res)>;
+    result<inverse_future_orders_info_t>
+    all_inverse_future_orders(
+         const std::string &symbol
+        ,std::size_t orderid = 0
+        ,std::size_t start_time = 0
+        ,std::size_t end_time = 0
+        ,std::size_t limit = 0
+        ,all_inverse_future_orders_cb cb = {}
+    ) {
+        return all_inverse_future_orders(
+             symbol.empty() ? nullptr : symbol.c_str()
+            ,orderid
+            ,start_time
+            ,end_time
+            ,limit
+            ,std::move(cb)
+        );
+    }
+    result<inverse_future_orders_info_t>
+    all_inverse_future_orders(
+         const char *symbol
+        ,std::size_t orderid = 0
+        ,std::size_t start_time = 0
+        ,std::size_t end_time = 0
+        ,std::size_t limit = 0
+        ,all_inverse_future_orders_cb cb = {}
+    );
+
     // https://github.com/binance/binance-spot-api-docs/blob/master/rest-api.md#new-order--trade
     // NOTE: if 'ec' not zero - the 'res' arg is in undefined state.
     using new_order_cb = std::function<bool(const char *fl, int ec, std::string errmsg, new_order_resp_type res)>;

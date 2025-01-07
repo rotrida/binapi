@@ -1015,6 +1015,75 @@ api::result<margin_orders_info_t> api::all_margin_orders(
 
 /*************************************************************************************************/
 
+/*************************************************************************************************/
+
+api::result<option_orders_info_t> api::all_option_orders(
+     const char *symbol
+    ,std::size_t orderid
+    ,std::size_t start_time
+    ,std::size_t end_time
+    ,std::size_t limit
+    ,all_option_orders_cb cb
+) {
+    const impl::init_list_type map = {
+         {"symbol", symbol}
+        ,{"orderId", orderid}
+        ,{"startTime", start_time}
+        ,{"endTime", end_time}
+        ,{"limit", limit}
+    };
+
+    return pimpl->post(true, "/eapi/v1/historyOrders", boost::beast::http::verb::get, map, std::move(cb));
+}
+
+/*************************************************************************************************/
+
+/*************************************************************************************************/
+
+api::result<linear_future_orders_info_t> api::all_linear_future_orders(
+     const char *symbol
+    ,std::size_t orderid
+    ,std::size_t start_time
+    ,std::size_t end_time
+    ,std::size_t limit
+    ,all_linear_future_orders_cb cb
+) {
+    const impl::init_list_type map = {
+         {"symbol", symbol}
+        ,{"orderId", orderid}
+        ,{"startTime", start_time}
+        ,{"endTime", end_time}
+        ,{"limit", limit}
+    };
+
+    return pimpl->post(true, "/fapi/v1/allOrders", boost::beast::http::verb::get, map, std::move(cb));
+}
+
+/*************************************************************************************************/
+
+/*************************************************************************************************/
+
+api::result<inverse_future_orders_info_t> api::all_inverse_future_orders(
+     const char *symbol
+    ,std::size_t orderid
+    ,std::size_t start_time
+    ,std::size_t end_time
+    ,std::size_t limit
+    ,all_inverse_future_orders_cb cb
+) {
+    const impl::init_list_type map = {
+         {"symbol", symbol}
+        ,{"orderId", orderid}
+        ,{"startTime", start_time}
+        ,{"endTime", end_time}
+        ,{"limit", limit}
+    };
+
+    return pimpl->post(true, "/dapi/v1/allOrders", boost::beast::http::verb::get, map, std::move(cb));
+}
+
+/*************************************************************************************************/
+
 api::result<new_order_resp_type>
 api::new_order(
      const char *symbol
