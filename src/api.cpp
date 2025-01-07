@@ -891,6 +891,24 @@ api::result<account_info_t> api::account_info(account_info_cb cb) {
 
 /*************************************************************************************************/
 
+api::result<option_account_info_t> api::option_account_info(option_account_info_cb cb) {
+    return pimpl->post(true, "/eapi/v1/account", boost::beast::http::verb::get, {}, std::move(cb));
+}
+
+/*************************************************************************************************/
+
+api::result<linear_future_account_info_t> api::linear_future_account_info(linear_future_account_info_cb cb) {
+    return pimpl->post(true, "/fapi/v3/account", boost::beast::http::verb::get, {}, std::move(cb));
+}
+
+/*************************************************************************************************/
+
+api::result<inverse_future_account_info_t> api::inverse_future_account_info(inverse_future_account_info_cb cb) {
+    return pimpl->post(true, "/dapi/v1/account", boost::beast::http::verb::get, {}, std::move(cb));
+}
+
+/*************************************************************************************************/
+
 api::result<order_info_t> api::order_info(const char *symbol, std::size_t orderid, const char *client_orderid, order_info_cb cb) {
     const impl::init_list_type map = {
          {"symbol", symbol}

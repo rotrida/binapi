@@ -582,19 +582,14 @@ linear_future_account_info_t::position_t linear_future_account_info_t::position_
     linear_future_account_info_t::position_t res{};
 
     __BINAPI_GET(symbol);
-    __BINAPI_GET(initialMargin);
-    __BINAPI_GET(maintMargin);
-    __BINAPI_GET(unrealizedProfit);
-    __BINAPI_GET(positionInitialMargin);
-    __BINAPI_GET(openOrderInitialMargin);
-    __BINAPI_GET(leverage);
-    __BINAPI_GET(isolated);
-    __BINAPI_GET(entryPrice);
-    __BINAPI_GET(maxNotional);
-    __BINAPI_GET(bidNotional);
-    __BINAPI_GET(askNotional);
     __BINAPI_GET(positionSide);
     __BINAPI_GET(positionAmt);
+    __BINAPI_GET(unrealizedProfit);
+    __BINAPI_GET(isolatedMargin);
+    __BINAPI_GET(notional);
+    __BINAPI_GET(isolatedWallet);
+    __BINAPI_GET(initialMargin);
+    __BINAPI_GET(maintMargin);
     __BINAPI_GET(updateTime);
 
     return res;
@@ -604,19 +599,14 @@ std::ostream &operator<<(std::ostream &os, const linear_future_account_info_t::p
     os
     << "{"
     << "\"symbol\":\"" << o.symbol << "\","
-    << "\"initialMargin\":\"" << o.initialMargin << "\","
-    << "\"maintMargin\":\"" << o.maintMargin << "\","
-    << "\"unrealizedProfit\":\"" << o.unrealizedProfit << "\","
-    << "\"positionInitialMargin\":\"" << o.positionInitialMargin << "\","
-    << "\"openOrderInitialMargin\":\"" << o.openOrderInitialMargin << "\","
-    << "\"leverage\":\"" << o.leverage << "\","
-    << "\"isolated\":\"" << o.isolated << "\","
-    << "\"entryPrice\":\"" << o.entryPrice << "\","
-    << "\"maxNotional\":\"" << o.maxNotional << "\","
-    << "\"bidNotional\":\"" << o.bidNotional << "\","
-    << "\"askNotional\":\"" << o.askNotional << "\","
     << "\"positionSide\":\"" << o.positionSide << "\","
     << "\"positionAmt\":\"" << o.positionAmt << "\","
+    << "\"unrealizedProfit\":\"" << o.unrealizedProfit << "\","
+    << "\"isolatedMargin\":\"" << o.isolatedMargin << "\","
+    << "\"notional\":\"" << o.notional << "\","
+    << "\"isolatedWallet\":\"" << o.isolatedWallet << "\","
+    << "\"initialMargin\":\"" << o.initialMargin << "\","
+    << "\"maintMargin\":\"" << o.maintMargin << "\","
     << "\"updateTime\":\"" << o.updateTime << "\""
     << "}";
 
@@ -628,14 +618,6 @@ linear_future_account_info_t linear_future_account_info_t::construct(const flatj
 
     linear_future_account_info_t res{};
 
-    __BINAPI_GET(feeTier);
-    __BINAPI_GET(feeBurn);
-    __BINAPI_GET_DEFAULT(canTrade, true);
-    __BINAPI_GET(canDeposit);
-    __BINAPI_GET(canWithdraw);
-    __BINAPI_GET(updateTime);
-    __BINAPI_GET(multiAssetsMargin);
-    __BINAPI_GET(tradeGroupId);
     __BINAPI_GET(totalInitialMargin);
     __BINAPI_GET(totalMaintMargin);
     __BINAPI_GET(totalWalletBalance);
@@ -696,14 +678,6 @@ const linear_future_account_info_t::position_t& linear_future_account_info_t::ge
 std::ostream &operator<<(std::ostream &os, const linear_future_account_info_t &o) {
     os
     << "{"
-    << "\"feeTier\":" << o.feeTier << ","
-    << "\"feeBurn\":" << o.feeBurn << ","
-    << "\"canTrade\":" << o.canTrade << ","
-    << "\"canDeposit\":" << o.canDeposit << ","
-    << "\"canWithdraw\":" << o.canWithdraw << ","
-    << "\"updateTime\":" << o.updateTime << ","
-    << "\"multiAssetsMargin\":" << o.multiAssetsMargin << ","
-    << "\"tradeGroupId\":" << o.tradeGroupId << ","
     << "\"totalInitialMargin\":" << o.totalInitialMargin << ","
     << "\"totalMaintMargin\":" << o.totalMaintMargin << ","
     << "\"totalWalletBalance\":" << o.totalWalletBalance << ","

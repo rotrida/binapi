@@ -206,6 +206,21 @@ struct api {
     result<account_info_t>
     account_info(account_info_cb cb = {});
 
+    // https://developers.binance.com/docs/derivatives/option/account
+    using option_account_info_cb = std::function<bool(const char *fl, int ec, std::string errmsg, option_account_info_t res)>;
+    result<option_account_info_t>
+    option_account_info(option_account_info_cb cb = {});
+
+    // https://developers.binance.com/docs/derivatives/usds-margined-futures/account/rest-api/Account-Information-V3
+    using linear_future_account_info_cb = std::function<bool(const char *fl, int ec, std::string errmsg, linear_future_account_info_t res)>;
+    result<linear_future_account_info_t>
+    linear_future_account_info(linear_future_account_info_cb cb = {});
+
+    // https://developers.binance.com/docs/derivatives/coin-margined-futures/account/Account-Information
+    using inverse_future_account_info_cb = std::function<bool(const char *fl, int ec, std::string errmsg, inverse_future_account_info_t res)>;
+    result<inverse_future_account_info_t>
+    inverse_future_account_info(inverse_future_account_info_cb cb = {});
+
     // https://github.com/binance/binance-spot-api-docs/blob/master/rest-api.md#query-order-user_data
     using order_info_cb = std::function<bool(const char *fl, int ec, std::string errmsg, order_info_t res)>;
     result<order_info_t>

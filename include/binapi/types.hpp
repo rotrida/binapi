@@ -209,15 +209,7 @@ struct option_account_info_t {
 
 // https://developers.binance.com/docs/derivatives/usds-margined-futures/account/rest-api/Account-Information-V2
 struct linear_future_account_info_t {
-        
-	double_type feeTier;  		// account commission tier 
-	bool feeBurn;  	            // "true": Fee Discount On; "false": Fee Discount Off	"canTrade": true,  	// if can trade
-	bool canTrade;  	        // if can trade
-	bool canDeposit;  	        // if can transfer in asset
-	bool canWithdraw; 	        // if can transfer out asset
-	size_t updateTime;          // reserved property, please ignore 
-	bool multiAssetsMargin;
-	int tradeGroupId;
+    
 	double_type totalInitialMargin;             // the sum of USD value of all cross positions/open order initial margin
 	double_type totalMaintMargin;  	            // the sum of USD value of all cross positions maintenance margin
 	double_type totalWalletBalance;             // total wallet balance in USD
@@ -256,19 +248,14 @@ struct linear_future_account_info_t {
     struct position_t
     {
         std::string symbol;  	                // symbol name
-        double_type initialMargin;	            // initial margin required with current mark price 
-        double_type maintMargin;		        // maintenance margin required
-        double_type unrealizedProfit;           // unrealized profit
-        double_type positionInitialMargin;      // initial margin required for positions with current mark price
-        double_type openOrderInitialMargin;     // initial margin required for open orders with current mark price
-        double_type leverage;		            // current initial leverage
-        bool isolated;  		                // if the position is isolated
-        double_type entryPrice;  	            // average entry price
-        double_type maxNotional;	            // maximum available notional with current leverage
-        double_type bidNotional;                // bids notional, ignore
-        double_type askNotional;                // ask notional, ignore
         std::string positionSide;  	            // position side
         double_type positionAmt;			    // position amount
+        double_type unrealizedProfit;           // unrealized profit
+        double_type isolatedMargin;             // unrealized profit
+        double_type notional;                   // notional
+        double_type isolatedWallet;             // isolated wallet
+        double_type initialMargin;	            // initial margin required with current mark price 
+        double_type maintMargin;		        // maintenance margin required
         size_t updateTime;                      // last update time
 
         static position_t construct(const flatjson::fjson &json);
