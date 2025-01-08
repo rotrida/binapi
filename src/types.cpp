@@ -3482,7 +3482,7 @@ std::ostream &operator<<(std::ostream &os, const new_order_resp_type &o) {
 
 /*************************************************************************************************/
 
-new_linear_future_order_info_ack_t construct(const flatjson::fjson &json)
+new_linear_future_order_info_ack_t new_linear_future_order_info_ack_t::construct(const flatjson::fjson &json)
 {
     assert(json.is_valid());
     new_linear_future_order_info_ack_t res{};
@@ -3722,6 +3722,66 @@ std::ostream &operator<<(std::ostream &os, const new_option_order_resp_type &o) 
     if ( const auto *p = boost::get<new_option_order_info_ack_t>(&o) ) {
         return os << *p;
     } else if ( const auto *p = boost::get<new_option_order_info_result_t>(&o) ) {
+        return os << *p;
+    } 
+
+    assert(!"unreachable");
+
+    return os;
+}
+
+/*************************************************************************************************/
+
+new_linear_future_order_resp_type new_linear_future_order_resp_type::construct(const flatjson::fjson &json) {
+    assert(json.is_valid());
+
+    if ( json.contains("avgPrice") ) {
+        // RESULT
+        new_linear_future_order_info_result_t res = new_linear_future_order_info_result_t::construct(json);
+        return res;
+    } else if ( json.contains("symbol") ) {
+        // ASK
+        new_linear_future_order_info_ack_t res = new_linear_future_order_info_ack_t::construct(json);
+        return res;
+    }
+
+    assert(!"unreachable");
+}
+
+std::ostream &operator<<(std::ostream &os, const new_linear_future_order_resp_type &o) {
+    if ( const auto *p = boost::get<new_linear_future_order_info_ack_t>(&o) ) {
+        return os << *p;
+    } else if ( const auto *p = boost::get<new_linear_future_order_info_result_t>(&o) ) {
+        return os << *p;
+    } 
+
+    assert(!"unreachable");
+
+    return os;
+}
+
+/*************************************************************************************************/
+
+new_inverse_future_order_resp_type new_inverse_future_order_resp_type::construct(const flatjson::fjson &json) {
+    assert(json.is_valid());
+
+    if ( json.contains("avgPrice") ) {
+        // RESULT
+        new_inverse_future_order_info_result_t res = new_inverse_future_order_info_result_t::construct(json);
+        return res;
+    } else if ( json.contains("symbol") ) {
+        // ASK
+        new_inverse_future_order_info_ack_t res = new_inverse_future_order_info_ack_t::construct(json);
+        return res;
+    }
+
+    assert(!"unreachable");
+}
+
+std::ostream &operator<<(std::ostream &os, const new_inverse_future_order_resp_type &o) {
+    if ( const auto *p = boost::get<new_inverse_future_order_info_ack_t>(&o) ) {
+        return os << *p;
+    } else if ( const auto *p = boost::get<new_inverse_future_order_info_result_t>(&o) ) {
         return os << *p;
     } 
 

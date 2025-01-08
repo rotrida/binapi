@@ -1193,6 +1193,199 @@ api::new_option_order(
 
 /*************************************************************************************************/
 
+api::result<new_linear_future_order_resp_type>
+api::new_linear_future_order(
+         const std::string_view symbol
+        ,const std::string &client_order_id
+        ,const e_side side
+        ,const e_type type
+        ,const std::string &quantity
+        ,const std::optional<e_position_side_type> positionSide
+        ,const std::optional<e_time> time
+        ,const std::optional<bool> reduceOnly
+        ,const std::optional<std::string> price
+        ,const std::optional<std::string> stopPrice
+        ,const std::optional<bool> closePosition
+        ,const std::optional<std::string> activationPrice
+        ,const std::optional<std::string> callbackRate
+        ,const std::optional<e_working_type> workingType
+        ,const std::optional<bool> priceProtect
+        ,const std::optional<e_trade_resp_type> resp
+        ,const std::optional<e_price_match> priceMatch
+        ,const std::optional<e_self_trade_prevention_mode> selfTradePreventionMode
+        ,const std::optional<size_t> goodTillDate
+        ,new_linear_future_order_cb cb
+    )
+{
+    const char *side_str = e_side_to_string(side);
+    assert(side_str);
+
+    const char *type_str = e_type_to_string(type);
+    assert(type_str);
+
+    std::deque<impl::kv_type> deq = {
+         {"symbol", symbol.data()}
+        ,{"clientOrderId", client_order_id.c_str()}
+        ,{"side", side_str}
+        ,{"type", type_str}
+        ,{"quantity", quantity.c_str()}};
+
+    if(positionSide)
+    {
+        deq.emplace_back(impl::kv_type({"positionSide", e_position_side_type_to_string(*positionSide)}));
+    }
+    if(time)
+    {
+        deq.emplace_back(impl::kv_type({"time", e_time_to_string(*time)}));
+    }
+    if(reduceOnly)
+    {
+        deq.emplace_back(impl::kv_type({"reduceOnly", *reduceOnly}));
+    }
+    if(price)
+    {
+        deq.emplace_back(impl::kv_type({"price", price->c_str()}));
+    }
+    if(stopPrice)
+    {
+        deq.emplace_back(impl::kv_type({"stopPrice", stopPrice->c_str()}));
+    }
+    if(closePosition)
+    {
+        deq.emplace_back(impl::kv_type({"closePosition", *closePosition}));
+    }
+    if(activationPrice)
+    {
+        deq.emplace_back(impl::kv_type({"activationPrice", activationPrice->c_str()}));
+    }
+    if(callbackRate)
+    {
+        deq.emplace_back(impl::kv_type({"callbackRate", callbackRate->c_str()}));
+    }
+    if(workingType)
+    {
+        deq.emplace_back(impl::kv_type({"workingType", e_working_type_to_string(*workingType)}));
+    }
+    if(priceProtect)
+    {
+        deq.emplace_back(impl::kv_type({"priceProtect", *priceProtect}));
+    }
+    if(resp)
+    {
+        deq.emplace_back(impl::kv_type({"resp", e_trade_resp_type_to_string(*resp)}));
+    }
+    if(priceMatch)
+    {
+        deq.emplace_back(impl::kv_type({"priceMatch", e_price_match_to_string(*priceMatch)}));
+    }
+    if(selfTradePreventionMode)
+    {
+        deq.emplace_back(impl::kv_type({"selfTradePreventionMode", e_self_trade_prevention_mode_to_string(*selfTradePreventionMode)}));
+    }
+    if(goodTillDate)
+    {
+        deq.emplace_back(impl::kv_type({"goodTillDate", *goodTillDate}));
+    }
+
+    return pimpl->post(true, "/fapi/v1/order", boost::beast::http::verb::post, deq, std::move(cb));
+}
+
+/*************************************************************************************************/
+
+api::result<new_inverse_future_order_resp_type>
+    api::new_inverse_future_order(
+         const std::string_view symbol
+        ,const std::string &client_order_id
+        ,const e_side side
+        ,const e_type type
+        ,const std::string &quantity
+        ,const std::optional<e_position_side_type> positionSide
+        ,const std::optional<e_time> time
+        ,const std::optional<bool> reduceOnly
+        ,const std::optional<std::string> price
+        ,const std::optional<std::string> stopPrice
+        ,const std::optional<bool> closePosition
+        ,const std::optional<std::string> activationPrice
+        ,const std::optional<std::string> callbackRate
+        ,const std::optional<e_working_type> workingType
+        ,const std::optional<bool> priceProtect
+        ,const std::optional<e_trade_resp_type> resp
+        ,const std::optional<e_price_match> priceMatch
+        ,const std::optional<e_self_trade_prevention_mode> selfTradePreventionMode
+        ,new_inverse_future_order_cb cb
+    )
+{
+    const char *side_str = e_side_to_string(side);
+    assert(side_str);
+
+    const char *type_str = e_type_to_string(type);
+    assert(type_str);
+
+    std::deque<impl::kv_type> deq = {
+         {"symbol", symbol.data()}
+        ,{"clientOrderId", client_order_id.c_str()}
+        ,{"side", side_str}
+        ,{"type", type_str}
+        ,{"quantity", quantity.c_str()}};
+
+    if(positionSide)
+    {
+        deq.emplace_back(impl::kv_type({"positionSide", e_position_side_type_to_string(*positionSide)}));
+    }
+    if(time)
+    {
+        deq.emplace_back(impl::kv_type({"time", e_time_to_string(*time)}));
+    }
+    if(reduceOnly)
+    {
+        deq.emplace_back(impl::kv_type({"reduceOnly", *reduceOnly}));
+    }
+    if(price)
+    {
+        deq.emplace_back(impl::kv_type({"price", price->c_str()}));
+    }
+    if(stopPrice)
+    {
+        deq.emplace_back(impl::kv_type({"stopPrice", stopPrice->c_str()}));
+    }
+    if(closePosition)
+    {
+        deq.emplace_back(impl::kv_type({"closePosition", *closePosition}));
+    }
+    if(activationPrice)
+    {
+        deq.emplace_back(impl::kv_type({"activationPrice", activationPrice->c_str()}));
+    }
+    if(callbackRate)
+    {
+        deq.emplace_back(impl::kv_type({"callbackRate", callbackRate->c_str()}));
+    }
+    if(workingType)
+    {
+        deq.emplace_back(impl::kv_type({"workingType", e_working_type_to_string(*workingType)}));
+    }
+    if(priceProtect)
+    {
+        deq.emplace_back(impl::kv_type({"priceProtect", *priceProtect}));
+    }
+    if(resp)
+    {
+        deq.emplace_back(impl::kv_type({"resp", e_trade_resp_type_to_string(*resp)}));
+    }
+    if(priceMatch)
+    {
+        deq.emplace_back(impl::kv_type({"priceMatch", e_price_match_to_string(*priceMatch)}));
+    }
+    if(selfTradePreventionMode)
+    {
+        deq.emplace_back(impl::kv_type({"selfTradePreventionMode", e_self_trade_prevention_mode_to_string(*selfTradePreventionMode)}));
+    }
+
+    return pimpl->post(true, "/dapi/v1/order", boost::beast::http::verb::post, deq, std::move(cb));
+}
+
+/*************************************************************************************************/
+
 api::result<new_order_resp_type>
 api::new_test_order(
      const char *symbol

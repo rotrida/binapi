@@ -477,14 +477,14 @@ struct api {
     result<new_linear_future_order_resp_type>
     new_linear_future_order(
          const std::string_view symbol
+        ,const std::string &client_order_id
         ,const e_side side
-        ,const std::optional<e_position_side_type> positionSide
-        ,const e_type type
-        ,const std::optional<e_time> time
+        ,const e_type type        
         ,const std::string &quantity
+        ,const std::optional<e_position_side_type> positionSide
+        ,const std::optional<e_time> time
         ,const std::optional<bool> reduceOnly
         ,const std::optional<std::string> price
-        ,const std::string &client_order_id
         ,const std::optional<std::string> stopPrice
         ,const std::optional<bool> closePosition
         ,const std::optional<std::string> activationPrice
@@ -504,14 +504,14 @@ struct api {
     result<new_inverse_future_order_resp_type>
     new_inverse_future_order(
          const std::string_view symbol
+        ,const std::string &client_order_id
         ,const e_side side
-        ,const std::optional<e_position_side_type> positionSide
         ,const e_type type
+        ,const std::string &quantity        
+        ,const std::optional<e_position_side_type> positionSide
         ,const std::optional<e_time> time
-        ,const std::string &quantity
         ,const std::optional<bool> reduceOnly
         ,const std::optional<std::string> price
-        ,const std::string &client_order_id
         ,const std::optional<std::string> stopPrice
         ,const std::optional<bool> closePosition
         ,const std::optional<std::string> activationPrice
