@@ -1203,10 +1203,10 @@ api::new_linear_future_order(
         ,const std::optional<e_position_side_type> positionSide
         ,const std::optional<e_time> time
         ,const std::optional<bool> reduceOnly
-        ,const std::optional<std::string> price
-        ,const std::optional<std::string> stopPrice
+        ,const std::optional<double_type> price
+        ,const std::optional<double_type> stopPrice
         ,const std::optional<bool> closePosition
-        ,const std::optional<std::string> activationPrice
+        ,const std::optional<double_type> activationPrice
         ,const std::optional<std::string> callbackRate
         ,const std::optional<e_working_type> workingType
         ,const std::optional<bool> priceProtect
@@ -1244,11 +1244,11 @@ api::new_linear_future_order(
     }
     if(price)
     {
-        deq.emplace_back(impl::kv_type({"price", price->c_str()}));
+        deq.emplace_back(impl::kv_type({"price", price->to_string().c_str()}));
     }
     if(stopPrice)
     {
-        deq.emplace_back(impl::kv_type({"stopPrice", stopPrice->c_str()}));
+        deq.emplace_back(impl::kv_type({"stopPrice", stopPrice->to_string().c_str()}));
     }
     if(closePosition)
     {
@@ -1256,7 +1256,7 @@ api::new_linear_future_order(
     }
     if(activationPrice)
     {
-        deq.emplace_back(impl::kv_type({"activationPrice", activationPrice->c_str()}));
+        deq.emplace_back(impl::kv_type({"activationPrice", activationPrice->to_string().c_str()}));
     }
     if(callbackRate)
     {
@@ -1302,10 +1302,10 @@ api::result<new_inverse_future_order_resp_type>
         ,const std::optional<e_position_side_type> positionSide
         ,const std::optional<e_time> time
         ,const std::optional<bool> reduceOnly
-        ,const std::optional<std::string> price
-        ,const std::optional<std::string> stopPrice
+        ,const std::optional<double_type> price
+        ,const std::optional<double_type> stopPrice
         ,const std::optional<bool> closePosition
-        ,const std::optional<std::string> activationPrice
+        ,const std::optional<double_type> activationPrice
         ,const std::optional<std::string> callbackRate
         ,const std::optional<e_working_type> workingType
         ,const std::optional<bool> priceProtect
@@ -1342,11 +1342,11 @@ api::result<new_inverse_future_order_resp_type>
     }
     if(price)
     {
-        deq.emplace_back(impl::kv_type({"price", price->c_str()}));
+        deq.emplace_back(impl::kv_type({"price", price->to_string().c_str()}));
     }
     if(stopPrice)
     {
-        deq.emplace_back(impl::kv_type({"stopPrice", stopPrice->c_str()}));
+        deq.emplace_back(impl::kv_type({"stopPrice", stopPrice->to_string().c_str()}));
     }
     if(closePosition)
     {
@@ -1354,7 +1354,7 @@ api::result<new_inverse_future_order_resp_type>
     }
     if(activationPrice)
     {
-        deq.emplace_back(impl::kv_type({"activationPrice", activationPrice->c_str()}));
+        deq.emplace_back(impl::kv_type({"activationPrice", activationPrice->to_string().c_str()}));
     }
     if(callbackRate)
     {

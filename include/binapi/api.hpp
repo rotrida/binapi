@@ -484,10 +484,10 @@ struct api {
         ,const std::optional<e_position_side_type> positionSide
         ,const std::optional<e_time> time
         ,const std::optional<bool> reduceOnly
-        ,const std::optional<std::string> price
-        ,const std::optional<std::string> stopPrice
+        ,const std::optional<double_type> price
+        ,const std::optional<double_type> stopPrice
         ,const std::optional<bool> closePosition
-        ,const std::optional<std::string> activationPrice
+        ,const std::optional<double_type> activationPrice
         ,const std::optional<std::string> callbackRate
         ,const std::optional<e_working_type> workingType
         ,const std::optional<bool> priceProtect
@@ -511,10 +511,10 @@ struct api {
         ,const std::optional<e_position_side_type> positionSide
         ,const std::optional<e_time> time
         ,const std::optional<bool> reduceOnly
-        ,const std::optional<std::string> price
-        ,const std::optional<std::string> stopPrice
+        ,const std::optional<double_type> price
+        ,const std::optional<double_type> stopPrice
         ,const std::optional<bool> closePosition
-        ,const std::optional<std::string> activationPrice
+        ,const std::optional<double_type> activationPrice
         ,const std::optional<std::string> callbackRate
         ,const std::optional<e_working_type> workingType
         ,const std::optional<bool> priceProtect
