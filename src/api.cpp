@@ -1448,6 +1448,50 @@ api::result<cancel_order_info_t> api::cancel_order(
 
 /*************************************************************************************************/
 
+api::result<cancel_option_order_info_t>
+        api::cancel_option_order(const std::string_view symbol, std::size_t order_id, const std::optional<std::string_view> client_order_id, cancel_option_order_cb cb)
+{
+    std::deque<impl::kv_type> deq = {
+         {"symbol", symbol.data()}
+        ,{"orderId", order_id}
+    };
+
+    if(client_order_id)
+        deq.emplace_back(impl::kv_type({"clientOrderId", client_order_id->data()}));
+
+    return pimpl->post(true, "/eapi/v1/order", boost::beast::http::verb::delete_, deq, std::move(cb));
+}
+
+/*************************************************************************************************/
+
+api::result<cancel_linear_future_order_info_t>
+        api::cancel_linear_future_order(const std::string_view symbol, std::size_t order_id, const std::optional<std::string_view> origClientOrderId, cancel_linear_future_order_cb cb)
+{
+    std::deque<impl::kv_type> deq = {
+         {"symbol", symbol.data()}
+        ,{"orderId", order_id}
+    };
+
+    if(origClientOrderId)
+        deq.emplace_back(impl::kv_type({"origClientOrderId", origClientOrderId->data()}));
+
+    return pimpl->post(true, "/fapi/v1/order", boost::beast::http::verb::delete_, deq, std::move(cb));
+}
+
+api::result<cancel_inverse_future_order_info_t>
+    api::cancel_inverse_future_order(const std::string_view symbol, std::size_t order_id, const std::optional<std::string_view> origClientOrderId, cancel_inverse_future_order_cb cb)
+{
+    std::deque<impl::kv_type> deq = {
+         {"symbol", symbol.data()}
+        ,{"orderId", order_id}
+    };
+
+    if(origClientOrderId)
+        deq.emplace_back(impl::kv_type({"origClientOrderId", origClientOrderId->data()}));
+
+    return pimpl->post(true, "/dapi/v1/order", boost::beast::http::verb::delete_, deq, std::move(cb));
+}
+
 api::result<new_order_resp_type>
 api::new_margin_order(
     const char* symbol

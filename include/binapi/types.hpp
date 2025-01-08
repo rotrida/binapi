@@ -1724,6 +1724,99 @@ struct cancel_order_info_t {
     friend std::ostream &operator<<(std::ostream &os, const cancel_order_info_t &o);
 };
 
+// https://developers.binance.com/docs/derivatives/option/trade/Cancel-Option-Order
+struct cancel_option_order_info_t {
+    std::size_t orderId;
+    std::string symbol;
+    double_type price;
+    double_type quantity;
+    double_type executedQty;
+    double_type fee;
+    std::string side;
+    std::string type;
+    std::string timeInForce;
+    bool reduceOnly;
+    bool postOnly;
+    size_t createDate;
+    size_t updateTime;
+    std::string status;
+    double_type avgPrice;
+    std::string source;
+    std::string clientOrderId;
+    size_t priceScale;
+    size_t quantityScale;
+    std::string optionSide;
+    std::string quoteAsset;
+    bool mmp;
+
+    static cancel_option_order_info_t construct(const flatjson::fjson &json);
+    friend std::ostream &operator<<(std::ostream &os, const cancel_option_order_info_t &o);
+};
+
+// https://developers.binance.com/docs/derivatives/usds-margined-futures/trade/rest-api/Cancel-Order
+struct cancel_linear_future_order_info_t {
+    std::string clientOrderId;
+    double_type cumQty;
+    double_type cumQuote;
+    double_type executedQty;
+    std::size_t orderId;
+    double_type origQty;
+    double_type price;
+    bool reduceOnly;
+    std::string side;
+    std::string positionSide;
+    std::string status;
+    double_type stopPrice;
+    bool closePosition;
+    std::string symbol;
+    std::string timeInForce;
+    std::string type;
+    double_type activatePrice;
+    double_type priceRate;
+    size_t updateTime;
+    std::string workingType;
+    bool priceProtect;
+    std::string priceMatch;
+    std::string selfTradePreventionMode;
+    size_t goodTillDate;
+
+    static cancel_linear_future_order_info_t construct(const flatjson::fjson &json);
+    friend std::ostream &operator<<(std::ostream &os, const cancel_linear_future_order_info_t &o);
+};
+
+// https://developers.binance.com/docs/derivatives/usds-margined-futures/trade/rest-api/Cancel-Order
+struct cancel_inverse_future_order_info_t {
+    double_type avgPrice;
+    std::string clientOrderId;
+    double_type cumQty;
+    double_type cumBase;
+    double_type executedQty;
+    std::size_t orderId;
+    double_type origQty;
+    std::string origType;
+    double_type price;    
+    bool reduceOnly;
+    std::string side;
+    std::string positionSide;
+    std::string status;
+    double_type stopPrice;
+    bool closePosition;
+    std::string symbol;
+    std::string pair;
+    std::string timeInForce;
+    std::string type;
+    double_type activatePrice;
+    double_type priceRate;
+    size_t updateTime;
+    std::string workingType;
+    bool priceProtect;
+    std::string priceMatch;
+    std::string selfTradePreventionMode;
+
+    static cancel_inverse_future_order_info_t construct(const flatjson::fjson &json);
+    friend std::ostream &operator<<(std::ostream &os, const cancel_inverse_future_order_info_t &o);
+};
+
 // https://github.com/binance-exchange/binance-official-api-docs/blob/master/rest-api.md#account-trade-list-user_data
 struct my_trades_info_t {
     struct my_trade_info_t {

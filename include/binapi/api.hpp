@@ -607,6 +607,19 @@ struct api {
     result<cancel_order_info_t>
         cancel_margin_order(const char* symbol, std::size_t order_id, const char* new_client_order_id, cancel_order_cb cb = {});
 
+    
+    using cancel_option_order_cb = std::function<bool(const char *fl, int ec, std::string errmsg, cancel_option_order_info_t res)>;
+    result<cancel_option_order_info_t>
+        cancel_option_order(const std::string_view symbol, std::size_t order_id, const std::optional<std::string_view> client_order_id, cancel_option_order_cb cb = {});
+
+    using cancel_linear_future_order_cb = std::function<bool(const char *fl, int ec, std::string errmsg, cancel_linear_future_order_info_t res)>;
+    result<cancel_linear_future_order_info_t>
+        cancel_linear_future_order(const std::string_view symbol, std::size_t order_id, const std::optional<std::string_view> origClientOrderId, cancel_linear_future_order_cb cb = {});
+
+    using cancel_inverse_future_order_cb = std::function<bool(const char *fl, int ec, std::string errmsg, cancel_inverse_future_order_info_t res)>;
+    result<cancel_inverse_future_order_info_t>
+        cancel_inverse_future_order(const std::string_view symbol, std::size_t order_id, const std::optional<std::string_view> origClientOrderId, cancel_inverse_future_order_cb cb = {});
+
     // https://github.com/binance/binance-spot-api-docs/blob/master/rest-api.md#account-trade-list-user_data
     using my_trades_cb = std::function<bool(const char *fl, int ec, std::string errmsg, my_trades_info_t res)>;
     result<my_trades_info_t>
