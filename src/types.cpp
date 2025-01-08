@@ -55,6 +55,14 @@ __get_json(T &v, const char *member, const flatjson::fjson &j) {
     v = new_qube::fixed_point<>(j.at(member).to_string());
 }
 
+template<typename T>
+typename std::enable_if<std::is_same<T, e_side>::value>::type
+__get_json(T &v, const char *member, const flatjson::fjson &j) {
+    std::string read_val;
+    const auto &o = j.at(member);
+    read_val = (o.is_null() ? std::string{} : o.to_string());
+    v = e_side_from_string(read_val.c_str());
+}
 
 #define __BINAPI_GET2(obj, member, json) \
     __get_json(obj.member, #member, json)
@@ -65,6 +73,13 @@ __get_json(T &v, const char *member, const flatjson::fjson &j) {
 #define __BINAPI_GET(member) __BINAPI_GET2(res, member, json)
 
 #define __BINAPI_GET_DEFAULT(member, default_value) __BINAPI_GET2_DEF(res, member, json, default_value)
+
+#define __BINANCE_GET_CONVERT2(obj, member, json, convert) \
+    std::string read_val; \
+    __get_json(read_val, #member, json); \
+    obj.member = convert(read_val.c_str())
+
+#define __BINANCE_GET_CONVERT(member, convert) __BINANCE_GET_CONVERT2(res, member, json, convert)
 
 /*************************************************************************************************/
 
@@ -2706,7 +2721,7 @@ std::ostream &operator<<(std::ostream &os, const order_info_t &o) {
     << "\"status\":\"" << o.status << "\","
     << "\"timeInForce\":\"" << o.timeInForce << "\","
     << "\"type\":\"" << o.type << "\","
-    << "\"side\":\"" << o.side << "\","
+    << "\"side\":\"" << e_side_to_string(o.side) << "\","
     << "\"stopPrice\":\"" << o.stopPrice << "\","
     << "\"icebergQty\":\"" << o.icebergQty << "\","
     << "\"time\":" << o.time << ","
@@ -2759,7 +2774,7 @@ std::ostream &operator<<(std::ostream &os, const margin_order_info_t &o) {
     << "\"status\":\"" << o.status << "\","
     << "\"timeInForce\":\"" << o.timeInForce << "\","
     << "\"type\":\"" << o.type << "\","
-    << "\"side\":\"" << o.side << "\","
+    << "\"side\":\"" << e_side_to_string(o.side) << "\","
     << "\"stopPrice\":\"" << o.stopPrice << "\","
     << "\"icebergQty\":\"" << o.icebergQty << "\","
     << "\"time\":" << o.time << ","
@@ -2812,7 +2827,7 @@ std::ostream &operator<<(std::ostream &os, const option_order_info_t &o) {
     << "\"quantity\":\"" << o.quantity << "\","
     << "\"executedQty\":\"" << o.executedQty << "\","
     << "\"fee\":\"" << o.fee << "\","
-    << "\"side\":\"" << o.side << "\","
+    << "\"side\":\"" << e_side_to_string(o.side) << "\","
     << "\"type\":\"" << o.type << "\","
     << "\"timeInForce\":\"" << o.timeInForce << "\","
     << "\"reduceOnly\":\"" << o.reduceOnly << "\","
@@ -2881,7 +2896,7 @@ std::ostream &operator<<(std::ostream &os, const linear_future_order_info_t &o) 
     << "\"origType\":\"" << o.origType << "\","
     << "\"price\":\"" << o.price << "\","
     << "\"reduceOnly\":\"" << o.reduceOnly << "\","
-    << "\"side\":\"" << o.side << "\","
+    << "\"side\":\"" << e_side_to_string(o.side) << "\","
     << "\"positionSide\":\"" << o.positionSide << "\","
     << "\"status\":\"" << o.status << "\","
     << "\"stopPrice\":\"" << o.stopPrice << "\","
@@ -2951,7 +2966,7 @@ std::ostream &operator<<(std::ostream &os, const inverse_future_order_info_t &o)
     << "\"origType\":\"" << o.origType << "\","
     << "\"price\":\"" << o.price << "\","
     << "\"reduceOnly\":\"" << o.reduceOnly << "\","
-    << "\"side\":\"" << o.side << "\","
+    << "\"side\":\"" << e_side_to_string(o.side) << "\","
     << "\"positionSide\":\"" << o.positionSide << "\","
     << "\"status\":\"" << o.status << "\","
     << "\"stopPrice\":" << o.stopPrice << ","
@@ -3236,7 +3251,7 @@ std::ostream &operator<<(std::ostream &os, const new_order_info_result_t &o) {
     << "\"status\":\"" << o.status << "\","
     << "\"timeInForce\":\"" << o.timeInForce << "\","
     << "\"type\":\"" << o.type << "\","
-    << "\"side\":\"" << o.side << "\""
+    << "\"side\":\"" << e_side_to_string(o.side) << "\""
     << "}";
 
     return os;
@@ -3323,7 +3338,7 @@ std::ostream &operator<<(std::ostream &os, const new_order_info_full_t &o) {
     << "\"status\":\"" << o.status << "\","
     << "\"timeInForce\":\"" << o.timeInForce << "\","
     << "\"type\":\"" << o.type << "\","
-    << "\"side\":\"" << o.side << "\","
+    << "\"side\":\"" << e_side_to_string(o.side) << "\","
     << "\"fills\":[";
     for ( auto it = o.fills.begin(); it != o.fills.end(); ++it ) {
         os
@@ -3371,7 +3386,7 @@ std::ostream &operator<<(std::ostream &os, const new_option_order_info_ack_t &o)
     << "\"symbol\":" << o.symbol << ","
     << "\"price\":\"" << o.price << "\","
     << "\"quantity\":\"" << o.quantity << "\","
-    << "\"side\":\"" << o.side << "\","
+    << "\"side\":\"" << e_side_to_string(o.side) << "\","
     << "\"type\":\"" << o.type << "\","
     << "\"createDate\":\"" << o.createDate << "\","
     << "\"reduceOnly\":\"" << o.reduceOnly << "\","
@@ -3420,7 +3435,7 @@ std::ostream &operator<<(std::ostream &os, const new_option_order_info_result_t 
     << "\"quantity\":" << o.quantity << ","
     << "\"executedQty\":\"" << o.executedQty << "\","
     << "\"fee\":\"" << o.fee << "\","
-    << "\"side\":\"" << o.side << "\","
+    << "\"side\":\"" << e_side_to_string(o.side) << "\","
     << "\"type\":\"" << o.type << "\","
     << "\"timeInForce\":\"" << o.timeInForce << "\","
     << "\"reduceOnly\":\"" << o.reduceOnly << "\","
@@ -3509,7 +3524,7 @@ std::ostream &operator<<(std::ostream &os, const new_linear_future_order_info_ac
     << "\"symbol\":\"" << o.symbol << "\","
     << "\"price\":\"" << o.price << "\","
     << "\"quantity\":\"" << o.quantity << "\","
-    << "\"side\":\"" << o.side << "\","
+    << "\"side\":\"" << e_side_to_string(o.side) << "\","
     << "\"type\":\"" << o.type << "\","
     << "\"createDate\":\"" << o.createDate << "\","
     << "\"reduceOnly\":\"" << o.reduceOnly << "\","
@@ -3547,7 +3562,7 @@ std::ostream &operator<<(std::ostream &os, const new_inverse_future_order_info_a
     << "\"symbol\":\"" << o.symbol << "\","
     << "\"price\":\"" << o.price << "\","
     << "\"quantity\":\"" << o.quantity << "\","
-    << "\"side\":\"" << o.side << "\","
+    << "\"side\":\"" << e_side_to_string(o.side) << "\","
     << "\"type\":\"" << o.type << "\","
     << "\"createDate\":\"" << o.createDate << "\","
     << "\"reduceOnly\":\"" << o.reduceOnly << "\","
@@ -3606,7 +3621,7 @@ std::ostream &operator<<(std::ostream &os, const new_linear_future_order_info_re
     << "\"origQty\":\"" << o.origQty << "\","
     << "\"price\":\"" << o.price << "\","
     << "\"reduceOnly\":\"" << o.reduceOnly << "\","
-    << "\"side\":\"" << o.side << "\","
+    << "\"side\":\"" << e_side_to_string(o.side) << "\","
     << "\"positionSide\":\"" << o.positionSide << "\","
     << "\"status\":\"" << o.status << "\","
     << "\"stopPrice\":\"" << o.stopPrice << "\","
@@ -3678,7 +3693,7 @@ std::ostream &operator<<(std::ostream &os, const new_inverse_future_order_info_r
     << "\"origQty\":\"" << o.origQty << "\","
     << "\"price\":\"" << o.price << "\","
     << "\"reduceOnly\":\"" << o.reduceOnly << "\","
-    << "\"side\":\"" << o.side << "\","
+    << "\"side\":\"" << e_side_to_string(o.side) << "\","
     << "\"positionSide\":\"" << o.positionSide << "\","
     << "\"status\":\"" << o.status << "\","
     << "\"stopPrice\":\"" << o.stopPrice << "\","
@@ -3844,7 +3859,7 @@ std::ostream &operator<<(std::ostream &os, const cancel_order_info_t &o) {
     << "\"status\":\"" << o.status << "\","
     << "\"timeInForce\":\"" << o.timeInForce << "\","
     << "\"type\":\"" << o.type << "\","
-    << "\"side\":\"" << o.side << "\""
+    << "\"side\":\"" << e_side_to_string(o.side) << "\""
     << "}";
 
     return os;
@@ -3893,7 +3908,7 @@ std::ostream &operator<<(std::ostream &os, const cancel_option_order_info_t &o)
     << "\"quantity\":\"" << o.quantity << "\","
     << "\"executedQty\":\"" << o.executedQty << "\","
     << "\"fee\":\"" << o.fee << "\","
-    << "\"side\":\"" << o.side << "\","
+    << "\"side\":\"" << e_side_to_string(o.side) << "\","
     << "\"type\":\"" << o.type << "\","
     << "\"timeInForce\":\"" << o.timeInForce << "\","
     << "\"reduceOnly\":\"" << o.reduceOnly << "\","
@@ -3961,7 +3976,7 @@ std::ostream &operator<<(std::ostream &os, const cancel_linear_future_order_info
     << "\"origQty\":\"" << o.origQty << "\","
     << "\"price\":\"" << o.price << "\","
     << "\"reduceOnly\":\"" << o.reduceOnly << "\","
-    << "\"side\":\"" << o.side << "\","
+    << "\"side\":\"" << e_side_to_string(o.side) << "\","
     << "\"positionSide\":\"" << o.positionSide << "\","
     << "\"status\":\"" << o.status << "\","
     << "\"stopPrice\":" << o.stopPrice << ","
@@ -4033,7 +4048,7 @@ std::ostream &operator<<(std::ostream &os, const cancel_inverse_future_order_inf
     << "\"origType\":\"" << o.origType << "\","
     << "\"price\":\"" << o.price << "\","
     << "\"reduceOnly\":\"" << o.reduceOnly << "\","
-    << "\"side\":\"" << o.side << "\","
+    << "\"side\":\"" << e_side_to_string(o.side) << "\","
     << "\"positionSide\":\"" << o.positionSide << "\","
     << "\"status\":\"" << o.status << "\","
     << "\"stopPrice\":\"" << o.stopPrice << "\","
@@ -4159,7 +4174,7 @@ std::ostream &operator<<(std::ostream &os, const my_option_trades_info_t::my_opt
     << "\"quantity\":\"" << o.quantity << "\","
     << "\"fee\":\"" << o.fee << "\","
     << "\"realizedProfit\":\"" << o.realizedProfit << "\","
-    << "\"side\":\"" << o.side << "\","
+    << "\"side\":\"" << e_side_to_string(o.side) << "\","
     << "\"type\":\"" << o.type << "\","
     << "\"volatility\":\"" << o.volatility << "\","
     << "\"liquidity\":\"" << o.liquidity << "\","
@@ -4240,7 +4255,7 @@ std::ostream &operator<<(std::ostream &os, const my_linear_future_trades_info_t:
     << "\"qty\":\"" << o.qty << "\","
     << "\"quoteQty\":\"" << o.quoteQty << "\","
     << "\"realizedPnl\":\"" << o.realizedPnl << "\","
-    << "\"side\":\"" << o.side << "\","
+    << "\"side\":\"" << e_side_to_string(o.side) << "\","
     << "\"positionSide\":\"" << o.positionSide << "\","
     << "\"symbol\":\"" << o.symbol << "\","
     << "\"time\":\"" << o.time
@@ -4311,7 +4326,7 @@ std::ostream &operator<<(std::ostream &os, const my_inverse_future_trades_info_t
     << "\"id\":\"" << o.id << "\","
     << "\"orderId\":\"" << o.orderId << "\","
     << "\"pair\":\"" << o.pair << "\","
-    << "\"side\":\"" << o.side << "\","
+    << "\"side\":\"" << e_side_to_string(o.side) << "\","
     << "\"price\":\"" << o.price << "\","
     << "\"qty\":\"" << o.qty << "\","
     << "\"realizedPnl\":\"" << o.realizedPnl << "\","

@@ -361,7 +361,7 @@ rest::orders_info_t get_open_orders(
     ,const rest::exchange_info_t &exinfo
     ,const std::vector<std::string> &pairs
     ,const std::function<void(const std::string &)> &tick
-    ,const char *side
+    ,const std::optional<e_side> side
     ,const std::uint64_t start_time
     ,const std::string &start_time_str)
 {
@@ -399,7 +399,7 @@ rest::orders_info_t get_open_orders(
         binapi::rest::orders_info_t tmp;
         for ( auto &pit: orders.orders ) {
             for ( auto &it: pit.second ) {
-                if ( it.side == side ) {
+                if ( it.side == *side ) {
                     tmp.orders[it.symbol].push_back(std::move(it));
                 }
             }
@@ -440,11 +440,11 @@ void make_open_orders_resume(
         binapi::double_type buy_for_pair, sell_for_pair;
         binapi::double_type buy_amount, sell_amount;
         for ( const auto &oit: pit.second ) {
-            if ( oit.side == "BUY" ) {
+            if ( oit.side == e_side::buy ) {
                 ++buy_count;
                 buy_for_pair += (oit.price * oit.origQty);
                 buy_amount += oit.origQty;
-            } else if ( oit.side == "SELL" ) {
+            } else if ( oit.side == e_side::sell ) {
                 ++sell_count;
                 sell_for_pair += (oit.price * oit.origQty);
                 sell_amount += oit.origQty;
@@ -484,11 +484,11 @@ void make_open_orders_detailed(
     {
         for ( const auto &oit: orders ) {
             if ( buy_or_sell ) {
-                if ( oit.side[0] == 'B' ) {
+                if ( oit.side == e_side::buy ) {
                     os << boost::format(" B: %10u|%10g|%8g|%10g|") % oit.orderId % oit.price % oit.origQty % (oit.price * oit.origQty) << std::endl;
                 }
             } else {
-                if ( oit.side[0] == 'S' ) {
+                if ( oit.side == e_side::sell ) {
                     os << boost::format(" S: %10u|%10g|%8g|%10g|") % oit.orderId % oit.price % oit.origQty % (oit.price * oit.origQty) << std::endl;
                 }
             }

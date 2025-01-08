@@ -1076,7 +1076,7 @@ struct order_info_t {
     std::string status;
     std::string timeInForce;
     std::string type;
-    std::string side;
+    e_side side;
     double_type stopPrice;
     double_type icebergQty;
     std::size_t time;
@@ -1102,7 +1102,7 @@ struct option_order_info_t
     double_type quantity;               // Order Quantity
     double_type executedQty;            // Number of completed trades
     double_type fee;                    // Fee 
-    std::string side;                   // Buy/sell direction
+    e_side side;                   // Buy/sell direction
     std::string type;                   // Order type
     std::string timeInForce;            // Time in force method
     bool reduceOnly;                    // Order is reduce only Y/N
@@ -1132,7 +1132,7 @@ struct linear_future_order_info_t
   	std::string origType;
   	double_type price; 	
     bool reduceOnly;
-  	std::string side;
+  	e_side side;
   	std::string positionSide;
   	std::string status;
   	double_type stopPrice;		// please ignore when order type is TRAILING_STOP_MARKET
@@ -1165,7 +1165,7 @@ struct inverse_future_order_info_t
   	std::string origType;
   	double_type price;
   	bool reduceOnly;
-  	std::string side;
+  	e_side side;
   	std::string positionSide;
   	std::string status;
   	double_type stopPrice;			// please ignore when order type is TRAILING_STOP_MARKET
@@ -1246,7 +1246,7 @@ struct new_order_info_result_t {
     std::string status;
     std::string timeInForce;
     std::string type;
-    std::string side;
+    e_side side;
 
     static new_order_info_result_t construct(const flatjson::fjson &json);
     friend std::ostream &operator<<(std::ostream &os, const new_order_info_result_t &o);
@@ -1264,7 +1264,7 @@ struct new_order_info_full_t {
     std::string status;
     std::string timeInForce;
     std::string type;
-    std::string side;
+    e_side side;
     bool isIsolated;
     struct fill_part {
         double_type price;
@@ -1289,7 +1289,7 @@ struct new_option_order_info_ack_t {
     std::string symbol;
     double_type price;
     double_type quantity;
-    std::string side;
+    e_side side;
     std::string type;
     std::size_t createDate;
     bool reduceOnly;
@@ -1307,7 +1307,7 @@ struct new_option_order_info_result_t {
     double_type quantity;
     double_type executedQty;
     double_type fee;
-    std::string side;
+    e_side side;
     std::string type;
     std::string timeInForce;
     bool reduceOnly;
@@ -1332,7 +1332,7 @@ struct new_linear_future_order_info_ack_t {
     std::string symbol;
     double_type price;
     double_type quantity;
-    std::string side;
+    e_side side;
     std::string type;
     std::size_t createDate;
     bool reduceOnly;
@@ -1354,7 +1354,7 @@ struct new_linear_future_order_info_result_t
  	double_type origQty;
  	double_type price;
   	bool reduceOnly;
-  	std::string side;
+  	e_side side;
   	std::string positionSide;
   	std::string status;
   	double_type stopPrice;
@@ -1381,7 +1381,7 @@ struct new_inverse_future_order_info_ack_t {
     std::string symbol;
     double_type price;
     double_type quantity;
-    std::string side;
+    e_side side;
     std::string type;
     std::size_t createDate;
     bool reduceOnly;
@@ -1403,7 +1403,7 @@ struct new_inverse_future_order_info_result_t
  	double_type origQty;
  	double_type price;
   	bool reduceOnly;
-  	std::string side;
+  	e_side side;
   	std::string positionSide;
   	std::string status;
   	double_type stopPrice;
@@ -1718,7 +1718,7 @@ struct cancel_order_info_t {
     std::string status;
     std::string timeInForce;
     std::string type;
-    std::string side;
+    e_side side;
 
     static cancel_order_info_t construct(const flatjson::fjson &json);
     friend std::ostream &operator<<(std::ostream &os, const cancel_order_info_t &o);
@@ -1732,7 +1732,7 @@ struct cancel_option_order_info_t {
     double_type quantity;
     double_type executedQty;
     double_type fee;
-    std::string side;
+    e_side side;
     std::string type;
     std::string timeInForce;
     bool reduceOnly;
@@ -1763,7 +1763,7 @@ struct cancel_linear_future_order_info_t {
     double_type origQty;
     double_type price;
     bool reduceOnly;
-    std::string side;
+    e_side side;
     std::string positionSide;
     std::string status;
     double_type stopPrice;
@@ -1796,7 +1796,7 @@ struct cancel_inverse_future_order_info_t {
     std::string origType;
     double_type price;    
     bool reduceOnly;
-    std::string side;
+    e_side side;
     std::string positionSide;
     std::string status;
     double_type stopPrice;
@@ -1856,7 +1856,7 @@ struct my_option_trades_info_t {
         double_type quantity;
         double_type fee;
         double_type realizedProfit;
-        std::string side;
+        e_side side;
         std::string type;
         double_type volatility;
         std::string liquidity;
@@ -1892,7 +1892,7 @@ struct my_linear_future_trades_info_t {
         double_type qty;
         double_type quoteQty;
         double_type realizedPnl;
-        std::string side;
+        e_side side;
         std::string positionSide;
         std::string symbol;
         std::size_t time;
@@ -1917,7 +1917,7 @@ struct my_inverse_future_trades_info_t {
         std::size_t id;
         std::size_t orderId;
         std::string pair;
-        std::string side;
+        e_side side;
         double_type price;
         double_type qty;
         double_type realizedPnl;
