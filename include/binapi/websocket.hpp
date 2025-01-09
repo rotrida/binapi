@@ -32,6 +32,10 @@ struct account_update_t;
 struct balance_update_t;
 struct order_update_t;
 
+struct option_account_update_t;
+struct option_risk_level_change_t;
+struct option_order_trade_update_t;
+
 } // ns userdata
 
 namespace ws {
@@ -157,6 +161,18 @@ struct websockets {
         ,on_order_update_cb order_update
         ,boost::posix_time::time_duration timeout = boost::posix_time::time_duration()
     );
+
+    using on_option_account_update_cb = std::function<bool(const char *fl, int ec, std::string errmsg, userdata::option_account_update_t msg, handle hnd)>;
+    using on_option_risk_level_change_cb = std::function<bool(const char *fl, int ec, std::string errmsg, userdata::option_risk_level_change_t msg, handle hnd)>;
+    using on_option_order_update_cb = std::function<bool(const char *fl, int ec, std::string errmsg, userdata::option_order_trade_update_t msg, handle hnd)>;
+    handle userdata(
+         const char *lkey
+        ,on_option_account_update_cb option_account_update
+        ,on_option_risk_level_change_cb risk_level_change
+        ,on_option_order_update_cb option_order_update
+        ,boost::posix_time::time_duration timeout = boost::posix_time::time_duration()
+    );
+
 
     void unsubscribe(const handle &h);
     void async_unsubscribe(const handle &h, async_stop_callback callback);

@@ -771,6 +771,59 @@ websockets::handle websockets::userdata(
 
 /*************************************************************************************************/
 
+websockets::handle websockets::userdata(
+         const char *lkey
+        ,on_option_account_update_cb option_account_update
+        ,on_option_risk_level_change_cb risk_level_change
+        ,on_option_order_update_cb option_order_update
+        ,boost::posix_time::time_duration timeout
+    )
+{
+    auto cb = [acb=std::move(option_account_update), rcb=std::move(risk_level_change), ocb=std::move(option_order_update)]
+        (const char *fl, int ec, std::string errmsg, userdata::userdata_stream_t msg, handle hnd)
+    {
+        if ( ec ) {
+            acb(fl, ec, errmsg, userdata::option_account_update_t{}, hnd);
+            rcb(fl, ec, errmsg, userdata::option_risk_level_change_t{}, hnd);
+            ocb(fl, ec, std::move(errmsg), userdata::option_order_trade_update_t{}, hnd);
+
+            return false;
+        }
+
+        const flatjson::fjson json{msg.data.c_str(), msg.data.length()};
+        assert(json.contains("e"));
+        const auto e = json.at("e");
+        const auto es = e.to_sstring();
+        const auto ehash = fnv1a(es.data(), es.size());
+        switch ( ehash ) {
+            case fnv1a("ACCOUNT_UPDATE"): {
+                userdata::option_account_update_t res = userdata::option_account_update_t::construct(json);
+                return acb(fl, ec, std::move(errmsg), std::move(res), hnd);
+            }
+            case fnv1a("RISK_LEVEL_CHANGE"): {
+                userdata::option_risk_level_change_t res = userdata::option_risk_level_change_t::construct(json);
+                return rcb(fl, ec, std::move(errmsg), std::move(res), hnd);
+            }
+            case fnv1a("ORDER_TRADE_UPDATE"): {
+                userdata::option_order_trade_update_t res = userdata::option_order_trade_update_t::construct(json);
+                return ocb(fl, ec, std::move(errmsg), std::move(res), hnd);
+            }
+            default: {
+                assert(!"unreachable");
+                return false;
+            }
+        }
+
+        return false;
+    };
+
+    return pimpl->start_channel(nullptr, lkey, std::move(cb), timeout);
+
+
+}
+
+/*************************************************************************************************/
+
 void websockets::unsubscribe(const handle &h) { return pimpl->stop_channel(h); }
 void websockets::async_unsubscribe(const handle &h, async_stop_callback callback) { return pimpl->async_stop_channel(h, callback); }
 
