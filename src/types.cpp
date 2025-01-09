@@ -5281,6 +5281,320 @@ std::ostream& operator<<(std::ostream &os, const balance_update_t &o) {
 
 /*************************************************************************************************/
 
+option_account_update_t::balance_t option_account_update_t::balance_t::construct(const flatjson::fjson &json)
+{
+    assert(json.is_valid());
+
+    option_account_update_t::balance_t res{};
+
+    __BINAPI_GET(b);
+    __BINAPI_GET(m);
+    __BINAPI_GET(u);
+    __BINAPI_GET(U);
+    __BINAPI_GET(M);
+    __BINAPI_GET(i);
+    __BINAPI_GET(a);
+
+    return res;
+}
+
+std::ostream& operator<<(std::ostream &os, const option_account_update_t::balance_t &o)
+{
+    os
+    << "{"
+    << "\"b\":\"" << o.b << "\","
+    << "\"m\":"   << o.m << ","
+    << "\"u\":\"" << o.u << "\","
+    << "\"U\":\"" << o.U << "\","
+    << "\"M\":\"" << o.M << "\","
+    << "\"i\":\"" << o.i << "\","
+    << "\"a\":"   << o.a
+    << "}";
+
+    return os;
+}
+
+option_account_update_t::greek_t option_account_update_t::greek_t::construct(const flatjson::fjson &json)
+{
+    assert(json.is_valid());
+
+    option_account_update_t::greek_t res{};
+
+    __BINAPI_GET(ui);
+    __BINAPI_GET(d);
+    __BINAPI_GET(t);
+    __BINAPI_GET(g);
+    __BINAPI_GET(v);
+
+    return res;
+}
+
+std::ostream& operator<<(std::ostream &os, const option_account_update_t::greek_t &o)
+{
+    os
+    << "{"
+    << "\"ui\":\"" << o.ui << "\","
+    << "\"d\":\"" << o.d << "\","
+    << "\"t\":\"" << o.t << "\","
+    << "\"g\":\"" << o.g << "\","
+    << "\"v\":"   << o.v
+    << "}";
+
+    return os;
+}
+
+option_account_update_t::position_t option_account_update_t::position_t::construct(const flatjson::fjson &json)
+{
+    assert(json.is_valid());
+    option_account_update_t::position_t res{};
+
+    __BINAPI_GET(s);
+    __BINAPI_GET(c);
+    __BINAPI_GET(r);
+    __BINAPI_GET(p);
+    __BINAPI_GET(a);
+
+    return res;
+}
+
+std::ostream& operator<<(std::ostream &os, const option_account_update_t::position_t &o)
+{
+    os
+    << "{"
+    << "\"s\":\"" << o.s << "\","
+    << "\"c\":\"" << o.c << "\","
+    << "\"r\":\"" << o.r << "\","
+    << "\"p\":\"" << o.p << "\","
+    << "\"a\":"   << o.a
+    << "}";
+
+    return os;
+}
+
+option_account_update_t option_account_update_t::construct(const flatjson::fjson &json)
+{
+    assert(json.is_valid());
+    option_account_update_t res{};
+
+    __BINAPI_GET(e);
+    __BINAPI_GET(E);
+    __BINAPI_GET(uid);
+
+    const auto B = json.at("B");
+    for ( auto idx = 0u; idx < B.size(); ++idx ) {
+        option_account_update_t::balance_t item = option_account_update_t::balance_t::construct(B.at(idx));
+        auto asset = item.a;
+        res.B[asset] = std::move(item);
+    }
+
+    const auto G = json.at("G");
+    for ( auto idx = 0u; idx < G.size(); ++idx ) {
+        option_account_update_t::greek_t item = option_account_update_t::greek_t::construct(G.at(idx));
+        auto underlying = item.ui;
+        res.G[underlying] = std::move(item);
+    }
+
+    const auto P = json.at("P");
+    for ( auto idx = 0u; idx < P.size(); ++idx ) {
+        option_account_update_t::position_t item = option_account_update_t::position_t::construct(P.at(idx));
+        auto symbol = item.s;
+        res.P[symbol] = std::move(item);
+    }
+
+    return res;
+}
+
+std::ostream& operator<<(std::ostream &os, const option_account_update_t &o)
+{
+    os
+    << "{"
+    << "\"e\":\"" << o.e << "\","
+    << "\"E\":" << o.E << ","
+    << "\"uid\":" << o.uid << ","
+    << "\"B\":[";
+    for ( auto it = o.B.begin(); it != o.B.end(); ++it ) {
+        os << it->second;
+        if ( std::next(it) != o.B.end() ) {
+            os << ",";
+        }
+    }
+    os << "\"G\":[";
+    for ( auto it = o.G.begin(); it != o.G.end(); ++it ) {
+        os << it->second;
+        if ( std::next(it) != o.G.end() ) {
+            os << ",";
+        }
+    }
+    os << "\"P\":[";
+    for ( auto it = o.P.begin(); it != o.P.end(); ++it ) {
+        os << it->second;
+        if ( std::next(it) != o.P.end() ) {
+            os << ",";
+        }
+    }
+    os << "]}";
+
+    return os;
+}
+
+option_risk_level_change_t option_risk_level_change_t::construct(const flatjson::fjson &json)
+{
+    assert(json.is_valid());
+    option_risk_level_change_t res{};
+
+    __BINAPI_GET(e);
+    __BINAPI_GET(E);
+    __BINAPI_GET(s);
+    __BINAPI_GET(mb);
+    __BINAPI_GET(mm);
+
+    return res;
+}
+
+std::ostream& operator<<(std::ostream &os, const option_risk_level_change_t &o)
+{
+    os
+    << "{"
+    << "\"e\":\"" << o.e << "\","
+    << "\"E\":\"" << o.E << "\","
+    << "\"s\":\"" << o.s << "\","
+    << "\"mb\":\"" << o.mb << "\","
+    << "\"mm\":"   << o.mm
+    << "}";
+
+    return os;
+}
+
+option_order_trade_update_t::trade_t option_order_trade_update_t::trade_t::construct(const flatjson::fjson &json)
+{
+    assert(json.is_valid());
+    option_order_trade_update_t::trade_t res{};
+
+    __BINAPI_GET(t);
+    __BINAPI_GET(p);
+    __BINAPI_GET(q);
+    __BINAPI_GET(T);
+    __BINAPI_GET(m);
+    __BINAPI_GET(f);
+
+    return res;
+}
+
+std::ostream& operator<<(std::ostream &os, const option_order_trade_update_t::trade_t &o)
+{
+    os
+    << "{"
+    << "\"t\":\"" << o.t << "\","
+    << "\"p\":\"" << o.p << "\","
+    << "\"q\":\"" << o.q << "\","
+    << "\"T\":\"" << o.T << "\","
+    << "\"m\":\"" << o.m << "\","
+    << "\"f\":"   << o.f
+    << "}";
+
+    return os;
+}
+
+option_order_trade_update_t::order_t option_order_trade_update_t::order_t::construct(const flatjson::fjson &json)
+{
+    assert(json.is_valid());
+    option_order_trade_update_t::order_t res;
+
+    __BINAPI_GET(T);      //Order Create Time
+    __BINAPI_GET(t);      //Order Update Time
+    __BINAPI_GET(s);      //Symbol
+    __BINAPI_GET(c);      //clientOrderId
+    __BINAPI_GET(oid);    //order id
+    __BINAPI_GET(p);      //order price
+    __BINAPI_GET(q);      //order quantity (positive for BUY, negative for SELL)
+    __BINAPI_GET(stp);    //not used for now
+    __BINAPI_GET(r);      //reduce only
+    __BINAPI_GET(po);     //post only
+    __BINAPI_GET(S);      //status
+    __BINAPI_GET(e);      //completed trade volume(in contracts)       
+    __BINAPI_GET(ec);     //completed trade amount(in quote asset) 
+    __BINAPI_GET(f);      //fee 
+    __BINAPI_GET(tif);  //time in force 
+    __BINAPI_GET(oty);    //order type
+
+    const auto fi = json.at("fi");
+    for ( auto idx = 0u; idx < fi.size(); ++idx ) 
+    {
+        res.trades.emplace_back(option_order_trade_update_t::trade_t::construct(fi.at(idx)));
+    }
+
+    return res;
+}
+
+std::ostream& operator<<(std::ostream &os, const option_order_trade_update_t::order_t &o)
+{
+    os
+    << "{"
+    << "\"T\":\"" << o.T << "\","
+    << "\"t\":" << o.t << ","
+    << "\"s\":" << o.s << ","
+    << "\"c\":" << o.c << ","
+    << "\"oid\":" << o.oid << ","
+    << "\"p\":" << o.p << ","
+    << "\"q\":" << o.q << ","
+    << "\"stp\":" << o.stp << ","
+    << "\"r\":" << o.r << ","
+    << "\"po\":" << o.po << ","
+    << "\"S\":" << o.S << ","
+    << "\"e\":" << o.e << ","
+    << "\"ec\":" << o.ec << ","
+    << "\"f\":" << o.f << ","
+    << "\"tif\":" << o.tif << ","
+    << "\"oty\":" << o.oty << ","
+    << "\"o\":[";
+    for ( auto it = o.trades.begin(); it != o.trades.end(); ++it ) {
+        os << *it;
+        if ( std::next(it) != o.trades.end() ) {
+            os << ",";
+        }
+    }
+    os << "]}";
+
+    return os;
+}
+
+option_order_trade_update_t option_order_trade_update_t::construct(const flatjson::fjson &json)
+{
+    assert(json.is_valid());
+    option_order_trade_update_t res;
+
+    __BINAPI_GET(e);
+    __BINAPI_GET(E);
+
+    const auto o = json.at("o");
+    for ( auto idx = 0u; idx < o.size(); ++idx ) 
+    {
+        res.orders.emplace_back(option_order_trade_update_t::order_t::construct(o.at(idx)));
+    }
+
+    return res;
+}
+
+std::ostream& operator<<(std::ostream &os, const option_order_trade_update_t &o)
+{
+    os
+    << "{"
+    << "\"e\":\"" << o.e << "\","
+    << "\"E\":" << o.E << ","
+    << "\"o\":[";
+    for ( auto it = o.orders.begin(); it != o.orders.end(); ++it ) {
+        os << *it;
+        if ( std::next(it) != o.orders.end() ) {
+            os << ",";
+        }
+    }
+    os << "]}";
+
+    return os;
+}
+
+/*************************************************************************************************/
+
 order_update_t order_update_t::construct(const flatjson::fjson &json) {
     assert(json.is_valid());
 

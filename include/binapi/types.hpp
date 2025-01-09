@@ -2340,6 +2340,119 @@ struct account_update_t {
 
 /*************************************************************************************************/
 
+// https://developers.binance.com/docs/derivatives/option/user-data-streams/Event-Account-data
+struct option_account_update_t {
+    struct balance_t 
+    {
+        double_type b;       // Account balance   
+        double_type m;       // Position value    
+        double_type u;       // Unrealized profit/loss   
+        double_type U;        // Positive unrealized profit for long position 
+        double_type M;       // Maintenance margin   
+        double_type i;       // Initial margin   
+        std::string a;       // Margin asset  
+
+        static balance_t construct(const flatjson::fjson &json);
+        friend std::ostream& operator<<(std::ostream &os, const balance_t &o);
+    };
+
+    struct greek_t
+    {
+        std::string ui;     // Underlying
+        double_type d;      // Delta  
+        double_type t;      // Theta 
+        double_type g;      // Gamma 
+        double_type v;      // Vega
+
+        static greek_t construct(const flatjson::fjson &json);
+        friend std::ostream& operator<<(std::ostream &os, const greek_t &o);
+    };
+
+    struct position_t
+    {
+        std::string s;      // Contract symbol   
+        double_type c;      // Number of current positions   
+        double_type r;      // Number of positions that can be reduced    
+        double_type p;      // Position value   
+        double_type a;      // Average entry price
+
+        static position_t construct(const flatjson::fjson &json);
+        friend std::ostream& operator<<(std::ostream &os, const position_t &o);
+    };
+
+    std::string e;      // Event type
+    std::size_t E;      // Event time
+    std::size_t uid;
+
+    std::unordered_map<std::string, balance_t> B;
+    std::unordered_map<std::string, greek_t> G;
+    std::unordered_map<std::string, position_t> P;
+
+    static option_account_update_t construct(const flatjson::fjson &json);
+    friend std::ostream& operator<<(std::ostream &os, const option_account_update_t &o);
+};
+
+struct option_risk_level_change_t
+{
+    std::string e;          //Event Type 
+    size_t E;               //Event Time 
+    std::string s;          //risk level
+    double_type mb;         //margin balance 
+    double_type mm;         //maintenance margin 
+
+    static option_risk_level_change_t construct(const flatjson::fjson &json);
+    friend std::ostream& operator<<(std::ostream &os, const option_risk_level_change_t &o);
+};
+
+struct option_order_trade_update_t
+{
+    struct trade_t
+    {
+        size_t t;                   //tradeId
+        double_type p;              //trade price
+        double_type q;              //trade quantity
+        size_t T;                   //trade time
+        std::string m;              //taker or maker
+        double_type f;              //commission(>0) or rebate(<0)
+
+        static trade_t construct(const flatjson::fjson &json);
+        friend std::ostream& operator<<(std::ostream &os, const trade_t &o);
+    };
+
+    struct order_t
+    {
+        size_t T;                       //Order Create Time
+        size_t t;                       //Order Update Time
+        std::string s;                  //Symbol
+        std::string c;                  //clientOrderId
+        size_t oid;                     //order id
+        double_type p;                  //order price
+        double_type q;                  //order quantity (positive for BUY, negative for SELL)
+        double_type stp;                //not used for now
+        bool r;                         //reduce only
+        bool po;                        //post only
+        std::string S;                  //status
+        double_type e;                  //completed trade volume(in contracts)       
+        double_type ec;                 //completed trade amount(in quote asset) 
+        double_type f;                  //fee 
+        std::string tif;                //time in force 
+        std::string oty;                //order type
+        std::vector<trade_t> trades;
+
+        static order_t construct(const flatjson::fjson &json);
+        friend std::ostream& operator<<(std::ostream &os, const order_t &o);
+    };
+
+    std::vector<order_t> orders;
+    std::string e;          //Event Type
+    size_t E;               //Event Time
+
+    static option_order_trade_update_t construct(const flatjson::fjson &json);
+    friend std::ostream& operator<<(std::ostream &os, const option_order_trade_update_t &o);
+};
+
+/*************************************************************************************************/
+
 // https://github.com/binance/binance-spot-api-docs/blob/master/user-data-stream.md#balance-update
 struct balance_update_t {
     std::string e;
