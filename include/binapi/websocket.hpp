@@ -46,6 +46,9 @@ struct future_strategy_update_t;
 struct future_grid_update_t;
 struct linear_future_conditional_order_trigger_rejection_event_t;
 
+struct inverse_future_order_update_event_t;
+struct inverse_future_configuration_update_t;
+
 } // ns userdata
 
 namespace ws {
@@ -190,7 +193,7 @@ struct websockets {
     using on_linear_future_trade_lite_event_cb = std::function<bool(const char *fl, int ec, std::string errmsg, userdata::linear_future_trade_lite_update_t msg, handle hnd)>;
     using on_linear_future_configuration_update_cb = std::function<bool(const char *fl, int ec, std::string errmsg, userdata::linear_future_configuration_update_t msg, handle hnd)>;
     using on_linear_future_strategy_update_cb = std::function<bool(const char *fl, int ec, std::string errmsg, userdata::future_strategy_update_t msg, handle hnd)>;
-    using on_linear_grid_update_cb = std::function<bool(const char *fl, int ec, std::string errmsg, userdata::future_grid_update_t msg, handle hnd)>;
+    using on_linear_future_grid_update_cb = std::function<bool(const char *fl, int ec, std::string errmsg, userdata::future_grid_update_t msg, handle hnd)>;
     using on_linear_future_conditional_order_trigger_rejection_event_cb = std::function<bool(const char *fl, int ec, std::string errmsg, userdata::linear_future_conditional_order_trigger_rejection_event_t msg, handle hnd)>;
 
     handle linear_future_userdata(
@@ -202,8 +205,28 @@ struct websockets {
         ,on_linear_future_trade_lite_event_cb linear_future_trade_lite_event_cb
         ,on_linear_future_configuration_update_cb linear_future_configuration_update_cb
         ,on_linear_future_strategy_update_cb linear_future_strategy_update_cb
-        ,on_linear_grid_update_cb linear_grid_update_cb
+        ,on_linear_future_grid_update_cb linear_future_grid_update_cb
         ,on_linear_future_conditional_order_trigger_rejection_event_cb linear_future_conditional_order_trigger_rejection_event_cb
+        ,boost::posix_time::time_duration timeout = boost::posix_time::time_duration()
+    );
+
+    using on_inverse_future_listen_key_expired_event_cb = std::function<bool(const char *fl, int ec, std::string errmsg, userdata::future_listen_key_expired_event_t msg, handle hnd)>;
+    using on_inverse_future_margin_call_event_cb = std::function<bool(const char *fl, int ec, std::string errmsg, userdata::future_margin_call_event_t msg, handle hnd)>;
+    using on_inverse_future_account_update_cb = std::function<bool(const char *fl, int ec, std::string errmsg, userdata::future_account_update_event_t msg, handle hnd)>;
+    using on_inverse_future_order_update_cb = std::function<bool(const char *fl, int ec, std::string errmsg, userdata::inverse_future_order_update_event_t msg, handle hnd)>;
+    using on_inverse_future_configuration_update_cb = std::function<bool(const char *fl, int ec, std::string errmsg, userdata::inverse_future_configuration_update_t msg, handle hnd)>;
+    using on_inverse_future_strategy_update_cb = std::function<bool(const char *fl, int ec, std::string errmsg, userdata::future_strategy_update_t msg, handle hnd)>;
+    using on_inverse_future_grid_update_cb = std::function<bool(const char *fl, int ec, std::string errmsg, userdata::future_grid_update_t msg, handle hnd)>;
+
+    handle inverse_future_userdata(
+         const char *lkey
+        ,on_inverse_future_listen_key_expired_event_cb inverse_future_listen_key_expired_event_cb
+        ,on_inverse_future_margin_call_event_cb inverse_future_margin_call_event_cb
+        ,on_inverse_future_account_update_cb inverse_future_account_update_cb
+        ,on_inverse_future_order_update_cb inverse_future_order_update_cb
+        ,on_inverse_future_configuration_update_cb inverse_future_configuration_update_cb
+        ,on_inverse_future_strategy_update_cb inverse_future_strategy_update_cb
+        ,on_inverse_future_grid_update_cb inverse_future_grid_update_cb
         ,boost::posix_time::time_duration timeout = boost::posix_time::time_duration()
     );
 

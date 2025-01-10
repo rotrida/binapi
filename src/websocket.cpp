@@ -829,7 +829,7 @@ websockets::handle websockets::linear_future_userdata(
         ,on_linear_future_trade_lite_event_cb linear_future_trade_lite_event_cb
         ,on_linear_future_configuration_update_cb linear_future_configuration_update_cb
         ,on_linear_future_strategy_update_cb linear_future_strategy_update_cb
-        ,on_linear_grid_update_cb linear_grid_update_cb
+        ,on_linear_future_grid_update_cb linear_future_grid_update_cb
         ,on_linear_future_conditional_order_trigger_rejection_event_cb linear_future_conditional_order_trigger_rejection_event_cb
         ,boost::posix_time::time_duration timeout
     )
@@ -843,7 +843,7 @@ websockets::handle websockets::linear_future_userdata(
         linear_future_trade_lite_event_cb=std::move(linear_future_trade_lite_event_cb),
         linear_future_configuration_update_cb=std::move(linear_future_configuration_update_cb),
         linear_future_strategy_update_cb=std::move(linear_future_strategy_update_cb),
-        linear_grid_update_cb=std::move(linear_grid_update_cb),
+        linear_future_grid_update_cb=std::move(linear_future_grid_update_cb),
         linear_future_conditional_order_trigger_rejection_event_cb=std::move(linear_future_conditional_order_trigger_rejection_event_cb)
     ]
         (const char *fl, int ec, std::string errmsg, userdata::userdata_stream_t msg, handle hnd)
@@ -857,7 +857,7 @@ websockets::handle websockets::linear_future_userdata(
             linear_future_trade_lite_event_cb(fl, ec, std::move(errmsg), {}, hnd);
             linear_future_configuration_update_cb(fl, ec, std::move(errmsg), {}, hnd);
             linear_future_strategy_update_cb(fl, ec, std::move(errmsg), {}, hnd);
-            linear_grid_update_cb(fl, ec, std::move(errmsg), {}, hnd);
+            linear_future_grid_update_cb(fl, ec, std::move(errmsg), {}, hnd);
             linear_future_conditional_order_trigger_rejection_event_cb(fl, ec, std::move(errmsg), {}, hnd);
             
             return false;
@@ -901,11 +901,95 @@ websockets::handle websockets::linear_future_userdata(
             }
             case fnv1a("GRID_UPDATE"):
             {
-                return linear_grid_update_cb(fl, ec, std::move(errmsg), userdata::future_grid_update_t::construct(json), hnd);
+                return linear_future_grid_update_cb(fl, ec, std::move(errmsg), userdata::future_grid_update_t::construct(json), hnd);
             }
             case fnv1a("CONDITIONAL_ORDER_TRIGGER_REJECT"):
             {
                 return linear_future_conditional_order_trigger_rejection_event_cb(fl, ec, std::move(errmsg), userdata::linear_future_conditional_order_trigger_rejection_event_t::construct(json), hnd);
+            }
+            default: {
+                assert(!"unreachable");
+                return false;
+            }
+        }
+
+        return false;
+    };
+
+    return pimpl->start_channel(nullptr, lkey, std::move(cb), timeout);
+}
+
+websockets::handle websockets::inverse_future_userdata(
+         const char *lkey
+        ,on_inverse_future_listen_key_expired_event_cb inverse_future_listen_key_expired_event_cb
+        ,on_inverse_future_margin_call_event_cb inverse_future_margin_call_event_cb
+        ,on_inverse_future_account_update_cb inverse_future_account_update_cb
+        ,on_inverse_future_order_update_cb inverse_future_order_update_cb
+        ,on_inverse_future_configuration_update_cb inverse_future_configuration_update_cb
+        ,on_inverse_future_strategy_update_cb inverse_future_strategy_update_cb
+        ,on_inverse_future_grid_update_cb inverse_future_grid_update_cb
+        ,boost::posix_time::time_duration timeout
+    )
+{
+    auto cb = [
+        inverse_future_listen_key_expired_event_cb=std::move(inverse_future_listen_key_expired_event_cb),
+        inverse_future_margin_call_event_cb=std::move(inverse_future_margin_call_event_cb),
+        inverse_future_account_update_cb=std::move(inverse_future_account_update_cb),
+        inverse_future_order_update_cb=std::move(inverse_future_order_update_cb),
+        inverse_future_configuration_update_cb=std::move(inverse_future_configuration_update_cb),
+        inverse_future_strategy_update_cb=std::move(inverse_future_strategy_update_cb),
+        inverse_future_grid_update_cb=std::move(inverse_future_grid_update_cb)
+    ]
+        (const char *fl, int ec, std::string errmsg, userdata::userdata_stream_t msg, handle hnd)
+    {
+        if ( ec ) {
+            
+            inverse_future_listen_key_expired_event_cb(fl, ec, std::move(errmsg), {}, hnd);
+            inverse_future_margin_call_event_cb(fl, ec, std::move(errmsg), {}, hnd);
+            inverse_future_account_update_cb(fl, ec, std::move(errmsg), {}, hnd);
+            inverse_future_order_update_cb(fl, ec, std::move(errmsg), {}, hnd);
+            inverse_future_configuration_update_cb(fl, ec, std::move(errmsg), {}, hnd);
+            inverse_future_strategy_update_cb(fl, ec, std::move(errmsg), {}, hnd);
+            inverse_future_grid_update_cb(fl, ec, std::move(errmsg), {}, hnd);
+
+            return false;
+        }
+
+        const flatjson::fjson json{msg.data.c_str(), msg.data.length()};
+        assert(json.contains("e"));
+        const auto e = json.at("e");
+        const auto es = e.to_sstring();
+        const auto ehash = fnv1a(es.data(), es.size());
+        switch ( ehash ) 
+        {
+
+            case fnv1a("listenKeyExpired"):
+            {
+                return inverse_future_listen_key_expired_event_cb(fl, ec, std::move(errmsg), userdata::future_listen_key_expired_event_t::construct(json), hnd);
+            }
+            case fnv1a("MARGIN_CALL"):
+            {
+                return inverse_future_margin_call_event_cb(fl, ec, std::move(errmsg), userdata::future_margin_call_event_t::construct(json), hnd);
+            }
+            case fnv1a("ACCOUNT_UPDATE"):
+            {
+                return inverse_future_account_update_cb(fl, ec, std::move(errmsg), userdata::future_account_update_event_t::construct(json), hnd);
+            }
+            case fnv1a("ORDER_TRADE_UPDATE"):
+            {
+                return inverse_future_order_update_cb(fl, ec, std::move(errmsg), userdata::inverse_future_order_update_event_t::construct(json), hnd);
+            }
+            case fnv1a("ACCOUNT_CONFIG_UPDATE"):
+            {
+                return inverse_future_configuration_update_cb(fl, ec, std::move(errmsg), userdata::inverse_future_configuration_update_t::construct(json), hnd);
+            }
+            case fnv1a("STRATEGY_UPDATE"):
+            {
+                return inverse_future_strategy_update_cb(fl, ec, std::move(errmsg), userdata::future_strategy_update_t::construct(json), hnd);
+            }
+            case fnv1a("GRID_UPDATE"):
+            {
+                return inverse_future_grid_update_cb(fl, ec, std::move(errmsg), userdata::future_grid_update_t::construct(json), hnd);
             }
             default: {
                 assert(!"unreachable");
