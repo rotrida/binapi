@@ -2436,7 +2436,7 @@ struct option_order_trade_update_t
         double_type ec;                 //completed trade amount(in quote asset) 
         double_type f;                  //fee 
         std::string tif;                //time in force 
-        std::string oty;                //order type
+        e_type oty;                     //order type
         std::vector<trade_t> trades;
 
         static order_t construct(const flatjson::fjson &json);

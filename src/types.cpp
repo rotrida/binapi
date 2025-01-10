@@ -74,6 +74,15 @@ __get_json(T &v, const char *member, const flatjson::fjson &j) {
     v = e_side_from_string(read_val.c_str());
 }
 
+template<typename T>
+typename std::enable_if<std::is_same<T, e_type>::value>::type
+__get_json(T &v, const char *member, const flatjson::fjson &j) {
+    std::string read_val;
+    const auto &o = j.at(member);
+    read_val = (o.is_null() ? std::string{} : o.to_string());
+    v = e_type_from_string(read_val.c_str());
+}
+
 #define __BINAPI_GET2(obj, member, json) \
     __get_json(obj.member, #member, json)
 
@@ -5524,7 +5533,7 @@ option_order_trade_update_t::order_t option_order_trade_update_t::order_t::const
     __BINAPI_GET(e);      //completed trade volume(in contracts)       
     __BINAPI_GET(ec);     //completed trade amount(in quote asset) 
     __BINAPI_GET(f);      //fee 
-    __BINAPI_GET(tif);  //time in force 
+    __BINAPI_GET(tif);      //time in force 
     __BINAPI_GET(oty);    //order type
 
     const auto fi = json.at("fi");
@@ -5555,7 +5564,7 @@ std::ostream& operator<<(std::ostream &os, const option_order_trade_update_t::or
     << "\"ec\":" << o.ec << ","
     << "\"f\":" << o.f << ","
     << "\"tif\":" << o.tif << ","
-    << "\"oty\":" << o.oty << ","
+    << "\"oty\":" << e_type_to_string(o.oty) << ","
     << "\"o\":[";
     for ( auto it = o.trades.begin(); it != o.trades.end(); ++it ) {
         os << *it;
