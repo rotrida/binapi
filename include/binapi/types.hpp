@@ -2504,6 +2504,345 @@ struct order_update_t {
     friend std::ostream& operator<<(std::ostream &os, const order_update_t &o);
 };
 
+struct future_listen_key_expired_event_t
+{
+    std::string e;      // event type
+	size_t E;			// event time
+
+    static future_listen_key_expired_event_t construct(const flatjson::fjson &json);
+    friend std::ostream& operator<<(std::ostream &os, const future_listen_key_expired_event_t &o);
+};
+
+struct margin_call_position_t
+{
+    std::string s;        // Symbol
+    std::string ps; 	  // Position Side
+    double_type pa;		  // Position Amount
+    std::string mt; 	  // Margin Type
+    double_type iw;		  // Isolated Wallet (if isolated position)
+    double_type mp;       // Mark Price
+    double_type up;	      // Unrealized PnL
+    double_type mm;	      // Maintenance Margin Required
+
+    static margin_call_position_t construct(const flatjson::fjson &json);
+    friend std::ostream& operator<<(std::ostream &os, const margin_call_position_t &o);
+};
+
+struct future_margin_call_event_t
+{
+    std::string e;    	            // Event Type
+    size_t E;		                // Event Time
+    std::optional<std::string> i;	// Account Alias
+    double_type cw;		            // Cross Wallet Balance. Only pushed with crossed position margin call
+
+    std::unordered_map<std::string, margin_call_position_t> p;
+
+    static future_margin_call_event_t construct(const flatjson::fjson &json);
+    friend std::ostream& operator<<(std::ostream &os, const future_margin_call_event_t &o);
+};
+
+struct future_balante_update_t
+{
+    std::string a;      // Asset
+    double_type wb;     // Wallet Balance
+    double_type cw;		// Cross Wallet Balance
+    double_type bc;		// Balance Change except PnL and Commission
+
+    static future_balante_update_t construct(const flatjson::fjson &json);
+    friend std::ostream& operator<<(std::ostream &os, const future_balante_update_t &o);
+};
+
+struct future_position_update_t
+{
+    std::string s;          // Symbol
+    double_type pa;         // Position Amount
+    double_type ep;         // Entry Price
+    double_type bep;        // Break-Even Price 
+    double_type cr;         // (Pre-fee) Accumulated Realized
+    double_type up;         // Unrealized PnL
+    std::string mt;		    // Margin Type
+    double_type iw;		    // Isolated Wallet (if isolated position)
+    std::string ps;		    // Position Side
+
+    static future_position_update_t construct(const flatjson::fjson &json);
+    friend std::ostream& operator<<(std::ostream &os, const future_position_update_t &o);
+};
+
+struct future_acount_data_t
+{
+    std::string m;
+    std::unordered_map<std::string, future_balante_update_t> B;
+    std::unordered_map<std::string, future_position_update_t> P;
+
+    static future_acount_data_t construct(const flatjson::fjson &json);
+    friend std::ostream& operator<<(std::ostream &os, const future_acount_data_t &o);
+};
+
+struct future_account_update_event_t
+{
+    std::string e;			            // Event Type
+    size_t E;            	            // Event Time
+    size_t T;           	            // Transaction
+    std::optional<std::string> i;		// Account Alias
+    future_acount_data_t a;
+    
+    static future_account_update_event_t construct(const flatjson::fjson &json);
+    friend std::ostream& operator<<(std::ostream &os, const future_account_update_event_t &o);
+};
+
+struct linear_future_order_event_t
+{
+    
+    std::string s;			         // Symbol
+    std::string c;				     // Client Order Id
+      // special client order id:
+      // starts with "autoclose-": liquidation order
+      // "adl_autoclose": ADL auto close order
+      // "settlement_autoclose-": settlement order for delisting or delivery
+    e_side S;					     // Side
+    std::string o;	                 // Order Type
+    std::string f;					 // Time in Force
+    double_type q;				     // Original Quantity
+    double_type p;			         // Original Price
+    double_type ap;			         // Average Price
+    double_type sp;				     // Stop Price. Please ignore with TRAILING_STOP_MARKET order
+    std::string x;					 // Execution Type
+    std::string X;					 // Order Status
+    size_t i;				         // Order Id
+    double_type l;					 // Order Last Filled Quantity
+    double_type z;					 // Order Filled Accumulated Quantity
+    double_type L;					 // Last Filled Price
+    std::string N;            	     // Commission Asset, will not push if no commission
+    double_type n;               	 // Commission, will not push if no commission
+    size_t T;			             // Order Trade Time
+    size_t t;			        	 // Trade Id
+    double_type b;	    	         // Bids Notional
+    double_type a;					 // Ask Notional
+    bool m;				             // Is this trade the maker side?
+    bool R;				             // Is this reduce only
+    std::string wt; 		         // Stop Price Working Type
+    std::string ot;                  // Original Order Type
+    std::string ps;					 // Position Side
+    bool cp;						     // If Close-All, pushed with conditional order
+    double_type AP;				     // Activation Price, only puhed with TRAILING_STOP_MARKET order
+    double_type cr;					 // Callback Rate, only puhed with TRAILING_STOP_MARKET order
+    bool pP;                          // If price protection is turned on
+    double_type si;                  // ignore
+    double_type ss;                  // ignore
+    double_type rp;	   				 // Realized Profit of the trade
+    std::string V;                   // STP mode
+    std::string pm;                  // Price match mode
+    size_t gtd;                      // TIF GTD order auto cancel time
+  
+    static linear_future_order_event_t construct(const flatjson::fjson &json);
+    friend std::ostream& operator<<(std::ostream &os, const linear_future_order_event_t &o);
+};
+
+struct linear_future_order_update_event_t
+{
+    std::string e;		   // Event Type
+    size_t E;			   // Event Time
+    size_t T;			   // Transaction Time
+    linear_future_order_event_t o;
+
+    static linear_future_order_update_event_t construct(const flatjson::fjson &json);
+    friend std::ostream& operator<<(std::ostream &os, const linear_future_order_update_event_t &o);
+};
+
+struct inverse_future_order_event_t
+{
+    std::string s;		// Symbol
+    std::string c;      // Client Order Id
+      // special client order id:
+      // starts with "autoclose-": liquidation order
+      // "adl_autoclose": ADL auto close order
+      // "delivery_autoclose-": settlement order for delisting or delivery
+    e_side S;		            // Side
+    std::string o;	            // Order Type
+    std::string f;				// Time in Force
+    double_type q;		        // Original Quantity
+    double_type p;			    // Original Price
+    double_type ap;			    // Average Price
+    double_type sp;			    // Stop Price. Please ignore with TRAILING_STOP_MARKET order
+    std::string x;				// Execution Type
+    std::string X;				// Order Status
+    size_t i;				    // Order Id
+    double_type l;				// Order Last Filled Quantity
+    double_type z;				// Order Filled Accumulated Quantity
+    double_type L;				// Last Filled Price
+    std::string ma;				// Margin Asset
+    std::string N;           	// Commission Asset of the trade, will not push if no commission
+    double_type n;              // Commission of the trade, will not push if no commission
+    size_t T;       			// Order Trade Time
+    size_t t;		        	// Trade Id
+    double_type rp;				// Realized Profit of the trade
+    double_type b;		    	// Bid quantity of base asset
+    double_type a;				// Ask quantity of base asset
+    bool m; 					// Is this trade the maker side?
+    bool R; 					// Is this reduce only
+    std::string wt; 		    // Stop Price Working Type
+    std::string ot;             // Original Order Type
+    std::string ps;				// Position Side
+    bool cp;					// If Close-All, pushed with conditional order
+    double_type AP;				// Activation Price, only puhed with TRAILING_STOP_MARKET order
+    double_type cr;				// Callback Rate, only puhed with TRAILING_STOP_MARKET order
+    bool pP;				    // If conditional order trigger is protected
+    std::string V;              // STP mode
+    std::string pm;             // Price match mode
+  
+    static inverse_future_order_event_t construct(const flatjson::fjson &json);
+    friend std::ostream& operator<<(std::ostream &os, const inverse_future_order_event_t &o);
+};
+
+struct inverse_future_order_update_event_t
+{
+    std::string e;		// Event Type
+    size_t E;			// Event Time
+    size_t T;			// Transaction Time
+    std::string i;		// Account Alias
+    inverse_future_order_event_t o;
+
+    static inverse_future_order_update_event_t construct(const flatjson::fjson &json);
+    friend std::ostream& operator<<(std::ostream &os, const inverse_future_order_update_event_t &o);
+};
+
+struct linear_future_trade_lite_update_t
+{
+    std::string e;       // Event Type
+    size_t E;            // Event Time
+    size_t T;            // Transaction Time                          
+    std::string s;       // Symbol
+    double_type q;       // Original Quantity
+    double_type p;       // Original Price
+    bool m;              // Is this trade the maker side?
+    std::string c; // Client Order Id
+        // special client order id:
+        // starts with "autoclose-": liquidation order
+        // "adl_autoclose": ADL auto close order
+        // "settlement_autoclose-": settlement order for delisting or delivery
+    std::string S;       // Side
+    double_type L;       // Last Filled Price
+    double_type l;       // Order Last Filled Quantity
+    size_t t;            // Trade Id
+    size_t i;            // Order Id
+
+    static linear_future_trade_lite_update_t construct(const flatjson::fjson &json);
+    friend std::ostream& operator<<(std::ostream &os, const linear_future_trade_lite_update_t &o);
+};
+
+struct future_account_configuration_t
+{
+    std::string s;  // Symbol
+    double_type l;  // Leverage
+
+    static future_account_configuration_t construct(const flatjson::fjson &json);
+    friend std::ostream& operator<<(std::ostream &os, const future_account_configuration_t &o);
+};
+
+struct future_configuration_mode_t
+{
+    bool j;  // Multi-Asset Mode
+
+    static future_configuration_mode_t construct(const flatjson::fjson &json);
+    friend std::ostream& operator<<(std::ostream &os, const future_configuration_mode_t &o);
+};
+
+struct linear_future_configuration_update_t
+{
+    std::string e;       // Event Type
+    size_t E;		     // Event Time
+    size_t T;		     // Transaction Time
+    std::optional<future_account_configuration_t> ac;
+    std::optional<future_configuration_mode_t> ai;
+
+    static linear_future_configuration_update_t construct(const flatjson::fjson &json);
+    friend std::ostream& operator<<(std::ostream &os, const linear_future_configuration_update_t &o);
+};
+
+struct inverse_future_configuration_update_t
+{
+    std::string e;       // Event Type
+    size_t E;		     // Event Time
+    size_t T;		     // Transaction Time
+    future_account_configuration_t ac;
+
+    static inverse_future_configuration_update_t construct(const flatjson::fjson &json);
+    friend std::ostream& operator<<(std::ostream &os, const inverse_future_configuration_update_t &o);
+};
+
+struct future_strategy_update_detail_t
+{
+    size_t si;          // Strategy ID
+    std::string st;     // Strategy Type
+    std::string ss;     // Strategy Status
+    std::string s;      // Symbol
+    size_t ut;          // Update Time
+    size_t c;           // opCode
+
+    static future_strategy_update_detail_t construct(const flatjson::fjson &json);
+    friend std::ostream& operator<<(std::ostream &os, const future_strategy_update_detail_t &o);
+};
+
+struct future_strategy_update_t
+{
+    std::string e;       // Event Type
+	size_t T;            // Transaction Time
+	size_t E;            // Event Time
+    future_strategy_update_detail_t su;
+
+    static future_strategy_update_t construct(const flatjson::fjson &json);
+    friend std::ostream& operator<<(std::ostream &os, const future_strategy_update_t &o);
+};
+
+struct future_grid_update_detail_t
+{
+    size_t si;              // Strategy ID
+    std::string st;         // Strategy Type
+    std::string ss;         // Strategy Status
+    std::string s;          // Symbol
+    double_type r;          // Realized PNL
+    double_type up;         //Unmatched Average Price
+    double_type uq;         // Unmatched Qty
+    double_type uf;         // Unmatched Fee
+    double_type mp;         // Matched PNL
+    size_t ut;              // Update Time
+
+    static future_grid_update_detail_t construct(const flatjson::fjson &json);
+    friend std::ostream& operator<<(std::ostream &os, const future_grid_update_detail_t &o);
+};
+
+struct future_grid_update_t
+{
+    std::string e;      // Event Type
+	size_t T;           // Transaction Time
+	size_t E;           // Event Time
+    future_grid_update_detail_t gu;
+
+    static future_grid_update_t construct(const flatjson::fjson &json);
+    friend std::ostream& operator<<(std::ostream &os, const future_grid_update_t &o);
+};
+
+struct linear_future_order_trigger_rejection_t
+{
+    std::string s;      // Symbol   
+    size_t i;           // orderId
+    std::string r;      // reject reason
+
+    static linear_future_order_trigger_rejection_t construct(const flatjson::fjson &json);
+    friend std::ostream& operator<<(std::ostream &os, const linear_future_order_trigger_rejection_t &o);
+};
+
+struct linear_future_conditional_order_trigger_rejection_event_t
+{
+    std::string e;      // Event Type
+    size_t E;           // Event Time
+    size_t T;           // me message send Time
+    linear_future_order_trigger_rejection_t OR;
+
+    static linear_future_conditional_order_trigger_rejection_event_t construct(const flatjson::fjson &json);
+    friend std::ostream& operator<<(std::ostream &os, const linear_future_conditional_order_trigger_rejection_event_t &o);
+};
+
 /*************************************************************************************************/
 
 // wrapper for account_update_t and order_update_t

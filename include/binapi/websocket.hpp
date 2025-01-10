@@ -36,6 +36,16 @@ struct option_account_update_t;
 struct option_risk_level_change_t;
 struct option_order_trade_update_t;
 
+struct future_listen_key_expired_event_t;
+struct future_account_update_event_t;
+struct future_margin_call_event_t;
+struct linear_future_order_update_event_t;
+struct linear_future_trade_lite_update_t;
+struct linear_future_configuration_update_t;
+struct future_strategy_update_t;
+struct future_grid_update_t;
+struct linear_future_conditional_order_trigger_rejection_event_t;
+
 } // ns userdata
 
 namespace ws {
@@ -165,7 +175,7 @@ struct websockets {
     using on_option_account_update_cb = std::function<bool(const char *fl, int ec, std::string errmsg, userdata::option_account_update_t msg, handle hnd)>;
     using on_option_risk_level_change_cb = std::function<bool(const char *fl, int ec, std::string errmsg, userdata::option_risk_level_change_t msg, handle hnd)>;
     using on_option_order_update_cb = std::function<bool(const char *fl, int ec, std::string errmsg, userdata::option_order_trade_update_t msg, handle hnd)>;
-    handle userdata(
+    handle option_userdata(
          const char *lkey
         ,on_option_account_update_cb option_account_update
         ,on_option_risk_level_change_cb risk_level_change
@@ -173,6 +183,29 @@ struct websockets {
         ,boost::posix_time::time_duration timeout = boost::posix_time::time_duration()
     );
 
+    using on_linear_future_listen_key_expired_event_cb = std::function<bool(const char *fl, int ec, std::string errmsg, userdata::future_listen_key_expired_event_t msg, handle hnd)>;
+    using on_linear_future_account_update_cb = std::function<bool(const char *fl, int ec, std::string errmsg, userdata::future_account_update_event_t msg, handle hnd)>;
+    using on_linear_future_margin_call_event_cb = std::function<bool(const char *fl, int ec, std::string errmsg, userdata::future_margin_call_event_t msg, handle hnd)>;
+    using on_linear_future_order_update_cb = std::function<bool(const char *fl, int ec, std::string errmsg, userdata::linear_future_order_update_event_t msg, handle hnd)>;
+    using on_linear_future_trade_lite_event_cb = std::function<bool(const char *fl, int ec, std::string errmsg, userdata::linear_future_trade_lite_update_t msg, handle hnd)>;
+    using on_linear_future_configuration_update_cb = std::function<bool(const char *fl, int ec, std::string errmsg, userdata::linear_future_configuration_update_t msg, handle hnd)>;
+    using on_linear_future_strategy_update_cb = std::function<bool(const char *fl, int ec, std::string errmsg, userdata::future_strategy_update_t msg, handle hnd)>;
+    using on_linear_grid_update_cb = std::function<bool(const char *fl, int ec, std::string errmsg, userdata::future_grid_update_t msg, handle hnd)>;
+    using on_linear_future_conditional_order_trigger_rejection_event_cb = std::function<bool(const char *fl, int ec, std::string errmsg, userdata::linear_future_conditional_order_trigger_rejection_event_t msg, handle hnd)>;
+
+    handle linear_future_userdata(
+         const char *lkey
+        ,on_linear_future_listen_key_expired_event_cb linear_future_listen_key_expired_event_cb
+        ,on_linear_future_account_update_cb linear_future_account_update_cb
+        ,on_linear_future_margin_call_event_cb linear_future_margin_call_event_cb
+        ,on_linear_future_order_update_cb linear_future_order_update_cb
+        ,on_linear_future_trade_lite_event_cb linear_future_trade_lite_event_cb
+        ,on_linear_future_configuration_update_cb linear_future_configuration_update_cb
+        ,on_linear_future_strategy_update_cb linear_future_strategy_update_cb
+        ,on_linear_grid_update_cb linear_grid_update_cb
+        ,on_linear_future_conditional_order_trigger_rejection_event_cb linear_future_conditional_order_trigger_rejection_event_cb
+        ,boost::posix_time::time_duration timeout = boost::posix_time::time_duration()
+    );
 
     void unsubscribe(const handle &h);
     void async_unsubscribe(const handle &h, async_stop_callback callback);

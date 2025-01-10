@@ -43,6 +43,16 @@ __get_json_def(T &v, const char *member, const flatjson::fjson &j, T default_val
 }
 
 template<typename T>
+typename std::enable_if<std::is_same<T, std::optional<std::string>>::value>::type
+__get_json(T &v, const char *member, const flatjson::fjson &j) {
+    if(j.contains(member))
+    {
+        const auto &o = j.at(member);
+        v = (o.is_null() ? std::string{} : o.to_string());
+    }
+}
+
+template<typename T>
 typename std::enable_if<std::is_same<T, std::string>::value>::type
 __get_json(T &v, const char *member, const flatjson::fjson &j) {
     const auto &o = j.at(member);
@@ -5589,6 +5599,815 @@ std::ostream& operator<<(std::ostream &os, const option_order_trade_update_t &o)
         }
     }
     os << "]}";
+
+    return os;
+}
+
+/* #################################*/
+
+future_listen_key_expired_event_t future_listen_key_expired_event_t::construct(const flatjson::fjson &json)
+{
+    assert(json.is_valid());
+    future_listen_key_expired_event_t res;
+
+    __BINAPI_GET(e);
+    __BINAPI_GET(E);
+
+    return res;
+}
+
+std::ostream& operator<<(std::ostream &os, const future_listen_key_expired_event_t &o)
+{
+    os
+    << "{"
+    << "\"e\":\"" << o.e << "\","
+    << "\"E\":" << o.E 
+    << "}";
+
+    return os;
+}
+
+margin_call_position_t margin_call_position_t::construct(const flatjson::fjson &json)
+{
+    assert(json.is_valid());
+    margin_call_position_t res;
+
+    __BINAPI_GET(s);
+    __BINAPI_GET(ps);
+    __BINAPI_GET(pa);
+    __BINAPI_GET(mt);
+    __BINAPI_GET(iw);
+    __BINAPI_GET(mp);
+    __BINAPI_GET(up);
+    __BINAPI_GET(mm);
+
+    return res;
+}
+
+std::ostream& operator<<(std::ostream &os, const margin_call_position_t &o)
+{
+    os
+    << "{"
+    << "\"s\":\"" << o.s << "\","
+    << "\"ps\":\"" << o.ps << "\","
+    << "\"pa\":\"" << o.pa << "\","
+    << "\"mt\":\"" << o.mt << "\","
+    << "\"iw\":\"" << o.iw << "\","
+    << "\"mp\":\"" << o.mp << "\","
+    << "\"up\":\"" << o.up << "\","
+    << "\"mm\":" << o.mm 
+    << "}";
+
+    return os;
+}
+
+future_margin_call_event_t future_margin_call_event_t::construct(const flatjson::fjson &json)
+{
+    assert(json.is_valid());
+    future_margin_call_event_t res;
+
+    __BINAPI_GET(e);
+    __BINAPI_GET(E);
+    __BINAPI_GET(i);
+    __BINAPI_GET(cw);
+
+    const auto p = json.at("p");
+    for ( auto idx = 0u; idx < p.size(); ++idx ) 
+    {
+        margin_call_position_t m = margin_call_position_t::construct(p.at(idx));
+        std::string symbol = m.s;
+
+        res.p[symbol] = std::move(m);
+    }
+
+    return res;
+}
+
+std::ostream& operator<<(std::ostream &os, const future_margin_call_event_t &o)
+{
+    os
+    << "{"
+    << "\"e\":\"" << o.e << "\","
+    << "\"E\":" << o.E << ",";
+
+    if(o.i)
+    {
+        os << "\"i\":" << *o.i << ",";
+    }
+
+    os 
+    << "\"cw\":" << o.cw << ","
+    << "\"p\":[";
+    for ( auto it = o.p.begin(); it != o.p.end(); ++it ) {
+        os << it->second;
+        if ( std::next(it) != o.p.end() ) {
+            os << ",";
+        }
+    }
+    os << "]}";
+
+    return os;
+}
+
+future_balante_update_t future_balante_update_t::construct(const flatjson::fjson &json)
+{
+    assert(json.is_valid());
+    future_balante_update_t res;
+
+    __BINAPI_GET(a);
+    __BINAPI_GET(wb);
+    __BINAPI_GET(cw);
+    __BINAPI_GET(bc);
+
+    return res;
+}
+std::ostream& operator<<(std::ostream &os, const future_balante_update_t &o)
+{
+    os
+    << "{"
+    << "\"a\":\"" << o.a << "\","
+    << "\"wb\":\"" << o.wb << "\","
+    << "\"cw\":\"" << o.cw << "\","
+    << "\"bc\":" << o.bc 
+    << "}";
+
+    return os;
+}
+
+future_position_update_t future_position_update_t::construct(const flatjson::fjson &json)
+{
+    assert(json.is_valid());
+    future_position_update_t res;
+
+    __BINAPI_GET(s);
+    __BINAPI_GET(pa);
+    __BINAPI_GET(ep);
+    __BINAPI_GET(bep);
+    __BINAPI_GET(cr);
+    __BINAPI_GET(up);
+    __BINAPI_GET(mt);
+    __BINAPI_GET(iw);
+    __BINAPI_GET(ps);
+
+    return res;
+}
+
+std::ostream& operator<<(std::ostream &os, const future_position_update_t &o)
+{
+    os
+    << "{"
+    << "\"s\":\"" << o.s << "\","
+    << "\"pa\":\"" << o.pa << "\","
+    << "\"ep\":\"" << o.ep << "\","
+    << "\"bep\":\"" << o.bep << "\","
+    << "\"cr\":\"" << o.cr << "\","
+    << "\"up\":\"" << o.up << "\","
+    << "\"mt\":\"" << o.mt << "\","
+    << "\"iw\":\"" << o.iw << "\","
+    << "\"ps\":" << o.ps 
+    << "}";
+
+    return os;
+}
+
+future_acount_data_t future_acount_data_t::construct(const flatjson::fjson &json)
+{
+    assert(json.is_valid());
+    future_acount_data_t res;
+
+    __BINAPI_GET(m);
+
+    const auto B = json.at("B");
+    for ( auto idx = 0u; idx < B.size(); ++idx ) 
+    {
+        future_balante_update_t b = future_balante_update_t::construct(B.at(idx));
+        std::string asset = b.a;
+
+        res.B[asset] = std::move(b);
+    }
+    
+    const auto P = json.at("P");
+    for ( auto idx = 0u; idx < P.size(); ++idx ) 
+    {
+        future_position_update_t p = future_position_update_t::construct(P.at(idx));
+        std::string symbol = p.s;
+
+        res.P[symbol] = std::move(p);
+    }
+
+    return res;
+}
+
+std::ostream& operator<<(std::ostream &os, const future_acount_data_t &o)
+{
+    os
+    << "{"
+    << "\"m\":\"" << o.m << "\","
+
+    << "\"B\":[";
+    for ( auto it = o.B.begin(); it != o.B.end(); ++it ) {
+        os << it->second;
+        if ( std::next(it) != o.B.end() ) {
+            os << ",";
+        }
+    }
+
+    os << "\"P\":[";
+    for ( auto it = o.P.begin(); it != o.P.end(); ++it ) {
+        os << it->second;
+        if ( std::next(it) != o.P.end() ) {
+            os << ",";
+        }
+    }
+
+    os << "]}";
+
+    return os;
+}
+
+future_account_update_event_t future_account_update_event_t::construct(const flatjson::fjson &json)
+{
+    assert(json.is_valid());
+    future_account_update_event_t res;
+
+    __BINAPI_GET(e);
+    __BINAPI_GET(E);
+    __BINAPI_GET(T);
+    __BINAPI_GET(i);
+    
+    res.a = future_acount_data_t::construct(json.at("a"));
+
+    return res;
+}
+
+std::ostream& operator<<(std::ostream &os, const future_account_update_event_t &o)
+{
+    os
+    << "{"
+    << "\"e\":\"" << o.e << "\","
+    << "\"E\":\"" << o.E << "\","
+    << "\"T\":\"" << o.T << "\",";
+
+    if(o.i)
+    {
+        os << "\"i\":" << *o.i << ",";
+    }
+
+    os 
+    << "\"a\":\"" << o.a
+    << "}";
+
+    return os;
+}
+
+linear_future_order_event_t linear_future_order_event_t::construct(const flatjson::fjson &json)
+{
+    assert(json.is_valid());
+    linear_future_order_event_t res;
+
+    __BINAPI_GET(s);
+    __BINAPI_GET(c);
+    __BINAPI_GET(S);
+    __BINAPI_GET(o);
+    __BINAPI_GET(f);
+    __BINAPI_GET(q);
+    __BINAPI_GET(p);
+    __BINAPI_GET(ap);
+    __BINAPI_GET(sp);
+    __BINAPI_GET(x);
+    __BINAPI_GET(X);
+    __BINAPI_GET(i);
+    __BINAPI_GET(l);
+    __BINAPI_GET(z);
+    __BINAPI_GET(L);
+    __BINAPI_GET(N);
+    __BINAPI_GET(n);
+    __BINAPI_GET(T);
+    __BINAPI_GET(t);
+    __BINAPI_GET(b);
+    __BINAPI_GET(a);
+    __BINAPI_GET(m);
+    __BINAPI_GET(R);
+    __BINAPI_GET(wt);
+    __BINAPI_GET(ot);
+    __BINAPI_GET(ps);
+    __BINAPI_GET(cp);
+    __BINAPI_GET(AP);
+    __BINAPI_GET(cr);
+    __BINAPI_GET(pP);
+    __BINAPI_GET(si);
+    __BINAPI_GET(ss);
+    __BINAPI_GET(rp);
+    __BINAPI_GET(V);
+    __BINAPI_GET(pm);
+    __BINAPI_GET(gtd);
+
+    return res;
+}
+
+std::ostream& operator<<(std::ostream &os, const linear_future_order_event_t &o)
+{
+    os
+    << "{"
+    << "\"s\":\"" << o.s << "\","
+    << "\"c\":\"" << o.c << "\","
+    << "\"S\":\"" << e_side_to_string(o.S) << "\","
+    << "\"o\":\"" << o.o << "\","
+    << "\"f\":\"" << o.f << "\","
+    << "\"q\":\"" << o.q << "\","
+    << "\"p\":\"" << o.p << "\","
+    << "\"ap\":\"" << o.ap << "\","
+    << "\"sp\":\"" << o.sp << "\","
+    << "\"x\":\"" << o.x << "\","
+    << "\"X\":\"" << o.X << "\","
+    << "\"i\":\"" << o.i << "\","
+    << "\"l\":\"" << o.l << "\","
+    << "\"z\":\"" << o.z << "\","
+    << "\"L\":\"" << o.L << "\","
+    << "\"N\":\"" << o.N << "\","
+    << "\"n\":\"" << o.n << "\","
+    << "\"T\":\"" << o.T << "\","
+    << "\"t\":\"" << o.t << "\","
+    << "\"b\":\"" << o.b << "\","
+    << "\"a\":\"" << o.a << "\","
+    << "\"m\":\"" << o.m << "\","
+    << "\"R\":\"" << o.R << "\","
+    << "\"wt\":\"" << o.wt << "\","
+    << "\"ot\":\"" << o.ot << "\","
+    << "\"ps\":\"" << o.ps << "\","
+    << "\"c\":\"" << o.c << "\","
+    << "\"AP\":\"" << o.AP << "\","
+    << "\"cr\":\"" << o.cr << "\","
+    << "\"p\":\"" << o.p << "\","
+    << "\"si\":\"" << o.si << "\","
+    << "\"ss\":\"" << o.ss << "\","
+    << "\"rp\":\"" << o.rp << "\","
+    << "\"V\":\"" << o.V << "\","
+    << "\"pm\":\"" << o.pm << "\","
+    << "\"gtd\":" << o.gtd 
+    << "}";
+
+    return os;
+}
+
+linear_future_order_update_event_t linear_future_order_update_event_t::construct(const flatjson::fjson &json)
+{
+    assert(json.is_valid());
+    linear_future_order_update_event_t res;
+
+    __BINAPI_GET(e);
+    __BINAPI_GET(E);
+    __BINAPI_GET(T);
+
+    res.o = linear_future_order_event_t::construct(json.at("o"));
+
+    return res;
+}
+
+std::ostream& operator<<(std::ostream &os, const linear_future_order_update_event_t &o)
+{
+    os
+    << "{"
+    << "\"e\":\"" << o.e << "\","
+    << "\"E\":\"" << o.E << "\","
+    << "\"T\":\"" << o.T << "\","
+    << "\"o\":\"" << o.o 
+    << "}";
+
+    return os;
+}
+
+inverse_future_order_event_t inverse_future_order_event_t::construct(const flatjson::fjson &json)
+{
+    assert(json.is_valid());
+    inverse_future_order_event_t res;
+    __BINAPI_GET(S);
+    __BINAPI_GET(o);
+    __BINAPI_GET(f);
+    __BINAPI_GET(q);
+    __BINAPI_GET(p);
+    __BINAPI_GET(ap);
+    __BINAPI_GET(sp);
+    __BINAPI_GET(x);
+    __BINAPI_GET(X);
+    __BINAPI_GET(i);
+    __BINAPI_GET(l);
+    __BINAPI_GET(z);
+    __BINAPI_GET(L);
+    __BINAPI_GET(ma);
+    __BINAPI_GET(N);
+    __BINAPI_GET(n);
+    __BINAPI_GET(T);
+    __BINAPI_GET(t);
+    __BINAPI_GET(rp);
+    __BINAPI_GET(b);
+    __BINAPI_GET(a);
+    __BINAPI_GET(m);
+    __BINAPI_GET(R);
+    __BINAPI_GET(wt);
+    __BINAPI_GET(ot);
+    __BINAPI_GET(ps);
+    __BINAPI_GET(cp);
+    __BINAPI_GET(AP);
+    __BINAPI_GET(cr);
+    __BINAPI_GET(pP);
+    __BINAPI_GET(V);
+    __BINAPI_GET(pm);
+
+    return res;
+}
+
+std::ostream& operator<<(std::ostream &os, const inverse_future_order_event_t &o)
+{
+    os
+    << "{"
+    << "\"S\":\"" << e_side_to_string(o.S) << "\","
+    << "\"o\":\"" << o.o << "\","
+    << "\"f\":\"" << o.f << "\","
+    << "\"q\":\"" << o.q << "\","
+    << "\"p\":\"" << o.p << "\","
+    << "\"ap\":\"" << o.ap << "\","
+    << "\"sp\":\"" << o.sp << "\","
+    << "\"x\":\"" << o.x << "\","
+    << "\"X\":\"" << o.X << "\","
+    << "\"i\":\"" << o.i << "\","
+    << "\"l\":\"" << o.l << "\","
+    << "\"z\":\"" << o.z << "\","
+    << "\"L\":\"" << o.L << "\","
+    << "\"ma\":\"" << o.ma << "\","
+    << "\"N\":\"" << o.N << "\","
+    << "\"n\":\"" << o.n << "\","
+    << "\"T\":\"" << o.T << "\","
+    << "\"t\":\"" << o.t << "\","
+    << "\"rp\":\"" << o.rp << "\","
+    << "\"b\":\"" << o.b << "\","
+    << "\"a\":\"" << o.a << "\","
+    << "\"m\":\"" << o.m << "\","
+    << "\"R\":\"" << o.R << "\","
+    << "\"wt\":\"" << o.wt << "\","
+    << "\"ot\":\"" << o.ot << "\","
+    << "\"ps\":\"" << o.ps << "\","
+    << "\"cp\":\"" << o.cp << "\","
+    << "\"AP\":\"" << o.AP << "\","
+    << "\"cr\":\"" << o.cr << "\","
+    << "\"pP\":\"" << o.pP << "\","
+    << "\"V\":\"" << o.V << "\","
+    << "\"pm\":" << o.pm 
+    << "}";
+
+    return os;
+}
+
+inverse_future_order_update_event_t inverse_future_order_update_event_t::construct(const flatjson::fjson &json)
+{
+    assert(json.is_valid());
+    inverse_future_order_update_event_t res;
+
+    __BINAPI_GET(e);
+    __BINAPI_GET(E);
+    __BINAPI_GET(T);
+    __BINAPI_GET(i);
+    
+    res.o = inverse_future_order_event_t::construct(json.at("o"));
+
+    return res;
+}
+
+std::ostream& operator<<(std::ostream &os, const inverse_future_order_update_event_t &o)
+{
+    os
+    << "{"
+    << "\"e\":\"" << o.e << "\","
+    << "\"E\":\"" << o.E << "\","
+    << "\"T\":\"" << o.T << "\","
+    << "\"o\":\"" << o.o;
+
+    return os;
+}
+
+linear_future_trade_lite_update_t linear_future_trade_lite_update_t::construct(const flatjson::fjson &json)
+{
+    assert(json.is_valid());
+    linear_future_trade_lite_update_t res;
+
+    __BINAPI_GET(e);
+    __BINAPI_GET(E);
+    __BINAPI_GET(T);
+    __BINAPI_GET(s);
+    __BINAPI_GET(q);
+    __BINAPI_GET(p);
+    __BINAPI_GET(m);
+    __BINAPI_GET(c);
+    __BINAPI_GET(S);
+    __BINAPI_GET(L);
+    __BINAPI_GET(l);
+    __BINAPI_GET(t);
+    __BINAPI_GET(i);
+
+    return res;
+}
+
+std::ostream& operator<<(std::ostream &os, const linear_future_trade_lite_update_t &o)
+{
+    os
+    << "{"
+    << "\"e\":\"" << o.e << "\","
+    << "\"E\":\"" << o.E << "\","
+    << "\"T\":\"" << o.T << "\","
+    << "\"s\":\"" << o.s << "\","
+    << "\"q\":\"" << o.q << "\","
+    << "\"p\":\"" << o.p << "\","
+    << "\"m\":\"" << o.m << "\","
+    << "\"c\":\"" << o.c << "\","
+    << "\"S\":\"" << o.S << "\","
+    << "\"L\":\"" << o.L << "\","
+    << "\"l\":\"" << o.l << "\","
+    << "\"t\":\"" << o.t << "\","
+    << "\"i\":" << o.i 
+    << "}";
+
+    return os;
+}
+
+future_account_configuration_t future_account_configuration_t::construct(const flatjson::fjson &json)
+{
+    assert(json.is_valid());
+    future_account_configuration_t res;
+
+    __BINAPI_GET(s);
+    __BINAPI_GET(l);
+
+    return res;
+}
+
+std::ostream& operator<<(std::ostream &os, const future_account_configuration_t &o)
+{
+    os
+    << "{"
+    << "\"s\":\"" << o.s << "\","
+    << "\"l\":" << o.l 
+    << "}";
+
+    return os;
+}
+
+future_configuration_mode_t future_configuration_mode_t::construct(const flatjson::fjson &json)
+{
+    assert(json.is_valid());
+    future_configuration_mode_t res;
+
+    __BINAPI_GET(j);
+
+    return res;
+}
+
+std::ostream& operator<<(std::ostream &os, const future_configuration_mode_t &o)
+{
+    os
+    << "{"
+    << "\"j\":" << o.j
+    << "}";
+
+    return os;
+}
+
+linear_future_configuration_update_t linear_future_configuration_update_t::construct(const flatjson::fjson &json)
+{
+    assert(json.is_valid());
+    linear_future_configuration_update_t res;
+
+    __BINAPI_GET(e);
+    __BINAPI_GET(E);
+    __BINAPI_GET(T);
+
+    if(json.contains("ac"))
+    {
+        res.ac = future_account_configuration_t::construct(json.at("ac"));
+    }
+
+    if(json.contains("ai"))
+    {
+        res.ai = future_configuration_mode_t::construct(json.at("ai"));
+    }
+
+    return res;
+}
+
+std::ostream& operator<<(std::ostream &os, const linear_future_configuration_update_t &o)
+{
+    os
+    << "{"
+    << "\"e\":\"" << o.e << "\","
+    << "\"E\":\"" << o.E << "\","
+    << "\"T\":\"" << o.T << "\",";
+    
+    if(o.ac)
+    {
+        os << "\"ac\":" << *o.ac;
+    }
+
+    if(o.ai)
+    {
+        os << "\"ai\":" << *o.ai;
+    }
+
+    os << "}";
+
+    return os;
+}
+
+inverse_future_configuration_update_t inverse_future_configuration_update_t::construct(const flatjson::fjson &json)
+{
+    assert(json.is_valid());
+    inverse_future_configuration_update_t res;
+
+    __BINAPI_GET(e);
+    __BINAPI_GET(E);
+    __BINAPI_GET(T);
+    res.ac = future_account_configuration_t::construct(json.at("ac"));
+
+    return res;
+}
+
+std::ostream& operator<<(std::ostream &os, const inverse_future_configuration_update_t &o)
+{
+    os
+    << "{"
+    << "\"e\":\"" << o.e << "\","
+    << "\"E\":\"" << o.E << "\","
+    << "\"T\":\"" << o.T << "\","
+    << "\"ac\":" << o.ac
+    << "}";
+
+    return os;
+}
+
+future_strategy_update_detail_t future_strategy_update_detail_t::construct(const flatjson::fjson &json)
+{
+    assert(json.is_valid());
+    future_strategy_update_detail_t res;
+
+    __BINAPI_GET(si);
+    __BINAPI_GET(st);
+    __BINAPI_GET(ss);
+    __BINAPI_GET(s);
+    __BINAPI_GET(ut);
+    __BINAPI_GET(c);
+
+    return res;
+}
+
+std::ostream& operator<<(std::ostream &os, const future_strategy_update_detail_t &o)
+{
+    os
+    << "{"
+    << "\"si\":\"" << o.si << "\","
+    << "\"st\":\"" << o.st << "\","
+    << "\"ss\":\"" << o.ss << "\","
+    << "\"s\":\"" << o.s << "\","
+    << "\"ut\":\"" << o.ut << "\","
+    << "\"c\":" << o.c
+    << "}";
+
+    return os;
+}
+
+future_strategy_update_t future_strategy_update_t::construct(const flatjson::fjson &json)
+{
+    assert(json.is_valid());
+    future_strategy_update_t res;
+
+    __BINAPI_GET(e);
+    __BINAPI_GET(T);
+    __BINAPI_GET(E);
+    res.su = future_strategy_update_detail_t::construct(json.at("su"));
+
+    return res;
+}
+
+std::ostream& operator<<(std::ostream &os, const future_strategy_update_t &o)
+{
+    os
+    << "{"
+    << "\"e\":\"" << o.e << "\","
+    << "\"T\":\"" << o.T << "\","
+    << "\"E\":\"" << o.E << "\","
+    << "\"su\":" << o.su
+    << "}";
+
+    return os;
+}
+
+future_grid_update_detail_t future_grid_update_detail_t::construct(const flatjson::fjson &json)
+{
+    assert(json.is_valid());
+    future_grid_update_detail_t res;
+
+    __BINAPI_GET(si);
+    __BINAPI_GET(st);
+    __BINAPI_GET(ss);
+    __BINAPI_GET(s);
+    __BINAPI_GET(r);
+    __BINAPI_GET(up);
+    __BINAPI_GET(uq);
+    __BINAPI_GET(uf);
+    __BINAPI_GET(mp);
+    __BINAPI_GET(ut);
+
+    return res;
+}
+
+std::ostream& operator<<(std::ostream &os, const future_grid_update_detail_t &o)
+{
+    os
+    << "{"
+    << "\"si\":\"" << o.si << "\","
+    << "\"st\":\"" << o.st << "\","
+    << "\"ss\":\"" << o.ss << "\","
+    << "\"s\":\"" << o.s << "\","
+    << "\"r\":\"" << o.r << "\","
+    << "\"up\":\"" << o.up << "\","
+    << "\"uq\":\"" << o.uq << "\","
+    << "\"uf\":\"" << o.uf << "\","
+    << "\"mp\":\"" << o.mp << "\","
+    << "\"ut\":" << o.ut
+    << "}";
+
+    return os;
+}
+
+future_grid_update_t future_grid_update_t::construct(const flatjson::fjson &json)
+{
+    assert(json.is_valid());
+    future_grid_update_t res;
+
+    __BINAPI_GET(e);
+    __BINAPI_GET(T);
+    __BINAPI_GET(E);
+    res.gu = future_grid_update_detail_t::construct(json.at("gu"));
+
+    return res;
+}
+
+std::ostream& operator<<(std::ostream &os, const future_grid_update_t &o)
+{
+    os
+    << "{"
+    << "\"e\":\"" << o.e << "\","
+    << "\"T\":\"" << o.T << "\","
+    << "\"E\":\"" << o.E << "\","
+    << "\"gu\":" << o.gu
+    << "}";
+
+    return os;
+}
+
+linear_future_order_trigger_rejection_t linear_future_order_trigger_rejection_t::construct(const flatjson::fjson &json)
+{
+    assert(json.is_valid());
+    linear_future_order_trigger_rejection_t res;
+
+    __BINAPI_GET(s);
+    __BINAPI_GET(i);
+    __BINAPI_GET(r);
+
+    return res;
+}
+
+std::ostream& operator<<(std::ostream &os, const linear_future_order_trigger_rejection_t &o)
+{
+    os
+    << "{"
+    << "\"s\":\"" << o.s << "\","
+    << "\"i\":\"" << o.i << "\","
+    << "\"r\":" << o.r
+    << "}";
+
+    return os;
+}
+
+linear_future_conditional_order_trigger_rejection_event_t linear_future_conditional_order_trigger_rejection_event_t::construct(const flatjson::fjson &json)
+{
+    assert(json.is_valid());
+    linear_future_conditional_order_trigger_rejection_event_t res;
+
+    __BINAPI_GET(e);
+    __BINAPI_GET(E);
+    __BINAPI_GET(T);
+    res.OR = linear_future_order_trigger_rejection_t::construct(json.at("or"));
+
+    return res;
+}
+
+std::ostream& operator<<(std::ostream &os, const linear_future_conditional_order_trigger_rejection_event_t &o)
+{
+    os
+    << "{"
+    << "\"e\":\"" << o.e << "\","
+    << "\"E\":\"" << o.E << "\","
+    << "\"T\":\"" << o.T << "\","
+    << "\"or\":" << o.OR
+    << "}";
 
     return os;
 }
