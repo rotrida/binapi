@@ -829,7 +829,7 @@ websockets::handle websockets::option_userdata(
         return false;
     };
 
-    return pimpl->start_channel(nullptr, lkey, std::move(cb), timeout);
+    return pimpl->start_options_channel(nullptr, lkey, std::move(cb), timeout);
 }
 
 websockets::handle websockets::linear_future_userdata(

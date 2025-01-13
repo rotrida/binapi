@@ -508,16 +508,19 @@ option_account_info_t option_account_info_t::construct(const flatjson::fjson &js
         res.assets.emplace(std::move(symbol), std::move(asset));
     }
 
-    const auto greek_arr = json.at("greek");
-    assert(greek_arr.is_array());
-    for ( auto idx = 0u; idx < greek_arr.size(); ++idx ) {
+    if(json.contains("greek"))
+    {
+        const auto greek_arr = json.at("greek");
+        assert(greek_arr.is_array());
+        for ( auto idx = 0u; idx < greek_arr.size(); ++idx ) {
 
-        const auto it = greek_arr.at(idx);
+            const auto it = greek_arr.at(idx);
 
-        greek_t greek = greek_t::construct(it);
-        std::string underlying = greek.underlying;
+            greek_t greek = greek_t::construct(it);
+            std::string underlying = greek.underlying;
 
-        res.greeks.emplace(std::move(underlying), std::move(greek));
+            res.greeks.emplace(std::move(underlying), std::move(greek));
+        }
     }
 
     return res;
