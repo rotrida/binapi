@@ -196,7 +196,7 @@ private:
 
         if (m_last_message_received + m_timeout < now)
         {
-            m_cb(__FILE__, -1, "Websocket timeout", nullptr, 0, this);
+            m_cb(__FILE__, -1, "Internal websocket timeout", nullptr, 0, this);
             stop();
 
             return;
