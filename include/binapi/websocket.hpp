@@ -28,6 +28,8 @@ class io_context;
 namespace binapi {
 namespace userdata {
 
+struct listen_key_expired_event_t;
+struct stream_terminated_event_t;
 struct account_update_t;
 struct balance_update_t;
 struct order_update_t;
@@ -164,11 +166,15 @@ struct websockets {
     using on_new_inverse_future_symbol_info_cb = std::function<bool(const char* fl, int ec, std::string errmsg, new_inverse_future_symbol_info_t msg, handle hnd)>;
     handle new_inverse_future_symbol_info(on_new_inverse_future_symbol_info_cb cb, boost::posix_time::time_duration timeout = boost::posix_time::time_duration());
 
+    using on_listen_key_expired_event_cb = std::function<bool(const char *fl, int ec, std::string errmsg, userdata::listen_key_expired_event_t msg, handle hnd)>;
+    using on_stream_terminated_event_cb = std::function<bool(const char *fl, int ec, std::string errmsg, userdata::stream_terminated_event_t msg, handle hnd)>;
     using on_account_update_cb = std::function<bool(const char *fl, int ec, std::string errmsg, userdata::account_update_t msg, handle hnd)>;
     using on_balance_update_cb = std::function<bool(const char *fl, int ec, std::string errmsg, userdata::balance_update_t msg, handle hnd)>;
     using on_order_update_cb = std::function<bool(const char *fl, int ec, std::string errmsg, userdata::order_update_t msg, handle hnd)>;
     handle userdata(
          const char *lkey
+        ,on_listen_key_expired_event_cb listen_key_expired_event_cb
+        ,on_stream_terminated_event_cb stream_terminated_event_cb
         ,on_account_update_cb account_update
         ,on_balance_update_cb balance_update
         ,on_order_update_cb order_update

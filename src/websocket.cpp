@@ -719,15 +719,19 @@ websockets::handle websockets::new_inverse_future_symbol_info(on_new_inverse_fut
 
 websockets::handle websockets::userdata(
      const char *lkey
+    ,on_listen_key_expired_event_cb listen_key_expired_event_cb
+    ,on_stream_terminated_event_cb stream_terminated_event_cb
     ,on_account_update_cb account_update
     ,on_balance_update_cb balance_update
     ,on_order_update_cb order_update
     ,boost::posix_time::time_duration timeout)
 {
-    auto cb = [acb=std::move(account_update), bcb=std::move(balance_update), ocb=std::move(order_update)]
+    auto cb = [ecb=std::move(listen_key_expired_event_cb), scb=std::move(stream_terminated_event_cb), acb=std::move(account_update), bcb=std::move(balance_update), ocb=std::move(order_update)]
         (const char *fl, int ec, std::string errmsg, userdata::userdata_stream_t msg, handle hnd)
     {
         if ( ec ) {
+            scb(fl, ec, errmsg, userdata::stream_terminated_event_t{}, hnd);
+            ecb(fl, ec, errmsg, userdata::listen_key_expired_event_t{}, hnd);
             acb(fl, ec, errmsg, userdata::account_update_t{}, hnd);
             bcb(fl, ec, errmsg, userdata::balance_update_t{}, hnd);
             ocb(fl, ec, std::move(errmsg), userdata::order_update_t{}, hnd);
@@ -741,6 +745,14 @@ websockets::handle websockets::userdata(
         const auto es = e.to_sstring();
         const auto ehash = fnv1a(es.data(), es.size());
         switch ( ehash ) {
+            case fnv1a("eventStreamTerminated"): {
+                userdata::stream_terminated_event_t res = userdata::stream_terminated_event_t::construct(json);
+                return scb(fl, ec, std::move(errmsg), std::move(res), hnd);
+            }
+            case fnv1a("listenKeyExpired"): {
+                userdata::listen_key_expired_event_t res = userdata::listen_key_expired_event_t::construct(json);
+                return ecb(fl, ec, std::move(errmsg), std::move(res), hnd);
+            }
             case fnv1a("outboundAccountPosition"): {
                 userdata::account_update_t res = userdata::account_update_t::construct(json);
                 return acb(fl, ec, std::move(errmsg), std::move(res), hnd);

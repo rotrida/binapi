@@ -5219,6 +5219,48 @@ std::ostream& operator<<(std::ostream &os, const option_ticker_t &o) {
 
 namespace userdata {
 
+listen_key_expired_event_t listen_key_expired_event_t::construct(const flatjson::fjson &json)
+{
+    assert(json.is_valid());
+    listen_key_expired_event_t res;
+
+    __BINAPI_GET(e);
+    __BINAPI_GET(E);
+
+    return res;
+}
+
+std::ostream& operator<<(std::ostream &os, const listen_key_expired_event_t &o) {
+    os
+    << "{"
+    << "\"e\":\"" << o.e << "\","
+    << "\"E\":\"" << o.E << "\""
+    << "}";
+
+    return os;
+}
+
+stream_terminated_event_t stream_terminated_event_t::construct(const flatjson::fjson &json)
+{
+    assert(json.is_valid());
+    stream_terminated_event_t res;
+
+    __BINAPI_GET(e);
+    __BINAPI_GET(E);
+
+    return res;
+}
+
+std::ostream& operator<<(std::ostream &os, const stream_terminated_event_t &o) {
+    os
+    << "{"
+    << "\"e\":\"" << o.e << "\","
+    << "\"E\":\"" << o.E << "\""
+    << "}";
+
+    return os;
+}
+
 std::ostream& operator<<(std::ostream &os, const account_update_t::balance_t &o) {
     os
     << "{"

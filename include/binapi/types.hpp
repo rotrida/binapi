@@ -2404,6 +2404,24 @@ struct option_risk_level_change_t
     friend std::ostream& operator<<(std::ostream &os, const option_risk_level_change_t &o);
 };
 
+struct listen_key_expired_event_t
+{
+    std::string e;      // event type
+	size_t E;			// event time
+
+    static listen_key_expired_event_t construct(const flatjson::fjson &json);
+    friend std::ostream& operator<<(std::ostream &os, const listen_key_expired_event_t &o);
+};
+
+struct stream_terminated_event_t
+{
+    std::string e;      // event type
+	size_t E;			// event time
+
+    static stream_terminated_event_t construct(const flatjson::fjson &json);
+    friend std::ostream& operator<<(std::ostream &os, const stream_terminated_event_t &o);
+};
+
 struct option_order_trade_update_t
 {
     struct trade_t
