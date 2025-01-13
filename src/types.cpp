@@ -5963,7 +5963,7 @@ std::ostream& operator<<(std::ostream &os, const linear_future_order_event_t &o)
     << "\"s\":\"" << o.s << "\","
     << "\"c\":\"" << o.c << "\","
     << "\"S\":\"" << e_side_to_string(o.S) << "\","
-    << "\"o\":\"" << o.o << "\","
+    << "\"o\":\"" << e_type_to_string(o.o) << "\","
     << "\"f\":\"" << o.f << "\","
     << "\"q\":\"" << o.q << "\","
     << "\"p\":\"" << o.p << "\","
@@ -6073,7 +6073,7 @@ std::ostream& operator<<(std::ostream &os, const inverse_future_order_event_t &o
     os
     << "{"
     << "\"S\":\"" << e_side_to_string(o.S) << "\","
-    << "\"o\":\"" << o.o << "\","
+    << "\"o\":\"" << e_type_to_string(o.o) << "\","
     << "\"f\":\"" << o.f << "\","
     << "\"q\":\"" << o.q << "\","
     << "\"p\":\"" << o.p << "\","

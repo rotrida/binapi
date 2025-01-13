@@ -2618,7 +2618,7 @@ struct linear_future_order_event_t
       // "adl_autoclose": ADL auto close order
       // "settlement_autoclose-": settlement order for delisting or delivery
     e_side S;					     // Side
-    std::string o;	                 // Order Type
+    e_type o;	                 // Order Type
     std::string f;					 // Time in Force
     double_type q;				     // Original Quantity
     double_type p;			         // Original Price
@@ -2676,7 +2676,7 @@ struct inverse_future_order_event_t
       // "adl_autoclose": ADL auto close order
       // "delivery_autoclose-": settlement order for delisting or delivery
     e_side S;		            // Side
-    std::string o;	            // Order Type
+    e_type o;	            // Order Type
     std::string f;				// Time in Force
     double_type q;		        // Original Quantity
     double_type p;			    // Original Price
