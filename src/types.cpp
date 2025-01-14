@@ -5581,10 +5581,13 @@ option_order_trade_update_t::order_t option_order_trade_update_t::order_t::const
     __BINAPI_GET(tif);      //time in force 
     __BINAPI_GET(oty);    //order type
 
-    const auto fi = json.at("fi");
-    for ( auto idx = 0u; idx < fi.size(); ++idx ) 
+    if(json.contains("fi"))
     {
-        res.trades.emplace_back(option_order_trade_update_t::trade_t::construct(fi.at(idx)));
+        const auto fi = json.at("fi");
+        for ( auto idx = 0u; idx < fi.size(); ++idx ) 
+        {
+            res.trades.emplace_back(option_order_trade_update_t::trade_t::construct(fi.at(idx)));
+        }
     }
 
     return res;
