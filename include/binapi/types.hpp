@@ -1291,7 +1291,7 @@ struct new_option_order_info_ack_t {
     double_type quantity;
     e_side side;
     std::string type;
-    std::size_t createDate;
+    std::optional<std::size_t> createDate;
     bool reduceOnly;
     bool postOnly;
     bool mmp;

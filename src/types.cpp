@@ -53,6 +53,16 @@ __get_json(T &v, const char *member, const flatjson::fjson &j) {
 }
 
 template<typename T>
+typename std::enable_if<std::is_same<T, std::optional<size_t>>::value>::type
+__get_json(T &v, const char *member, const flatjson::fjson &j) {
+    if(j.contains(member))
+    {
+        const auto& o = j.at(member);
+        v = (o.is_null() ? size_t{} : o.to<size_t>());
+    }
+}
+
+template<typename T>
 typename std::enable_if<std::is_same<T, std::string>::value>::type
 __get_json(T &v, const char *member, const flatjson::fjson &j) {
     const auto &o = j.at(member);
@@ -3410,7 +3420,7 @@ std::ostream &operator<<(std::ostream &os, const new_option_order_info_ack_t &o)
     << "\"quantity\":\"" << o.quantity << "\","
     << "\"side\":\"" << e_side_to_string(o.side) << "\","
     << "\"type\":\"" << o.type << "\","
-    << "\"createDate\":\"" << o.createDate << "\","
+    << "\"createDate\":\"" << o.createDate.value_or(0) << "\","
     << "\"reduceOnly\":\"" << o.reduceOnly << "\","
     << "\"postOnly\":\"" << o.postOnly << "\","
     << "\"mmp\":" << o.mmp
