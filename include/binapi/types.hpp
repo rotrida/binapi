@@ -1737,7 +1737,7 @@ struct cancel_option_order_info_t {
     std::string timeInForce;
     bool reduceOnly;
     bool postOnly;
-    size_t createDate;
+    size_t createTime;
     size_t updateTime;
     std::string status;
     double_type avgPrice;
@@ -2347,7 +2347,7 @@ struct option_account_update_t {
         double_type b;       // Account balance   
         double_type m;       // Position value    
         double_type u;       // Unrealized profit/loss   
-        double_type U;        // Positive unrealized profit for long position 
+        std::optional<double_type> U;        // Positive unrealized profit for long position 
         double_type M;       // Maintenance margin   
         double_type i;       // Initial margin   
         std::string a;       // Margin asset  

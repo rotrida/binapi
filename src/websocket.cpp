@@ -141,14 +141,17 @@ private:
             }
         );
     }
-    void on_connected(holder_type holder) {
-        
+    void on_connected(holder_type holder) 
+    {
+        _log_callback("WS connected.");
+
         m_ws.control_callback([this, me_ptr=shared_from_this()] (boost::beast::websocket::frame_type kind, boost::beast::string_view payload) mutable 
             {
                 (void)kind; (void)payload;
 
                 boost::asio::dispatch(m_strand, [this, me_ptr]() 
                 {
+                    _log_callback(std::format("WS {} control Msg received.", m_host));
                     m_last_message_received = boost::posix_time::second_clock::universal_time();
                 });
             }
@@ -210,7 +213,10 @@ private:
                 , [this, me](boost::beast::error_code ec)
                 { 
                     if (!ec)
+                    {
+                        _log_callback(std::format("WS {} Ping sent.", m_host));
                         return;
+                    }
 
                     __BINAPI_CB_ON_ERROR(m_cb, ec, this);
                 }
@@ -255,6 +261,8 @@ private:
             return;
         }
 
+        _log_callback(std::format("WS {} start reading.", m_host));
+
         m_ws.async_read(
              m_buf,
             m_strand.wrap(
@@ -288,10 +296,13 @@ private:
         }
         m_buf.consume(m_buf.size());
 
-        _log_callback(std::format("WS Rcv: {}", strbuf.data()));
+        _log_callback(std::format("WS Rcv {}: {}", m_host, strbuf.data()));
 
         bool ok = m_cb(nullptr, 0, std::string{}, strbuf.data(), strbuf.size(), this);
-        if ( !ok ) {
+        if ( !ok ) 
+        {
+            _log_callback(std::format("WS {} Not OK received. Closing connection.", m_host));
+
             stop();
         } else {
             start_read(boost::system::error_code{}, std::move(holder));
@@ -437,7 +448,7 @@ struct websockets::impl {
 
         boost::asio::dispatch(m_strand, [this, ws, schannel]()
         {
-            _log_callback(std::format("Starting channel {} - {:p}", schannel, (void*)ws.get()));
+            _log_callback(std::format("Starting channel {} {} - {:p}", m_host, schannel, (void*)ws.get()));
 
             m_websockets.insert(std::make_pair(ws.get(), ws));
         });
@@ -512,7 +523,7 @@ struct websockets::impl {
 
         boost::asio::dispatch(m_strand, [this, ws, schannel]()
         {
-            _log_callback(std::format("Starting option channel {} - {:p}", schannel, (void*)ws.get()));
+            _log_callback(std::format("Starting option channel {} {} - {:p}", m_host, schannel, (void*)ws.get()));
             m_websockets.insert(std::make_pair(ws.get(), ws));
         });
         

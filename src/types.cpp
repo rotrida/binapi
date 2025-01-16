@@ -53,6 +53,16 @@ __get_json(T &v, const char *member, const flatjson::fjson &j) {
 }
 
 template<typename T>
+typename std::enable_if<std::is_same<T, std::optional<double_type>>::value>::type
+__get_json(T &v, const char *member, const flatjson::fjson &j) {
+    if(j.contains(member))
+    {
+        const auto &o = j.at(member);
+        v = (o.is_null() ? std::string{} : o.to_string());
+    }
+}
+
+template<typename T>
 typename std::enable_if<std::is_same<T, std::optional<size_t>>::value>::type
 __get_json(T &v, const char *member, const flatjson::fjson &j) {
     if(j.contains(member))
@@ -3915,7 +3925,7 @@ cancel_option_order_info_t cancel_option_order_info_t::construct(const flatjson:
     __BINAPI_GET(timeInForce);
     __BINAPI_GET(reduceOnly);
     __BINAPI_GET(postOnly);
-    __BINAPI_GET(createDate);
+    __BINAPI_GET(createTime);
     __BINAPI_GET(updateTime);
     __BINAPI_GET(status);
     __BINAPI_GET(avgPrice);
@@ -3945,7 +3955,7 @@ std::ostream &operator<<(std::ostream &os, const cancel_option_order_info_t &o)
     << "\"timeInForce\":\"" << o.timeInForce << "\","
     << "\"reduceOnly\":\"" << o.reduceOnly << "\","
     << "\"postOnly\":\"" << o.postOnly << "\","
-    << "\"createDate\":" << o.createDate << ","
+    << "\"createDate\":" << o.createTime << ","
     << "\"updateTime\":\"" << o.updateTime << "\","
     << "\"status\":\"" << o.status << "\","
     << "\"avgPrice\":\"" << o.avgPrice << "\","
@@ -5379,7 +5389,7 @@ std::ostream& operator<<(std::ostream &os, const option_account_update_t::balanc
     << "\"b\":\"" << o.b << "\","
     << "\"m\":"   << o.m << ","
     << "\"u\":\"" << o.u << "\","
-    << "\"U\":\"" << o.U << "\","
+    << "\"U\":\"" << o.U.value_or(0) << "\","
     << "\"M\":\"" << o.M << "\","
     << "\"i\":\"" << o.i << "\","
     << "\"a\":"   << o.a
