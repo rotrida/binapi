@@ -23,6 +23,7 @@
 #include <map>
 #include <cstdint>
 #include <cassert>
+#include <optional>
 
 // forward
 namespace flatjson {

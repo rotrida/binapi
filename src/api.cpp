@@ -431,7 +431,7 @@ struct api::impl {
 
         //std::cout << "X-MBX-APIKEY:" << m_pk << "\n" << std::flush;
 
-        _log_callback(std::format( "{} REQUEST. Host {}", target, m_host));
+        _log_callback(std::format( "{} REQUEST. Host {}:{}", target, m_host, m_port));
 
         // Look up the domain name
         m_resolver.async_resolve(
