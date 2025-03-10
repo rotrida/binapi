@@ -687,28 +687,34 @@ linear_future_account_info_t linear_future_account_info_t::construct(const flatj
     __BINAPI_GET(availableBalance);
     __BINAPI_GET(maxWithdrawAmount);
 
-    const auto asset_arr = json.at("asset");
-    assert(asset_arr.is_array());
-    for ( auto idx = 0u; idx < asset_arr.size(); ++idx ) {
+    if(json.contains("asset"))
+    {
+        const auto asset_arr = json.at("asset");
+        assert(asset_arr.is_array());
+        for ( auto idx = 0u; idx < asset_arr.size(); ++idx ) {
 
-        const auto it = asset_arr.at(idx);
+            const auto it = asset_arr.at(idx);
 
-        asset_t asset = asset_t::construct(it);
-        std::string symbol = asset.asset;
+            asset_t asset = asset_t::construct(it);
+            std::string symbol = asset.asset;
 
-        res.assets.emplace(std::move(symbol), std::move(asset));
+            res.assets.emplace(std::move(symbol), std::move(asset));
+        }
     }
 
-    const auto position_arr = json.at("positions");
-    assert(position_arr.is_array());
-    for ( auto idx = 0u; idx < position_arr.size(); ++idx ) {
+    if(json.contains("positions"))
+    {
+        const auto position_arr = json.at("positions");
+        assert(position_arr.is_array());
+        for ( auto idx = 0u; idx < position_arr.size(); ++idx ) {
 
-        const auto it = position_arr.at(idx);
+            const auto it = position_arr.at(idx);
 
-        position_t position = position_t::construct(it);
-        std::string symbol = position.symbol;
+            position_t position = position_t::construct(it);
+            std::string symbol = position.symbol;
 
-        res.positions.emplace(std::move(symbol), std::move(position));
+            res.positions.emplace(std::move(symbol), std::move(position));
+        }
     }
 
     return res;
@@ -864,28 +870,34 @@ inverse_future_account_info_t inverse_future_account_info_t::construct(const fla
     __BINAPI_GET(feeTier);
     __BINAPI_GET(updateTime);
     
-    const auto asset_arr = json.at("asset");
-    assert(asset_arr.is_array());
-    for ( auto idx = 0u; idx < asset_arr.size(); ++idx ) {
+    if(json.contains("asset"))
+    {
+        const auto asset_arr = json.at("asset");
+        assert(asset_arr.is_array());
+        for ( auto idx = 0u; idx < asset_arr.size(); ++idx ) {
 
-        const auto it = asset_arr.at(idx);
+            const auto it = asset_arr.at(idx);
 
-        asset_t asset = asset_t::construct(it);
-        std::string symbol = asset.asset;
+            asset_t asset = asset_t::construct(it);
+            std::string symbol = asset.asset;
 
-        res.assets.emplace(std::move(symbol), std::move(asset));
+            res.assets.emplace(std::move(symbol), std::move(asset));
+        }
     }
 
-    const auto position_arr = json.at("positions");
-    assert(position_arr.is_array());
-    for ( auto idx = 0u; idx < position_arr.size(); ++idx ) {
+    if(json.contains("positions"))
+    {
+        const auto position_arr = json.at("positions");
+        assert(position_arr.is_array());
+        for ( auto idx = 0u; idx < position_arr.size(); ++idx ) {
 
-        const auto it = position_arr.at(idx);
+            const auto it = position_arr.at(idx);
 
-        position_t position = position_t::construct(it);
-        std::string symbol = position.symbol;
+            position_t position = position_t::construct(it);
+            std::string symbol = position.symbol;
 
-        res.positions.emplace(std::move(symbol), std::move(position));
+            res.positions.emplace(std::move(symbol), std::move(position));
+        }
     }
 
     return res;

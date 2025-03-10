@@ -20,7 +20,7 @@
 #include <boost/beast/ssl.hpp>
 #include <boost/beast/websocket.hpp>
 #include <boost/beast/websocket/ssl.hpp>
-#include <boost/asio/strand.hpp>
+#include <boost/asio.hpp>
 
 #include <boost/callable_traits.hpp>
 #include <boost/algorithm/string/case_conv.hpp>
@@ -132,7 +132,7 @@ private:
             res.begin()
             ,res.end()
             ,[this, me_ptr=shared_from_this(), holder=std::move(holder)]
-             (boost::system::error_code ec, boost::asio::ip::tcp::resolver::iterator) mutable {
+             (boost::system::error_code ec, auto) mutable {
                 if ( ec ) {
                     if ( !m_stop_requested ) { __BINAPI_CB_ON_ERROR(m_cb, ec, this); }
                 } else {
