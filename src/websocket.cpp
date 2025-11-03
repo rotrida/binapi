@@ -53,7 +53,7 @@ struct websocket: std::enable_shared_from_this<websocket> {
     explicit websocket(boost::asio::io_context& ioctx, on_message_received_cb cb, boost::posix_time::time_duration timeout, websockets::log_callback log_callback_)
         :m_ioctx{ioctx}
         ,m_strand{ioctx}
-        ,m_timeout{timeout}
+        ,m_timeout{std::chrono::milliseconds{timeout.total_milliseconds()}}
         ,m_timeout_timer{ioctx}
         ,m_cb(cb)
         ,m_ssl{boost::asio::ssl::context::sslv23_client}
@@ -152,7 +152,7 @@ private:
                 boost::asio::dispatch(m_strand, [this, me_ptr]() 
                 {
                     _log_callback(std::format("WS {} control Msg received.", m_host));
-                    m_last_message_received = boost::posix_time::second_clock::universal_time();
+                    m_last_message_received = std::chrono::steady_clock::now();
                 });
             }
         );
@@ -195,7 +195,7 @@ private:
             return;
         }
 
-        const auto now = boost::posix_time::second_clock::universal_time();
+        const auto now = std::chrono::steady_clock::now();
 
         if (m_last_message_received + m_timeout < now)
         {
@@ -223,7 +223,7 @@ private:
             );
         }
 
-        m_timeout_timer.expires_from_now(m_timeout_verification);
+        m_timeout_timer.expires_after(m_timeout_verification);
         m_timeout_timer.async_wait(boost::asio::bind_executor(m_strand, std::bind(&websocket::on_timeout_timer_control, shared_from_this(), std::placeholders::_1)));
     }
 
@@ -239,13 +239,13 @@ private:
             )
         );
 
-        if (m_timeout != boost::posix_time::time_duration())
+        if (m_timeout != std::chrono::milliseconds())
         {
             m_timeout_verification = m_timeout / 2;
 
-            m_last_message_received = boost::posix_time::second_clock::universal_time();
+            m_last_message_received = std::chrono::steady_clock::now();
 
-            m_timeout_timer.expires_from_now(m_timeout_verification);
+            m_timeout_timer.expires_after(m_timeout_verification);
             m_timeout_timer.async_wait(boost::asio::bind_executor(m_strand, std::bind(&websocket::on_timeout_timer_control, shared_from_this(), std::placeholders::_1)));
         }
     }
@@ -283,7 +283,7 @@ private:
             return;
         }
 
-        m_last_message_received = boost::posix_time::second_clock::universal_time();
+        m_last_message_received = std::chrono::steady_clock::now();
 
         auto size = m_buf.size();
         assert(size == rd);
@@ -311,12 +311,12 @@ private:
 
     boost::asio::io_context &m_ioctx;
     boost::asio::io_context::strand m_strand;
-    boost::posix_time::time_duration m_timeout;
-    boost::posix_time::time_duration m_timeout_verification;
-    boost::asio::deadline_timer m_timeout_timer;
+    std::chrono::milliseconds m_timeout;
+    std::chrono::milliseconds m_timeout_verification;
+    boost::asio::steady_timer m_timeout_timer;
     on_message_received_cb m_cb;
     websockets::log_callback _log_callback;
-    boost::posix_time::ptime m_last_message_received;
+    std::chrono::steady_clock::time_point m_last_message_received;
     boost::asio::ssl::context m_ssl;
     boost::asio::ip::tcp::resolver m_resolver;
     boost::beast::websocket::stream<boost::beast::ssl_stream<boost::beast::tcp_stream>> m_ws;

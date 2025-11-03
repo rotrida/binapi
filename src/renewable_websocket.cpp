@@ -8,13 +8,11 @@ renewable_websocket::renewable_websocket(boost::asio::io_context& ioc, binapi::w
 	_channel_renew_timer(ioc),
     _websockets(websocket),
 	_web_socket_timeout(web_socket_timeout),
-	_web_socket_channel_renew(web_socket_channel_renew),
+	_web_socket_channel_renew(web_socket_channel_renew.total_milliseconds()),
 	_active_channel(nullptr),
 	_secondary_channel(nullptr),
     _log_callback(log_callback),
-    _active_channel_last_attempt_connection(boost::gregorian::date(1900, 01, 01)),
-    _secondary_channel_last_attempt_connection(boost::gregorian::date(1900, 01, 01)),
-    _reconnection_delay(boost::posix_time::seconds(5)),
+    _reconnection_delay(std::chrono::seconds(5)),
     _stopped(false)
 {
 }
@@ -34,21 +32,21 @@ void renewable_websocket::create_channel(async_channel_creation_callback callbac
     {
         boost::asio::dispatch(*_strand_ptr, [this, me_ptr, handle, callback]()
         {
-            _channel_renew_timer.expires_from_now(_web_socket_channel_renew);
+            _channel_renew_timer.expires_after(_web_socket_channel_renew);
             _channel_renew_timer.async_wait(boost::asio::bind_executor(*_strand_ptr, std::bind(&renewable_websocket::deal_channel_renew_timer_event, this, std::placeholders::_1)));
 
             callback(handle);    
         });
     };
 
-    const auto now = boost::posix_time::second_clock::universal_time();
+    const auto now = std::chrono::steady_clock::now();
     const auto next_reconnection_attempt = last_attempt_connection + _reconnection_delay;
 
     if(last_attempt_connection + _reconnection_delay > now)
     {
         _log_callback("Too soon to reconnect. Waiting the right time");
 
-        connection_timer_ptr = std::make_shared<boost::asio::deadline_timer>(_ioc);
+        connection_timer_ptr = std::make_shared<boost::asio::steady_timer>(_ioc);
         connection_timer_ptr->expires_at(next_reconnection_attempt);
         connection_timer_ptr->async_wait(_strand_ptr->wrap([this, me_ptr=shared_from_this(), subscribe_result, primary](boost::system::error_code ec)
         {

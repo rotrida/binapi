@@ -17,19 +17,19 @@ namespace binapi
 
 			boost::asio::io_context& _ioc;
 			std::shared_ptr<boost::asio::io_context::strand> _strand_ptr;
-			boost::asio::deadline_timer _channel_renew_timer;
+			boost::asio::steady_timer _channel_renew_timer;
 			binapi::ws::websockets& _websockets;
 			boost::posix_time::time_duration _web_socket_timeout;
-			boost::posix_time::time_duration _web_socket_channel_renew;
+			std::chrono::milliseconds _web_socket_channel_renew;
 			binapi::ws::websockets::handle _active_channel;
 			binapi::ws::websockets::handle _secondary_channel;
 			log_callback _log_callback;
 
-			std::shared_ptr<boost::asio::deadline_timer> _active_channel_connection_attempt_timer_ptr;
-			std::shared_ptr<boost::asio::deadline_timer> _secondary_channel_connection_attempt_timer_ptr;
-			boost::posix_time::ptime _active_channel_last_attempt_connection;
-			boost::posix_time::ptime _secondary_channel_last_attempt_connection;
-			boost::posix_time::time_duration _reconnection_delay;
+			std::shared_ptr<boost::asio::steady_timer> _active_channel_connection_attempt_timer_ptr;
+			std::shared_ptr<boost::asio::steady_timer> _secondary_channel_connection_attempt_timer_ptr;
+			std::chrono::steady_clock::time_point _active_channel_last_attempt_connection;
+			std::chrono::steady_clock::time_point _secondary_channel_last_attempt_connection;
+			std::chrono::milliseconds _reconnection_delay;
 
 			bool _stopped;
 
